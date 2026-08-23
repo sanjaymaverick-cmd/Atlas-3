@@ -225,11 +225,21 @@ export interface ChangeItem {
   response?: string;
 }
 
+export interface Customer {
+  id: string;
+  name: string;
+  phone: string;
+  pan?: string;
+  source?: string;
+  createdAt: string;
+}
+
 export interface Booking {
   id: string;
   projectId: string;
   unit: string;
   customer: string;
+  customerId?: string;
   value: number;
   collected: number;
   status: "active" | "cancelled" | "possession";
@@ -375,6 +385,7 @@ export interface Lead {
   source: string;
   partnerId?: string;
   agentId?: string;
+  customerId?: string;
   stage: LeadStage;
   unit: string;
   note: string;
@@ -384,6 +395,12 @@ export interface Lead {
   band?: ScoreBand;
   scoreReasons?: string[];
   scoreModel?: string;
+  currentScore?: number;
+  currentBand?: ScoreBand;
+  currentProbability?: number;
+  currentScoreReasons?: string[];
+  currentModelId?: string;
+  lastScoredAt?: string;
   waConsent?: boolean;
 }
 
@@ -436,8 +453,16 @@ export interface SalesAgent {
 export interface ScoringModel {
   id: string;
   name: string;
+  algorithm: ScoreModelKind;
   kind: ScoreModelKind;
+  version: string;
+  trainedAt?: string;
+  metrics: Record<string, number>;
+  featureList: string[];
   active: boolean;
+  isActive?: boolean;
+  createdAt: string;
+  notes: string;
   note: string;
 }
 
@@ -451,11 +476,18 @@ export interface LeadFeatureRow {
 export interface LeadScoreHistory {
   id: string;
   leadId: string;
+  modelId: string;
   at: string;
+  scoredAt: string;
   score: number;
   band: ScoreBand;
+  probability: number;
   model: string;
   reasons: string[];
+  topReasons: string[];
+  shapValues: Record<string, number>;
+  triggerType: string;
+  triggerDetail: string;
 }
 
 export interface SiteVisit {

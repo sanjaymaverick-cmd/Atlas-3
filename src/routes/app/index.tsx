@@ -1,9 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Kpi } from "@/components/kpi";
 import { PageHeader } from "@/components/page-header";
 import { ProjectTimeline } from "@/components/project-timeline";
 import { QueueStrip } from "@/components/queue-strip";
-import { Status } from "@/components/status";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { canSeeTally } from "@/lib/roles";
 import { companyAgentIds, myCompanyId } from "@/lib/sales-scope";
@@ -89,11 +88,13 @@ function Command() {
           ]
         : [
             { to: "/app/approvals", label: "Approvals waiting", count: pending.length },
-            { to: "/app/quotations", label: "RFQs / quotes", count: "Open" },
+            { to: "/app/site", label: "Failed inspections", count: failed.length },
             { to: "/app/changes", label: "Open NCRs", count: openNcr.length },
             ...(canSeeTally(user?.role)
               ? [{ to: "/app/finance", label: "Tally cases", count: openTally.length }]
-              : [{ to: "/app/customers", label: "Receivable", count: inr(receivable, true) }]),
+              : overdueObs
+                ? [{ to: "/app/land", label: "Statutory overdue", count: overdueObs }]
+                : [{ to: "/app/customers", label: "Receivable", count: inr(receivable, true) }]),
           ];
 
   const exceptions = [
@@ -116,7 +117,7 @@ function Command() {
 
       <QueueStrip items={queue} />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {channelDesk ? (
           <>
             <Kpi label="Available units" value={String(available.length)} hint="Hold from Channel desk" />
@@ -145,7 +146,26 @@ function Command() {
           </>
         ) : (
           <>
-            <Kpi label="Portfolio" value={ragLabel} tone={rag} hint="On track / needs a decision" />
+            <Kpi
+              label="Collections / cash-in"
+              value={inr(collections, true)}
+              vs={`still ${inr(receivable, true)}`}
+              hint={ragLabel}
+              tone={receivable > collections ? "warn" : rag}
+            />
+            <Kpi
+              label="Open gates"
+              value={String(pending.length)}
+              vs={pending.length ? `oldest ${oldest}d` : "Inbox clear"}
+              hint="Approvals waiting"
+              tone={pending.length ? "warn" : "ok"}
+            />
+            <Kpi
+              label="Quality"
+              value={String(failed.length)}
+              hint="Failed inspections"
+              tone={failed.length ? "danger" : "ok"}
+            />
             <Kpi
               label="Spent vs budget"
               value={`${spendPct}%`}
@@ -153,29 +173,6 @@ function Command() {
               hint="Concept land excluded from committed"
               tone={spendPct > 70 ? "warn" : "ok"}
             />
-            <Kpi
-              label="Collections / cash-in"
-              value={inr(collections, true)}
-              vs={`still ${inr(receivable, true)}`}
-              tone={receivable > collections ? "warn" : "ok"}
-            />
-            <Kpi
-              label="Material decisions"
-              value={String(pending.length)}
-              vs={pending.length ? `oldest ${oldest}d` : "Inbox clear"}
-              tone={pending.length ? "warn" : "ok"}
-            />
-            <Kpi
-              label="Risk exceptions"
-              value={String(failed.length + overdueObs)}
-              hint="Failed inspections + overdue statutory"
-              tone={failed.length + overdueObs ? "danger" : "ok"}
-            />
-            {pipeline.length ? (
-              <Kpi label="CRM pipeline" value={String(pipeline.length)} hint="Live leads this entity" vs="not won/lost" />
-            ) : (
-              <Kpi label="Open NCRs" value={String(openNcr.length)} tone={openNcr.length ? "warn" : "ok"} />
-            )}
           </>
         )}
       </div>
@@ -203,31 +200,8 @@ function Command() {
                 </p>
               ))
             )}
-            <Link to="/app/portfolio" className="mt-2 inline-block text-sm text-primary underline-offset-4 hover:underline">
-              Owners Hub
-            </Link>
-            <span className="text-muted"> · </span>
-            <Link to="/app/capital" className="text-sm text-primary underline-offset-4 hover:underline">
-              Capital
-            </Link>
           </CardBody>
         </Card>
-      </div>
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        {list.map((p) => (
-          <Link key={p.id} to="/app/projects/$id" params={{ id: p.id }} className="block">
-            <Card className="p-4 hover:bg-chip">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <p className="truncate text-sm font-medium">{p.code}</p>
-                <Status value={p.status} />
-              </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-chip">
-                <div className="h-full bg-primary" style={{ width: `${p.progress}%` }} />
-              </div>
-            </Card>
-          </Link>
-        ))}
       </div>
     </div>
   );

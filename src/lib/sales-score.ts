@@ -8,11 +8,14 @@ export interface ScoreContribution {
 export interface ScoreResult {
   score: number;
   band: ScoreBand;
+  probability: number;
   reasons: string[];
   model: string;
   contributions: ScoreContribution[];
   features: Record<string, number>;
+  shapValues: Record<string, number>;
   raw: number;
+  servedBy: "hybrid" | "catboost";
 }
 
 /** Empirical conversion priors — class imbalance handling for the local demo. */
@@ -73,15 +76,14 @@ export function extractFeatures(
 }
 
 /**
- * Hybrid scorer: hard rules + GBDT-lite.
- * Swap `model` for xgboost / lightgbm / catboost leaf weights — trained GBDT
- * labs stay an owner TODO (not on this host).
+ * Hybrid scorer on this host: hard rules + calibrated GBDT-lite.
+ * CatBoost is not re-implemented here — see `scoring.ts` / `services/scoring`.
  */
 export function scoreLead(
   lead: Pick<Lead, "source" | "stage" | "budget" | "note" | "kind">,
   unit?: InventoryUnit,
   activities: LeadActivity[] = [],
-  model: ScoreModelKind = "hybrid",
+  _model: ScoreModelKind = "hybrid",
 ): ScoreResult {
   const f = extractFeatures(lead, unit, activities);
   const contrib: ScoreContribution[] = [];
@@ -92,7 +94,7 @@ export function scoreLead(
   contrib.push({ feature: `Source ${lead.source}`, weight: srcPts });
 
   if (lead.stage === "lost") {
-    return pack(8, "cold", ["Lead marked lost"], model, contrib, f, 8);
+    return pack(8, "cold", 0.05, ["Lead marked lost"], contrib, f, { lost: -30 }, 8);
   }
   if (f.stage >= 2) {
     rules += 14;
@@ -133,24 +135,21 @@ export function scoreLead(
   if (f.call) contrib.push({ feature: "Call engagement", weight: f.call * 3 });
   if (f.brochure) contrib.push({ feature: "Brochure views", weight: f.brochure * 4 });
 
-  if (model === "xgboost") ml = ml * 1.05 + f.stage * 2;
-  else if (model === "lightgbm") ml = ml * 0.98 + f.sourcePrior * 8;
-  else if (model === "catboost") ml = ml * 0.88 + f.sourceTarget * 22;
-
-  const raw = model === "hybrid" ? 0.42 * rules + 0.58 * ml : ml;
-  // Mild Platt-style calibration. A hard 0.18 prior smash parked every new lead in Cold.
+  const raw = 0.42 * rules + 0.58 * ml;
   const z = (raw - 48) / 14;
   const p = 1 / (1 + Math.exp(-z));
   const mixed = 0.85 * p + 0.15 * (POSITIVE_PRIOR + 0.35);
-  const score = Math.max(5, Math.min(98, Math.round(mixed * 100)));
+  const probability = Math.max(0.02, Math.min(0.98, mixed));
+  const score = Math.max(5, Math.min(98, Math.round(probability * 100)));
   const band: ScoreBand = score >= 70 ? "hot" : score >= 45 ? "warm" : "cold";
   const reasons = contrib
     .slice()
     .sort((a, b) => Math.abs(b.weight) - Math.abs(a.weight))
     .slice(0, 4)
     .map((c) => `${c.feature} ${c.weight >= 0 ? "+" : ""}${Math.round(c.weight)}`);
-  reasons.push(`${modelLabel(model)} · calibrated ${band}`);
-  return pack(score, band, reasons.slice(0, 5), model, contrib, f, raw);
+  reasons.push(`hybrid · calibrated ${band}`);
+  const shapValues = Object.fromEntries(contrib.map((c) => [c.feature, c.weight]));
+  return pack(score, band, probability, reasons.slice(0, 5), contrib, f, shapValues, raw);
 }
 
 export function bandTone(band: ScoreBand): "ok" | "warn" | "danger" {
@@ -160,22 +159,34 @@ export function bandTone(band: ScoreBand): "ok" | "warn" | "danger" {
 }
 
 export function modelLabel(kind: ScoreModelKind) {
-  if (kind === "hybrid") return "rules+gbdt-lite";
-  if (kind === "xgboost") return "xgboost-lite";
-  if (kind === "lightgbm") return "lightgbm-lite";
-  return "catboost-ordered-ts";
+  if (kind === "hybrid") return "hybrid";
+  if (kind === "xgboost") return "xgboost";
+  if (kind === "lightgbm") return "lightgbm";
+  return "catboost";
 }
 
 function pack(
   score: number,
   band: ScoreBand,
+  probability: number,
   reasons: string[],
-  model: ScoreModelKind,
   contributions: ScoreContribution[],
   features: Record<string, number>,
+  shapValues: Record<string, number>,
   raw: number,
 ): ScoreResult {
-  return { score, band, reasons, model: modelLabel(model), contributions, features, raw };
+  return {
+    score,
+    band,
+    probability,
+    reasons,
+    model: "hybrid",
+    contributions,
+    features,
+    shapValues,
+    raw,
+    servedBy: "hybrid",
+  };
 }
 
 function clamp(n: number, lo: number, hi: number) {

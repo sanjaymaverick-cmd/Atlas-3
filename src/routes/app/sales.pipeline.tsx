@@ -11,9 +11,15 @@ import { isThirdParty } from "@/lib/sales-scope";
 import { STAGE_LABEL } from "@/lib/sales/stages";
 import { useAtlas } from "@/lib/store";
 import { inr, todayIso } from "@/lib/utils";
-import type { ScoreModelKind } from "@/lib/types";
+import type { Lead, SalesAgent, ScoreModelKind } from "@/lib/types";
 
 export const Route = createFileRoute("/app/sales/pipeline")({ component: Pipeline });
+
+function assignableAgents(agents: SalesAgent[], lead: Lead) {
+  return agents.filter(
+    (a) => a.status === "active" && (a.inHouse || (lead.partnerId ? a.companyId === lead.partnerId : false)),
+  );
+}
 
 function Pipeline() {
   const {
@@ -23,12 +29,14 @@ function Pipeline() {
     leads,
     units,
     user,
+    agents,
     scoreModels,
     activeScoreModel,
     leadActivities,
     scoreHistory,
     siteVisits,
     ingestLead,
+    assignLead,
     advanceLead,
     loseLead,
     nurtureLead,
@@ -59,11 +67,12 @@ function Pipeline() {
       <PageHeader
         kicker="In-house pipeline"
         title="New → visit → book"
-        description="New, contacted, qualified, site visit, negotiation, booked / lost / nurture. Hybrid score 0–100. Convert locks inventory. Local only."
+        description="New, contacted, qualified, site visit, negotiation, booked / lost / nurture. Assign an active agent. Convert locks inventory and opens handover. Local only."
       />
       <GateBanner>
-        Live portal pulls and trained XGBoost / LightGBM / CatBoost stay owner TODOs. Dedup is by phone + project. CatBoost
-        path uses ordered target statistics on source.
+        CatBoost is a separate service (`services/scoring`) that takes categoricals via cat_features. This host does not
+        re-implement Ordered Target Statistics. Select CatBoost to queue a native apply; unbound → hybrid. Dedup is
+        phone + project.
       </GateBanner>
 
       <Card className="mb-6 p-5">
@@ -155,16 +164,18 @@ function Pipeline() {
           const hist = scoreHistory.filter((s) => s.leadId === l.id).slice(0, 3);
           const visits = siteVisits.filter((v) => v.leadId === l.id);
           const open = openId === l.id;
+          const owner = agents.find((a) => a.id === l.agentId);
+          const desk = assignableAgents(agents, l);
           return (
-            <Card key={l.id} className="p-4">
+            <Card key={l.id} className="p-4" data-lead-id={l.id}>
               <button type="button" className="flex w-full flex-wrap items-start justify-between gap-3 text-left" onClick={() => setOpenId(open ? null : l.id)}>
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
-                    {l.source} · {l.unit || "no unit"} · {l.scoreModel}
+                    {l.source} · {l.unit || "no unit"} · {l.scoreModel} · {owner?.name ?? "unassigned"}
                   </p>
                   <p className="font-display text-xl">{l.name}</p>
                   <p className="text-sm text-muted">
-                    Score {l.score ?? "—"} · {(l.scoreReasons ?? []).join(" · ")}
+                    Score {l.currentScore ?? l.score ?? "—"} · p {((l.currentProbability ?? (l.score ?? 0) / 100)).toFixed(2)} · {(l.currentScoreReasons ?? l.scoreReasons ?? []).join(" · ")}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -174,6 +185,25 @@ function Pipeline() {
               </button>
               {l.stage !== "won" && l.stage !== "lost" ? (
                 <div className="mt-3 flex flex-wrap gap-2">
+                  <select
+                    aria-label={`Assign ${l.name}`}
+                    className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+                    value={l.agentId ?? ""}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => {
+                      if (!e.target.value) return;
+                      const err = assignLead(l.id, e.target.value);
+                      toast(err ?? `Assigned to ${agents.find((a) => a.id === e.target.value)?.name}.`);
+                    }}
+                  >
+                    <option value="">Assign agent</option>
+                    {desk.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.name}
+                        {a.inHouse ? " · in-house" : ""}
+                      </option>
+                    ))}
+                  </select>
                   <Button size="sm" variant="outline" className="h-11" onClick={() => toast(advanceLead(l.id) ?? "Advanced.")}>
                     Advance
                   </Button>
@@ -198,7 +228,7 @@ function Pipeline() {
                     variant="outline"
                     onClick={() => {
                       const err = convertLead(l.id, Number(convertValue[l.id] ?? l.budget) || 0);
-                      toast(err ?? "Unit locked as booked. Commission accrued if partner active.");
+                      toast(err ?? "Unit locked as booked. Handover opened. Commission accrued if partner active.");
                     }}
                   >
                     Book unit
@@ -224,6 +254,7 @@ function Pipeline() {
                       Unit {l.unit || "—"} {inv ? `· ${inv.status} · ${inr(inv.price, true)}` : ""}
                     </p>
                     {l.budget ? <p className="text-sm text-muted">Budget {inr(l.budget, true)}</p> : null}
+                    <p className="mt-2 text-sm text-muted">Desk {owner?.name ?? "unassigned"}</p>
                   </div>
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Why this score</p>

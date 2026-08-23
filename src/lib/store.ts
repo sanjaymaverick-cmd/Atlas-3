@@ -35,6 +35,7 @@ import {
 import { COMMISSIONS, HOSTS, LEADS, PARTNERS, PAYMENTS, SNAGS } from "./crm-seed";
 import {
   AGENTS,
+  CUSTOMERS,
   BOOKING_DOCS,
   DAILY_REPORTS,
   HANDOVERS,
@@ -52,6 +53,7 @@ import {
   WA_SENDS,
 } from "./sales-seed";
 import { scoreLead } from "./sales-score";
+import { score as scoreNative } from "./sales/scoring";
 import { refuseBook, refuseHold } from "./sales/inventory";
 import { refuseDailyReport, refuseHoldWithoutReport } from "./sales/channel";
 import { findDuplicate, normalizePhone } from "./sales/ingest";
@@ -61,6 +63,7 @@ import type {
   Approval,
   AuditEvent,
   Booking,
+  Customer,
   ChangeItem,
   Contract,
   DecisionId,
@@ -146,6 +149,7 @@ interface AtlasState {
   units: InventoryUnit[];
   unitEvents: UnitEvent[];
   agents: SalesAgent[];
+  customers: Customer[];
   dailyReports: DailyReport[];
   holds: UnitHold[];
   leadActivities: LeadActivity[];
@@ -250,6 +254,7 @@ interface AtlasState {
     notes: string;
   }) => string | null;
   ingestLead: (input: Omit<Lead, "id" | "stage" | "score" | "band" | "scoreReasons" | "scoreModel">) => string | null;
+  assignLead: (leadId: string, agentId: string) => string | null;
   rescoreLead: (leadId: string, activity?: string) => string | null;
   setUnitDispute: (unitId: string) => string | null;
   advanceHandover: (id: string) => string | null;
@@ -317,6 +322,19 @@ function accrueCommission(commissions: Commission[], partners: Partner[], bookin
   ];
 }
 
+function upsertCustomer(customers: Customer[], name: string, phone?: string, source?: string) {
+  const hit = (phone ? customers.find((c) => c.phone === phone) : undefined) ?? customers.find((c) => c.name === name);
+  if (hit) return { customers, id: hit.id };
+  const row: Customer = {
+    id: uid("cu"),
+    name,
+    phone: phone ?? "",
+    source,
+    createdAt: new Date().toISOString(),
+  };
+  return { customers: [row, ...customers], id: row.id };
+}
+
 function expireHolds(units: InventoryUnit[], events: UnitEvent[], holds: UnitHold[]) {
   const today = todayIso();
   let nextUnits = units;
@@ -331,28 +349,91 @@ function expireHolds(units: InventoryUnit[], events: UnitEvent[], holds: UnitHol
   return { units: nextUnits, events: nextEvents, holds: nextHolds };
 }
 
+function ensureHandover(handovers: HandoverCase[], projectId: string, unit: string) {
+  if (!unit || handovers.some((h) => h.unit === unit)) return handovers;
+  const row: HandoverCase = {
+    id: uid("ho"),
+    projectId,
+    unit,
+    oc: "pending",
+    snagsOpen: 0,
+    status: "snagging",
+  };
+  return [row, ...handovers];
+}
+
 function rememberScore(
   leadId: string,
   scored: ReturnType<typeof scoreLead>,
   history: LeadScoreHistory[],
   features: LeadFeatureRow[],
+  modelId: string,
+  triggerType: string,
+  triggerDetail: string,
 ) {
   const at = new Date().toISOString();
-  return {
-    history: [
-      {
-        id: uid("sh"),
-        leadId,
-        at,
-        score: scored.score,
-        band: scored.band as ScoreBand,
-        model: scored.model,
-        reasons: scored.reasons,
-      },
-      ...history,
-    ].slice(0, 200),
-    features: [{ id: uid("lf"), leadId, at, features: scored.features }, ...features.filter((f) => f.leadId !== leadId)],
+  const row: LeadScoreHistory = {
+    id: uid("sh"),
+    leadId,
+    modelId,
+    at,
+    scoredAt: at,
+    score: scored.score,
+    band: scored.band as ScoreBand,
+    probability: scored.probability ?? scored.score / 100,
+    model: scored.model,
+    reasons: scored.reasons,
+    topReasons: scored.reasons,
+    shapValues: scored.shapValues ?? {},
+    triggerType,
+    triggerDetail,
   };
+  return {
+    history: [row, ...history].slice(0, 200),
+    features: [{ id: uid("lf"), leadId, at, features: scored.features }, ...features.filter((f) => f.leadId !== leadId)],
+    stamp: {
+      score: scored.score,
+      band: scored.band,
+      scoreReasons: scored.reasons,
+      scoreModel: scored.model,
+      currentScore: scored.score,
+      currentBand: scored.band,
+      currentProbability: row.probability,
+      currentScoreReasons: scored.reasons,
+      currentModelId: modelId,
+      lastScoredAt: at,
+    },
+  };
+}
+
+/** Native CatBoost when that model is active. Hybrid stays the sync path. */
+function queueNativeScore(leadId: string, triggerType: string, triggerDetail: string) {
+  const state = useAtlas.getState();
+  const model = state.scoreModels.find((m) => m.active) ?? state.scoreModels[0];
+  if ((model?.algorithm ?? model?.kind) !== "catboost") return;
+  const l = state.leads.find((x) => x.id === leadId);
+  if (!l) return;
+  const unit = state.units.find((u) => u.code === l.unit);
+  const acts = state.leadActivities.filter((a) => a.leadId === leadId);
+  void scoreNative({ lead: l, unit, activities: acts, model, triggerType, triggerDetail }).then((scored) => {
+    if (scored.servedBy !== "catboost") return;
+    const latest = useAtlas.getState();
+    const mem = rememberScore(
+      leadId,
+      scored,
+      latest.scoreHistory,
+      latest.leadFeatures,
+      model.id,
+      triggerType,
+      triggerDetail,
+    );
+    useAtlas.setState({
+      leads: latest.leads.map((x) => (x.id === leadId ? { ...x, ...mem.stamp } : x)),
+      scoreHistory: mem.history,
+      leadFeatures: mem.features,
+    });
+    latest.log("CatBoost native applied", `${l.name} · ${scored.score}`);
+  });
 }
 
 export const useAtlas = create<AtlasState>()(
@@ -384,6 +465,7 @@ export const useAtlas = create<AtlasState>()(
       units: UNITS,
       unitEvents: UNIT_EVENTS,
       agents: AGENTS,
+      customers: CUSTOMERS,
       dailyReports: DAILY_REPORTS,
       holds: HOLDS,
       leadActivities: LEAD_ACTIVITIES,
@@ -733,7 +815,8 @@ export const useAtlas = create<AtlasState>()(
         const inv = get().units.find((u) => u.projectId === b.projectId && u.code === b.unit);
         const locked = refuseBook(inv, get().bookings, b.projectId, b.unit);
         if (locked) return locked;
-        const row: Booking = { ...b, id: uid("b"), collected: 0, status: "active" };
+        const cu = upsertCustomer(get().customers, b.customer, undefined, "booking");
+        const row: Booking = { ...b, id: uid("b"), collected: 0, status: "active", customerId: cu.id };
         const moved = inv
           ? moveUnit(get().units, get().unitEvents, inv.id, "booked", `Booking ${row.id}`)
           : { units: get().units, events: get().unitEvents };
@@ -749,6 +832,8 @@ export const useAtlas = create<AtlasState>()(
           unitEvents: moved.events,
           commissions,
           bookingDocs: [...docs, ...get().bookingDocs],
+          customers: cu.customers,
+          handovers: ensureHandover(get().handovers, row.projectId, row.unit),
         });
         get().log("Created booking", `${b.unit} · ${b.customer}`);
         return null;
@@ -774,6 +859,11 @@ export const useAtlas = create<AtlasState>()(
           payments,
         });
         get().log("Recorded collection", b.unit);
+        const next = get().bookings.find((x) => x.id === bookingId);
+        if (next && next.collected < next.value) {
+          const lead = get().leads.find((l) => l.name === b.customer || l.unit === b.unit);
+          if (lead) get().fireWaTrigger("payment_due", lead.id);
+        }
         return null;
       },
       recordDecision: (id, note) => {
@@ -1085,18 +1175,25 @@ export const useAtlas = create<AtlasState>()(
         if (!stage) return "Convert to booking instead of advancing.";
         const unit = get().units.find((u) => u.code === l.unit);
         const acts = get().leadActivities.filter((a) => a.leadId === id);
+        const model = get().scoreModels.find((m) => m.active) ?? get().scoreModels[0];
         const scored = scoreLead({ ...l, stage }, unit, acts, get().activeScoreModel);
-        const mem = rememberScore(id, scored, get().scoreHistory, get().leadFeatures);
+        const mem = rememberScore(id, scored, get().scoreHistory, get().leadFeatures, model?.id ?? "m_hybrid", "stage_change", stage);
         set({
-          leads: get().leads.map((x) =>
-            x.id === id
-              ? { ...x, stage, score: scored.score, band: scored.band, scoreReasons: scored.reasons, scoreModel: scored.model }
-              : x,
-          ),
+          leads: get().leads.map((x) => (x.id === id ? { ...x, stage, ...mem.stamp } : x)),
           scoreHistory: mem.history,
           leadFeatures: mem.features,
         });
         get().log(`Lead moved to ${stage}`, l.name);
+        queueNativeScore(id, "stage_change", stage);
+        return null;
+      },
+      assignLead: (leadId, agentId) => {
+        const l = get().leads.find((x) => x.id === leadId);
+        if (!l) return "Lead not found.";
+        const ag = get().agents.find((a) => a.id === agentId);
+        if (!ag || ag.status !== "active") return "Active agent required.";
+        set({ leads: get().leads.map((x) => (x.id === leadId ? { ...x, agentId } : x)) });
+        get().log("Lead assigned", `${l.name} · ${ag.name}`);
         return null;
       },
       loseLead: (id) => {
@@ -1141,6 +1238,8 @@ export const useAtlas = create<AtlasState>()(
           { id: uid("py"), bookingId: booking.id, label: "Construction", due: todayIso(), amount: Math.round(value * 0.4), paid: 0 },
           { id: uid("py"), bookingId: booking.id, label: "Possession", due: todayIso(), amount: value - token * 2 - Math.round(value * 0.4), paid: 0 },
         ];
+        const cu = upsertCustomer(get().customers, l.name, l.phone, l.source);
+        booking.customerId = cu.id;
         const commissions = accrueCommission(get().commissions, get().partners, booking, value);
         const moved = inv
           ? moveUnit(get().units, get().unitEvents, inv.id, "booked", `Lead convert ${booking.id}`)
@@ -1152,14 +1251,17 @@ export const useAtlas = create<AtlasState>()(
         ];
         set({
           bookings: [booking, ...get().bookings],
-          leads: get().leads.map((x) => (x.id === id ? { ...x, stage: "won" } : x)),
+          leads: get().leads.map((x) => (x.id === id ? { ...x, stage: "won", customerId: cu.id } : x)),
           payments: [...steps, ...get().payments],
           units: moved.units,
           unitEvents: moved.events,
           commissions,
           bookingDocs: [...docs, ...get().bookingDocs],
+          customers: cu.customers,
+          handovers: ensureHandover(get().handovers, l.projectId, l.unit),
         });
         get().log("Converted lead to booking", `${l.name} · ${l.unit}`);
+        if (l.waConsent) get().fireWaTrigger("document_request", id);
         return null;
       },
       addPartner: (input) => {
@@ -1329,20 +1431,29 @@ export const useAtlas = create<AtlasState>()(
         const dup = findDuplicate(get().leads, phone, input.projectId);
         if (dup) return `Duplicate lead on ${dup.phone} — already ${dup.stage}.`;
         const unit = get().units.find((u) => u.code === input.unit);
+        const model = get().scoreModels.find((m) => m.active) ?? get().scoreModels[0];
         const scored = scoreLead({ ...input, stage: "inquiry" }, unit, [], get().activeScoreModel);
+        const cu = upsertCustomer(get().customers, input.name, phone, input.source);
         const row: Lead = {
           ...input,
           phone,
           id: uid("ld"),
           stage: "inquiry",
+          customerId: cu.id,
           score: scored.score,
           band: scored.band,
           scoreReasons: scored.reasons,
           scoreModel: scored.model,
         };
-        const mem = rememberScore(row.id, scored, get().scoreHistory, get().leadFeatures);
-        set({ leads: [row, ...get().leads], scoreHistory: mem.history, leadFeatures: mem.features });
+        const mem = rememberScore(row.id, scored, get().scoreHistory, get().leadFeatures, model?.id ?? "m_hybrid", "arrival", input.source);
+        set({
+          leads: [{ ...row, ...mem.stamp }, ...get().leads],
+          scoreHistory: mem.history,
+          leadFeatures: mem.features,
+          customers: cu.customers,
+        });
         get().log("Ingested lead", `${row.name} · ${row.band} ${row.score}`);
+        queueNativeScore(row.id, "arrival", input.source);
         return null;
       },
       rescoreLead: (leadId, activity) => {
@@ -1359,19 +1470,25 @@ export const useAtlas = create<AtlasState>()(
             }
           : undefined;
         const acts = act ? [act, ...get().leadActivities.filter((a) => a.leadId === leadId)] : get().leadActivities.filter((a) => a.leadId === leadId);
+        const model = get().scoreModels.find((m) => m.active) ?? get().scoreModels[0];
         const scored = scoreLead(l, unit, acts, get().activeScoreModel);
-        const mem = rememberScore(leadId, scored, get().scoreHistory, get().leadFeatures);
+        const mem = rememberScore(
+          leadId,
+          scored,
+          get().scoreHistory,
+          get().leadFeatures,
+          model?.id ?? "m_hybrid",
+          "engagement",
+          activity || "rescore",
+        );
         set({
-          leads: get().leads.map((x) =>
-            x.id === leadId
-              ? { ...x, score: scored.score, band: scored.band, scoreReasons: scored.reasons, scoreModel: scored.model }
-              : x,
-          ),
+          leads: get().leads.map((x) => (x.id === leadId ? { ...x, ...mem.stamp } : x)),
           leadActivities: act ? [act, ...get().leadActivities] : get().leadActivities,
           scoreHistory: mem.history,
           leadFeatures: mem.features,
         });
         get().log("Lead re-scored", `${l.name} · ${scored.band}`);
+        queueNativeScore(leadId, "engagement", activity || "rescore");
         return null;
       },
       setUnitDispute: (unitId) => {
@@ -1405,9 +1522,18 @@ export const useAtlas = create<AtlasState>()(
       setScoreModel: (kind) => {
         set({
           activeScoreModel: kind,
-          scoreModels: get().scoreModels.map((m) => ({ ...m, active: m.kind === kind })),
+          scoreModels: get().scoreModels.map((m) => ({
+            ...m,
+            active: m.algorithm === kind || m.kind === kind,
+            isActive: m.algorithm === kind || m.kind === kind,
+          })),
         });
         get().log("Scoring model selected", kind);
+        if (kind === "catboost") {
+          get()
+            .leads.filter((l) => l.stage !== "won" && l.stage !== "lost")
+            .forEach((l) => queueNativeScore(l.id, "model_switch", "catboost"));
+        }
       },
       scheduleVisit: (input) => {
         const l = get().leads.find((x) => x.id === input.leadId);
@@ -1600,6 +1726,6 @@ export const useAtlas = create<AtlasState>()(
         return report;
       },
     }),
-    { name: "atlas3-sales-v5" },
+    { name: "atlas3-sales-v9" },
   ),
 );

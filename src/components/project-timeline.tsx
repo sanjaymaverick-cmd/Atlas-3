@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { Project } from "@/lib/types";
 
 function pct(start: string, end: string, now = Date.now()) {
@@ -13,7 +14,7 @@ export function ProjectTimeline({ projects }: { projects: Project[] }) {
       {projects.map((p) => {
         const t = pct(p.start, p.possession);
         return (
-          <div key={p.id}>
+          <Link key={p.id} to="/app/projects/$id" params={{ id: p.id }} className="block hover:opacity-90">
             <div className="mb-1.5 flex items-baseline justify-between gap-3">
               <p className="truncate text-sm font-medium">{p.name}</p>
               <p className="shrink-0 font-mono text-[10px] tabular-nums text-muted">
@@ -31,7 +32,7 @@ export function ProjectTimeline({ projects }: { projects: Project[] }) {
                 {p.progress}% built · {Math.round(t)}% of calendar
               </span>
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>

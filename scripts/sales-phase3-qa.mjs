@@ -8,20 +8,30 @@ const OUT = join(process.cwd(), "screenshots", "sales");
 mkdirSync(OUT, { recursive: true });
 const errors = [];
 
+const SEAT = {
+  "ca@atlas.local": "Pink City company admin",
+  "sm@atlas.local": "Sales Manager",
+  "ag@atlas.local": "Channel agent (Pink City)",
+};
+
 async function login(page, email, password) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 30000 });
   await page.evaluate(() => {
-    localStorage.removeItem("atlas3-sales-v3");
-    localStorage.removeItem("atlas3-sales-v4");
+    for (const k of ["atlas3-sales-v3", "atlas3-sales-v4", "atlas3-sales-v5", "atlas3-sales-v6", "atlas3-sales-v7", "atlas3-sales-v8", "atlas3-sales-v9", "atlas3-clt-v1", "atlas3-company-day-v1"]) {
+      localStorage.removeItem(k);
+    }
   });
-  await page.reload({ waitUntil: "domcontentloaded" });
-  await page.getByRole("button", { name: /enter local atlas/i }).waitFor({ timeout: 20000 });
+  await page.reload({ waitUntil: "networkidle" });
   await page.getByText("Local test accounts").waitFor({ timeout: 20000 });
-  await page.waitForTimeout(1200);
-  await page.locator("input").nth(0).fill(email);
-  await page.locator("input[type='password']").fill(password);
+  await page.waitForTimeout(800);
+  const seat = SEAT[email];
+  if (seat) await page.getByRole("button", { name: seat }).click();
+  else {
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill(password);
+  }
   await page.getByRole("button", { name: /enter local atlas/i }).click();
-  await page.waitForURL(/\/app/, { timeout: 20000 });
+  await page.getByRole("button", { name: /end session/i }).waitFor({ timeout: 25000 });
 }
 
 async function main() {
@@ -30,8 +40,36 @@ async function main() {
   page.on("pageerror", (err) => errors.push(String(err)));
 
   await login(page, "sm@atlas.local", "AtlasLocal-SM");
+
+  await page.goto(`${BASE}/app/sales/analytics`, { waitUntil: "domcontentloaded" });
+  await page.getByText("Commission payouts").waitFor({ timeout: 10000 });
+  const analytics = await page.locator("body").innerText();
+  if (!/Model monitor/i.test(analytics)) errors.push("Analytics missing model monitor");
+  if (!/Never pays|never post/i.test(analytics)) errors.push("Payouts missing never-pay copy");
+  const pay = page.getByRole("button", { name: /send for approval/i }).first();
+  if (await pay.count()) {
+    await pay.click();
+    await page.waitForTimeout(400);
+    const afterPay = await page.locator("body").innerText();
+    if (!/Waiting in Approvals/i.test(afterPay)) errors.push("Commission did not move to Approvals");
+  } else errors.push("Send for approval missing on accrued commission");
+  await page.screenshot({ path: join(OUT, "analytics-monitor.png"), fullPage: true });
+
+  await page.goto(`${BASE}/app/sales/pipeline`, { waitUntil: "domcontentloaded" });
+  await page.getByText("New → visit → book").waitFor({ timeout: 10000 });
+  const gupta = page.locator("[data-lead-id]").filter({ hasText: "P. Gupta" });
+  if (await gupta.count()) {
+    await gupta.getByRole("button", { name: /book unit/i }).click();
+    await page.waitForTimeout(500);
+  } else errors.push("P. Gupta book control missing");
+  await page.goto(`${BASE}/app/sales/handover`, { waitUntil: "domcontentloaded" });
+  await page.getByText("OC, snags, possession, society").waitFor({ timeout: 10000 });
+  const ho = await page.locator("body").innerText();
+  if (!/A-0101/i.test(ho)) errors.push("Convert did not open handover for A-0101");
+  await page.screenshot({ path: join(OUT, "handover-convert.png"), fullPage: true });
+
   await page.goto(`${BASE}/app/sales/whatsapp`, { waitUntil: "domcontentloaded" });
-  await page.getByText("Templates, consent, quality").waitFor({ timeout: 10000 });
+  await page.getByText("Templates, thread, automation").waitFor({ timeout: 10000 });
   const wa = await page.locator("body").innerText();
   if (!/site_visit_confirm/i.test(wa) || !/new_launch/i.test(wa)) errors.push("WhatsApp templates missing");
   await page.screenshot({ path: join(OUT, "whatsapp.png"), fullPage: true });

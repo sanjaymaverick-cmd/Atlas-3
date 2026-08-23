@@ -47,6 +47,8 @@ Third-party portal first, in-house pipeline next. Inventory locks a unit on hold
 | 3 Ingest + score | Portal inbox, hybrid GBDT-lite |
 | 4 Handover + analytics | OC/snags, funnel, drift stub |
 
+Scoring: hybrid on this host. CatBoost is a separate process (`services/scoring`) that takes categoricals via `cat_features` — Atlas does not re-implement Ordered Target Statistics. Bind `VITE_SCORING_URL` when that process is up.
+
 Connectors (99acres, MagicBricks, Housing, Meta, Google, WhatsApp, Razorpay, e-sign, telephony) are an **inbound inbox**, not live APIs.
 
 WhatsApp: template registry (Utility vs Marketing), consent, quality-rating pause. Site-visit auto-sends confirm. Inbound replies re-score and can qualify. Business API is owner TODO.

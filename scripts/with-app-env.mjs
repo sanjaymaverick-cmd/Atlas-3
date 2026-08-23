@@ -86,6 +86,17 @@ export function isMainModule(moduleUrl) {
   }
 }
 
+/** Windows must use a shell so `npm.cmd` / `.cmd` shims can spawn. */
+export function childSpawnOptions(platform = process.platform) {
+  return { stdio: "inherit", shell: platform === "win32" };
+}
+
+/** Quote a Windows path so `shell:true` does not split on spaces (e.g. Program Files). */
+export function spawnCommand(command, platform = process.platform) {
+  if (platform === "win32" && /[\s&()^]/.test(command)) return `"${command}"`;
+  return command;
+}
+
 function main(argv) {
   const [command, ...args] = argv;
   if (!command) {
@@ -93,7 +104,7 @@ function main(argv) {
     process.exit(2);
   }
   const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
-  const child = spawn(command, args, { stdio: "inherit", env, shell: process.platform === "win32" });
+  const child = spawn(spawnCommand(command), args, { ...childSpawnOptions(), env });
   // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
     process.on(signal, () => child.kill(signal));

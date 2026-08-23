@@ -63,6 +63,17 @@ create table if not exists sales_agents (
 );
 create index if not exists sales_agents_company_idx on sales_agents (company_id) where deleted_at is null;
 
+create table if not exists sales_customers (
+  id            text primary key,
+  name          text not null,
+  phone         text not null,
+  pan           text,
+  source        text,
+  created_at    timestamptz not null default now(),
+  deleted_at    timestamptz
+);
+create unique index if not exists sales_customers_phone on sales_customers (phone) where deleted_at is null;
+
 create table if not exists sales_daily_reports (
   id            text primary key,
   agent_id      text not null references sales_agents (id),
@@ -70,9 +81,35 @@ create table if not exists sales_daily_reports (
   calls         integer not null default 0,
   visits        integer not null default 0,
   leads         integer not null default 0,
+  holds         integer not null default 0,
+  bookings      integer not null default 0,
+  cancellations integer not null default 0,
   notes         text not null default '',
   created_at    timestamptz not null default now(),
   unique (agent_id, report_date)
+);
+
+create table if not exists sales_bookings (
+  id            text primary key,
+  project_id    text not null,
+  unit_code     text not null,
+  customer_id   text references sales_customers (id),
+  customer_name text not null,
+  partner_id    text,
+  value         numeric not null,
+  collected     numeric not null default 0,
+  status        text not null check (status in ('active', 'cancelled', 'possession')),
+  created_at    timestamptz not null default now()
+);
+
+create table if not exists sales_commissions (
+  id            text primary key,
+  partner_id    text not null,
+  booking_id    text not null,
+  project_id    text not null,
+  amount        numeric not null,
+  status        text not null check (status in ('accrued', 'approved', 'paid', 'rejected')),
+  created_at    timestamptz not null default now()
 );
 
 create table if not exists sales_holds (

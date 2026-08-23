@@ -269,10 +269,10 @@ export const CHANGES: ChangeItem[] = [
 ];
 
 export const BOOKINGS: Booking[] = [
-  { id: "b1", projectId: "p_kanak", unit: "A-1204", customer: "V. Agarwal", value: 8_450_000, collected: 3_380_000, status: "active" },
-  { id: "b2", projectId: "p_kanak", unit: "B-0302", customer: "N. Khandelwal", value: 6_920_000, collected: 6_920_000, status: "active" },
-  { id: "b3", projectId: "p_mansar", unit: "C-304", customer: "S. Bhargava", value: 5_150_000, collected: 5_150_000, status: "possession" },
-  { id: "b4", projectId: "p_baggad", unit: "P-101", customer: "G. Singh", value: 11_200_000, collected: 1_120_000, status: "active" },
+  { id: "b1", projectId: "p_kanak", unit: "A-1204", customer: "V. Agarwal", customerId: "cu1", value: 8_450_000, collected: 3_380_000, status: "active" },
+  { id: "b2", projectId: "p_kanak", unit: "B-0302", customer: "N. Khandelwal", customerId: "cu2", value: 6_920_000, collected: 6_920_000, status: "active" },
+  { id: "b3", projectId: "p_mansar", unit: "C-304", customer: "S. Bhargava", customerId: "cu3", value: 5_150_000, collected: 5_150_000, status: "possession" },
+  { id: "b4", projectId: "p_baggad", unit: "P-101", customer: "G. Singh", customerId: "cu4", value: 11_200_000, collected: 1_120_000, status: "active" },
 ];
 
 export const TALLY: TallyCase[] = [

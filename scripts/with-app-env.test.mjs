@@ -8,10 +8,12 @@ import { promisify } from "node:util";
 import { loadEnv } from "vite";
 import {
   APP_ENV_REL_PATH,
+  childSpawnOptions,
   mergeAppEnv,
   parseAppEnv,
   projectRoot,
   readAppEnv,
+  spawnCommand,
 } from "./with-app-env.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -26,6 +28,14 @@ function makeWorkspace(appEnvJson) {
   }
   return root;
 }
+
+test("uses shell:true on win32 so npm.cmd can spawn", () => {
+  assert.equal(childSpawnOptions("win32").shell, true);
+  assert.equal(childSpawnOptions("linux").shell, false);
+  assert.equal(childSpawnOptions("darwin").shell, false);
+  assert.equal(spawnCommand("C:\\Program Files\\nodejs\\node.exe", "win32"), '"C:\\Program Files\\nodejs\\node.exe"');
+  assert.equal(spawnCommand("vite", "win32"), "vite");
+});
 
 test("keeps VITE_-prefixed string entries", () => {
   assert.deepEqual(parseAppEnv('{"VITE_AUTH_ENABLED":"false"}'), {

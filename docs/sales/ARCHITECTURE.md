@@ -8,8 +8,8 @@
 |---|---|---|
 | Presentation | TanStack Start routes under `src/routes/app/sales*` | Same UI; swap data hooks |
 | Services | `src/lib/sales/*` pure functions | Same modules as Nest/Go packages |
-| Data | Zustand persist `atlas3-sales-v4` | PostgreSQL + JSONB |
-| Scoring | `sales-score.ts` rules + GBDT-lite | XGBoost / LightGBM / CatBoost lab |
+| Data | Zustand persist `atlas3-sales-v6` | PostgreSQL + JSONB (`docs/sales/0003_scores.sql`) |
+| Scoring | Hybrid on this host; CatBoost native service at `services/scoring` (`cat_features`, no OTS reimplementation) | Bind `VITE_SCORING_URL` |
 | Integrations | inbound inbox + WhatsApp template registry | Live 99acres / MagicBricks / Housing / Meta / Google / WhatsApp Business / Razorpay / e-sign / telephony |
 | Books | Tally remains the books. Atlas never posts. | Same invariant |
 

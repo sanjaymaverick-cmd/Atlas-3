@@ -105,9 +105,9 @@ function Approvals() {
         </div>
       )}
       {done.length > 0 ? (
-        <div className="mt-8">
-          <h2 className="mb-3 font-display text-2xl">Closed</h2>
-          <div className="space-y-2">
+        <details className="mt-8">
+          <summary className="cursor-pointer font-display text-2xl">Closed ({done.length})</summary>
+          <div className="mt-3 space-y-2">
             {done.map((a) => (
               <div key={a.id} className="flex items-center justify-between rounded-md border border-line px-4 py-3 text-sm">
                 <span className="truncate">{a.title}</span>
@@ -115,7 +115,7 @@ function Approvals() {
               </div>
             ))}
           </div>
-        </div>
+        </details>
       ) : null}
     </div>
   );

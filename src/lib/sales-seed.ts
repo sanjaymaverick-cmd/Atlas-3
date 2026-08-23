@@ -4,6 +4,7 @@ import type {
   InboundEvent,
   WaSend,
   WaTemplate,
+  Customer,
   HandoverCase,
   InventoryUnit,
   LeadActivity,
@@ -38,11 +39,21 @@ export const UNITS: InventoryUnit[] = [
   { id: "un10", projectId: "p_baggad", towerId: "tw_s", code: "S-12", kind: "shop", floor: "G", area: "380 sqft", price: 3_600_000, status: "held" },
 ];
 
+export const CUSTOMERS: Customer[] = [
+  { id: "cu1", name: "V. Agarwal", phone: "98xxxx1001", source: "walk-in", createdAt: "2025-10-12T12:00:00+05:30" },
+  { id: "cu2", name: "N. Khandelwal", phone: "97xxxx1002", source: "walk-in", createdAt: "2025-11-01T12:00:00+05:30" },
+  { id: "cu3", name: "S. Bhargava", phone: "90xxxx1003", source: "partner", createdAt: "2026-01-10T12:00:00+05:30" },
+  { id: "cu4", name: "G. Singh", phone: "91xxxx1004", source: "99acres", createdAt: "2026-06-01T12:00:00+05:30" },
+  { id: "cu5", name: "M. Saxena", phone: "98xxxx2101", source: "walk-in", createdAt: "2026-08-20T11:00:00+05:30" },
+  { id: "cu6", name: "R. Soni", phone: "96xxxx2108", source: "partner", createdAt: "2026-08-21T10:00:00+05:30" },
+];
+
 export const AGENTS: SalesAgent[] = [
   { id: "ag1", name: "V. Meena", phone: "98xxxx3301", companyId: "pt1", userId: "u_ch", inHouse: false, status: "active" },
   { id: "ag_ca", name: "K. Pink", phone: "91xxxx2201", companyId: "pt1", userId: "u_ca", inHouse: false, status: "active" },
   { id: "ag2", name: "S. Qureshi", phone: "97xxxx1188", companyId: "pt1", inHouse: false, status: "active" },
   { id: "ag3", name: "N. Bhatia", phone: "90xxxx2200", userId: "u_sales", inHouse: true, status: "active" },
+  { id: "ag5", name: "A. Joshi", phone: "95xxxx1180", inHouse: true, status: "active" },
   { id: "ag4", name: "R. Shekhawat", phone: "96xxxx4410", companyId: "pt3", inHouse: false, status: "active" },
 ];
 
@@ -80,11 +91,66 @@ export const HANDOVERS: HandoverCase[] = [
   { id: "ho1", projectId: "p_mansar", unit: "C-304", oc: "received", snagsOpen: 1, status: "snagging" },
 ];
 
+const FEATURE_LIST = ["source", "stage", "kind", "budget", "unit_price", "wa", "call", "brochure", "visit"];
+
 export const SCORE_MODELS: ScoringModel[] = [
-  { id: "m_hybrid", name: "Rules + GBDT-lite", kind: "hybrid", active: true, note: "Live on this host. Calibrated, imbalance-aware." },
-  { id: "m_xgb", name: "XGBoost", kind: "xgboost", active: false, note: "Swap-ready. Trained booster is an owner TODO." },
-  { id: "m_lgb", name: "LightGBM", kind: "lightgbm", active: false, note: "Swap-ready. Trained booster is an owner TODO." },
-  { id: "m_cat", name: "CatBoost", kind: "catboost", active: false, note: "Ordered target statistics for portal source." },
+  {
+    id: "m_hybrid",
+    name: "Rules + GBDT-lite",
+    algorithm: "hybrid",
+    kind: "hybrid",
+    version: "1.0",
+    metrics: { auc: 0.71, logloss: 0.48 },
+    featureList: FEATURE_LIST,
+    active: true,
+    isActive: true,
+    createdAt: "2026-08-01T00:00:00+05:30",
+    notes: "Live on this host. Calibrated, imbalance-aware.",
+    note: "Live on this host. Calibrated, imbalance-aware.",
+  },
+  {
+    id: "m_cat",
+    name: "CatBoost",
+    algorithm: "catboost",
+    kind: "catboost",
+    version: "1.0",
+    trainedAt: undefined,
+    metrics: {},
+    featureList: FEATURE_LIST,
+    active: false,
+    isActive: false,
+    createdAt: "2026-08-01T00:00:00+05:30",
+    notes: "Native CatBoost via cat_features. Bind VITE_SCORING_URL to services/scoring. This host does not re-implement Ordered Target Statistics.",
+    note: "Native CatBoost via cat_features. Bind VITE_SCORING_URL to services/scoring.",
+  },
+  {
+    id: "m_xgb",
+    name: "XGBoost",
+    algorithm: "xgboost",
+    kind: "xgboost",
+    version: "0.1",
+    metrics: {},
+    featureList: FEATURE_LIST,
+    active: false,
+    isActive: false,
+    createdAt: "2026-08-01T00:00:00+05:30",
+    notes: "Swap-ready booster. Not trained on this host.",
+    note: "Swap-ready booster. Not trained on this host.",
+  },
+  {
+    id: "m_lgb",
+    name: "LightGBM",
+    algorithm: "lightgbm",
+    kind: "lightgbm",
+    version: "0.1",
+    metrics: {},
+    featureList: FEATURE_LIST,
+    active: false,
+    isActive: false,
+    createdAt: "2026-08-01T00:00:00+05:30",
+    notes: "Swap-ready booster. Not trained on this host.",
+    note: "Swap-ready booster. Not trained on this host.",
+  },
 ];
 
 export const UNIT_EVENTS: UnitEvent[] = [
@@ -162,8 +228,38 @@ export const INBOUND: InboundEvent[] = [
 ];
 
 export const SCORE_HISTORY: LeadScoreHistory[] = [
-  { id: "sh1", leadId: "ld1", at: "2026-08-20T11:00:00+05:30", score: 78, band: "hot", model: "rules+gbdt-lite", reasons: ["Walk-in", "Budget matches", "Site visit"] },
-  { id: "sh2", leadId: "ld2", at: "2026-08-21T16:00:00+05:30", score: 81, band: "hot", model: "rules+gbdt-lite", reasons: ["Partner", "Late-funnel", "Car park intent"] },
+  {
+    id: "sh1",
+    leadId: "ld1",
+    modelId: "m_hybrid",
+    at: "2026-08-20T11:00:00+05:30",
+    scoredAt: "2026-08-20T11:00:00+05:30",
+    score: 78,
+    band: "hot",
+    probability: 0.78,
+    model: "hybrid",
+    reasons: ["Walk-in", "Budget matches", "Site visit"],
+    topReasons: ["Walk-in", "Budget matches", "Site visit"],
+    shapValues: { "Source walk-in": 18, "Budget matches unit": 14 },
+    triggerType: "arrival",
+    triggerDetail: "walk-in",
+  },
+  {
+    id: "sh2",
+    leadId: "ld2",
+    modelId: "m_hybrid",
+    at: "2026-08-21T16:00:00+05:30",
+    scoredAt: "2026-08-21T16:00:00+05:30",
+    score: 81,
+    band: "hot",
+    probability: 0.81,
+    model: "hybrid",
+    reasons: ["Partner", "Late-funnel", "Car park intent"],
+    topReasons: ["Partner", "Late-funnel", "Car park intent"],
+    shapValues: { "Source partner": 12, "Late-funnel stage": 14 },
+    triggerType: "engagement",
+    triggerDetail: "negotiation",
+  },
 ];
 
 export const WA_SENDS: WaSend[] = [
