@@ -47,7 +47,7 @@ Third-party portal first, in-house pipeline next. Inventory locks a unit on hold
 | 3 Ingest + score | Portal inbox, hybrid GBDT-lite |
 | 4 Handover + analytics | OC/snags, funnel, drift stub |
 
-Scoring: hybrid on this host. CatBoost is a separate process (`services/scoring`) that takes categoricals via `cat_features` — Atlas does not re-implement Ordered Target Statistics. Bind `VITE_SCORING_URL` when that process is up.
+Scoring: CatBoost is bound on this host (`npm run scoring` → `http://127.0.0.1:8091`). Categoricals go through `cat_features` — Atlas does not re-implement Ordered Target Statistics. If that process is down, the UI falls back to hybrid. Override with `VITE_SCORING_URL`.
 
 Connectors (99acres, MagicBricks, Housing, Meta, Google, WhatsApp, Razorpay, e-sign, telephony) are an **inbound inbox**, not live APIs.
 

@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 from catboost import CatBoostClassifier, Pool
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
@@ -13,6 +14,12 @@ CAT_FEATURES = ["source", "stage", "kind"]
 NUMERICS = ["budget", "unit_price", "wa", "call", "brochure", "visit"]
 
 app = FastAPI(title="Atlas CatBoost scoring")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 model: CatBoostClassifier | None = None
 
 

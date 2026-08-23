@@ -479,7 +479,7 @@ export const useAtlas = create<AtlasState>()(
       waTemplates: WA_TEMPLATES,
       waSends: WA_SENDS,
       notices: [],
-      activeScoreModel: "hybrid",
+      activeScoreModel: "catboost",
       vendors: VENDORS,
       rfqs: RFQS,
       quotes: QUOTES,
@@ -1192,6 +1192,9 @@ export const useAtlas = create<AtlasState>()(
         if (!l) return "Lead not found.";
         const ag = get().agents.find((a) => a.id === agentId);
         if (!ag || ag.status !== "active") return "Active agent required.";
+        if (!ag.inHouse && (!l.partnerId || ag.companyId !== l.partnerId)) {
+          return "Agent is not on this desk.";
+        }
         set({ leads: get().leads.map((x) => (x.id === leadId ? { ...x, agentId } : x)) });
         get().log("Lead assigned", `${l.name} · ${ag.name}`);
         return null;
@@ -1726,6 +1729,6 @@ export const useAtlas = create<AtlasState>()(
         return report;
       },
     }),
-    { name: "atlas3-sales-v9" },
+    { name: "atlas3-sales-v10" },
   ),
 );

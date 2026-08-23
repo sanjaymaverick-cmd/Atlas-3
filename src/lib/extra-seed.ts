@@ -94,7 +94,7 @@ export const OWNER_TODOS = [
   {
     id: "todo_gbdt",
     title: "GBDT model lab",
-    detail: "Train/compare XGBoost, LightGBM, CatBoost off-host. This demo uses rules + GBDT-lite. SHAP stays a later swap.",
+    detail: "CatBoost native is bound on this host (services/scoring). Off-host train/compare of XGBoost / LightGBM remains an owner TODO.",
     status: "open" as const,
   },
 ];

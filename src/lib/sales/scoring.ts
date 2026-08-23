@@ -54,11 +54,14 @@ export function catBoostPayload(req: ScoreRequest): CatBoostPayload {
   };
 }
 
+const LOCAL_SCORING = "http://127.0.0.1:8091";
+
 function scoringUrl() {
   try {
-    return (import.meta as { env?: { VITE_SCORING_URL?: string } }).env?.VITE_SCORING_URL ?? "";
+    const fromEnv = (import.meta as { env?: { VITE_SCORING_URL?: string } }).env?.VITE_SCORING_URL;
+    return (fromEnv && fromEnv.trim()) || LOCAL_SCORING;
   } catch {
-    return "";
+    return LOCAL_SCORING;
   }
 }
 

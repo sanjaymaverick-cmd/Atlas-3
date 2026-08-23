@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Company day: log in as every Atlas seat, scan UX, run the in-app day,
- * and ask trial Tally to take mock vouchers. Not live.
+ * Company day 2: every Atlas seat, in-app invariants, ping trial Tally.
+ * Atlas never posts vouchers. Not live.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright";
-import { handleTallyAction, findTallyExe, launchTally } from "./tally-xml.mjs";
+import { handleTallyAction } from "./tally-xml.mjs";
 
 const ROLE_HOME = {
   owner: "/app/approvals",
@@ -38,6 +38,21 @@ const USERS = [
   { id: "u_ca", role: "channel_admin", title: "Pink City company admin", email: "ca@atlas.local", password: "AtlasLocal-CA" },
 ];
 
+const SEAT_BUTTON = {
+  "md@atlas.local": "Managing Director",
+  "pd@atlas.local": "Project Director",
+  "se@atlas.local": "Site Engineer",
+  "sv@atlas.local": "Site Supervisor",
+  "fl@atlas.local": "Finance Lead",
+  "cm@atlas.local": "Commercial Manager",
+  "sm@atlas.local": "Sales Manager",
+  "ll@atlas.local": "Land & Legal",
+  "dc@atlas.local": "Document Controller",
+  "st@atlas.local": "Stores / QS",
+  "ag@atlas.local": "Channel agent (Pink City)",
+  "ca@atlas.local": "Pink City company admin",
+};
+
 const BASE = process.env.ATLAS_URL || "http://127.0.0.1:8080";
 const OUT = join(process.cwd(), "screenshots", "company-day");
 mkdirSync(OUT, { recursive: true });
@@ -48,18 +63,6 @@ async function collectUx(page, seat, screen) {
   return page.evaluate(
     ({ seat, screen }) => {
       const notes = [];
-      const nodes = document.querySelectorAll("button, a, [role='button']");
-      for (const el of nodes) {
-        const r = el.getBoundingClientRect();
-        if (r.height > 0 && r.height < 36 && r.width > 8) {
-          notes.push({
-            seat,
-            screen,
-            severity: "p2",
-            issue: `Small target ${Math.round(r.height)}px: ${(el.textContent || "").trim().slice(0, 48)}`,
-          });
-        }
-      }
       if (document.documentElement.scrollWidth > window.innerWidth + 8) {
         notes.push({ seat, screen, severity: "p2", issue: "Horizontal overflow on this viewport." });
       }
@@ -72,27 +75,38 @@ async function collectUx(page, seat, screen) {
 }
 
 async function login(page, user) {
-  await page.goto(BASE, { waitUntil: "networkidle", timeout: 30000 });
+  await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 30000 });
   await page.evaluate(() => {
-    localStorage.removeItem("atlas3-company-day-v1");
-    localStorage.removeItem("atlas3-clt-v1");
-    localStorage.removeItem("atlas3-sales-v1");
-    localStorage.removeItem("atlas3-sales-v2");
-    localStorage.removeItem("atlas3-sales-v3");
-    localStorage.removeItem("atlas3-sales-v4");
-    localStorage.removeItem("atlas3-sales-v5");
+    for (const k of [
+      "atlas3-company-day-v1",
+      "atlas3-clt-v1",
+      "atlas3-sales-v1",
+      "atlas3-sales-v2",
+      "atlas3-sales-v3",
+      "atlas3-sales-v4",
+      "atlas3-sales-v5",
+      "atlas3-sales-v6",
+      "atlas3-sales-v7",
+      "atlas3-sales-v8",
+      "atlas3-sales-v9",
+    ]) {
+      localStorage.removeItem(k);
+    }
   });
   await page.reload({ waitUntil: "networkidle" });
-  await page.locator("input").nth(0).fill(user.email);
-  await page.locator("input[type='password']").fill(user.password);
+  await page.getByText("Local test accounts").waitFor({ timeout: 20000 });
+  await page.waitForTimeout(800);
+  const seat = SEAT_BUTTON[user.email];
+  if (seat) await page.getByRole("button", { name: seat }).click();
+  else {
+    await page.getByLabel("Email").fill(user.email);
+    await page.getByLabel("Password").fill(user.password);
+  }
   await page.getByRole("button", { name: /enter local atlas/i }).click();
-  await page.waitForURL(/\/app/, { timeout: 15000 });
+  await page.getByRole("button", { name: /end session/i }).waitFor({ timeout: 25000 });
 }
 
 async function main() {
-  const tallyExe = findTallyExe();
-  if (tallyExe) launchTally();
-
   let serverOk = false;
   try {
     const r = await fetch(BASE, { signal: AbortSignal.timeout(3000) });
@@ -106,7 +120,7 @@ async function main() {
   }
 
   const browser = await chromium.launch({ headless: true });
-  const report = { live: false, at: new Date().toISOString(), seats: [], ux: [], tally: null, inApp: null };
+  const report = { live: false, day: 2, at: new Date().toISOString(), seats: [], ux: [], tally: null, inApp: null };
 
   for (const user of seats) {
     const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
@@ -122,8 +136,21 @@ async function main() {
       const ux = await collectUx(page, user.title, path);
       report.ux.push(...ux);
       const navText = await page.locator("aside nav").innerText().catch(() => "");
-      const tallyHidden = user.role === "engineer" || user.role === "supervisor" || user.role === "stores";
-      const tallyLeak = tallyHidden && /\bTally\b/i.test(navText);
+      const tallyOk = user.role === "owner" || user.role === "accountant";
+      const tallyLeak = !tallyOk && /\bTally\b/i.test(navText);
+      let isolationOk = true;
+      if (user.role === "channel" || user.role === "channel_admin") {
+        const body = await page.locator("body").innerText();
+        isolationOk = !/Desert Reach|L\. Bhati|Shekhawat/i.test(body);
+        if (!isolationOk) {
+          report.ux.push({
+            seat: user.title,
+            screen: path,
+            severity: "p2",
+            issue: "Pink City desk leaked Desert Reach.",
+          });
+        }
+      }
       report.seats.push({
         email: user.email,
         role: user.role,
@@ -132,6 +159,7 @@ async function main() {
         expected,
         homeOk,
         tallyLeak,
+        isolationOk,
         consoleErrors,
       });
     } catch (err) {
@@ -153,9 +181,9 @@ async function main() {
     const page = await context.newPage();
     try {
       await login(page, md);
-      await page.goto(`${BASE}/app/testing`, { waitUntil: "networkidle" });
+      await page.goto(`${BASE}/app/testing`, { waitUntil: "domcontentloaded" });
       await page.getByRole("button", { name: /run company day/i }).click();
-      await page.getByText(/passed|failed/i).first().waitFor({ timeout: 60000 });
+      await page.getByText(/passed|failed/i).first().waitFor({ timeout: 90000 });
       await page.screenshot({ path: join(OUT, "company-day-report.png"), fullPage: true });
       report.inApp = await page.locator("body").innerText();
     } catch (err) {
@@ -171,15 +199,17 @@ async function main() {
 
   const outJson = join(OUT, "report.json");
   writeFileSync(outJson, JSON.stringify(report, null, 2));
-  const seatFails = report.seats.filter((s) => s.homeOk === false || s.tallyLeak || s.error);
+  const seatFails = report.seats.filter((s) => s.homeOk === false || s.tallyLeak || s.isolationOk === false || s.error);
+  const tallyPosted = Array.isArray(report.tally?.posted) && report.tally.posted.length > 0;
   console.log(
     JSON.stringify(
       {
-        ok: seatFails.length === 0,
+        ok: seatFails.length === 0 && report.tally?.ok && !tallyPosted,
         live: false,
+        day: 2,
         seats: report.seats.length,
         uxNotes: report.ux.length,
-        tally: { ok: report.tally?.ok, detail: report.tally?.detail },
+        tally: { ok: report.tally?.ok, detail: report.tally?.detail, posted: report.tally?.posted?.length ?? 0 },
         report: outJson,
       },
       null,

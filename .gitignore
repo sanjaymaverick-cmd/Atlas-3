@@ -22,3 +22,8 @@ test-results/
 
 # Local Vite/PWA caches
 .grok/app-env.json
+
+# CatBoost local venv (model.cbm is committed)
+services/scoring/.venv/
+services/scoring/__pycache__/
+catboost_info/

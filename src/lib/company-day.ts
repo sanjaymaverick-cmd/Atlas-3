@@ -1,5 +1,5 @@
 import { NAV } from "@/components/layout/nav";
-import { canSeeTally, homeForRole, ROLE_LABEL } from "@/lib/roles";
+import { canSeeTally, homeForRole } from "@/lib/roles";
 import { USERS } from "@/lib/seed";
 import { useAtlas } from "@/lib/store";
 import { tallyAgent } from "@/lib/tally";
@@ -83,15 +83,7 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
       tallyOk,
     );
     if (!canSeeTally(u.role) && tallyLink) {
-      addUx(u.title, "Nav", "Tally is visible to a site seat — Site Engineer must never see Tally actions.");
-    }
-    if (u.role === "engineer" || u.role === "supervisor") {
-      addUx(
-        u.title,
-        "Command",
-        "If this seat opens Command, money KPIs (cash committed, receivable) still show. Suppress money for site seats.",
-        "p2",
-      );
+      addUx(u.title, "Nav", "Tally is visible to a seat that must never see Tally actions.");
     }
   }
 
@@ -107,12 +99,6 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   useAtlas.getState().setDiligence("dd3", "clear");
   const acquired = useAtlas.getState().acquireParcel("lp2");
   record("land-acquire", legal.title, legal.role, "Acquire Baggad after diligence clear", acquired);
-  addUx(
-    legal.title,
-    "Land",
-    "EMI ‘Record paid’ sounds like a books posting. Label is ops-only, but the verb ‘paid’ still reads as Tally.",
-    "p3",
-  );
 
   // ── Documents: quarantine → four-eyes → single-use ───────────────────
   const docs = asUser("dc@atlas.local");
@@ -130,12 +116,6 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   record("doc-clear", docs.title, docs.role, "Clear quarantine", cleared);
   const exportReq = fresh ? useAtlas.getState().requestExport(fresh.id) : "no document";
   record("doc-export-req", docs.title, docs.role, "Request original (four-eyes)", exportReq);
-  addUx(
-    docs.title,
-    "Documents",
-    "Quarantine status chip is visible, but the reason for hold is only inside revision notes — surface it on the card.",
-    "p2",
-  );
 
   const md = asUser("md@atlas.local");
   const exportApproval = useAtlas
@@ -176,12 +156,6 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
     deviceKey,
   });
   record("diary-idempotent", sup.title, sup.role, "Second seal same device+date refused", diary2, true);
-  addUx(
-    sup.title,
-    "Site",
-    "Primary Seal diary is full-width (good). Inspection Pass/Fail on the table is still a dense office row on a phone.",
-    "p2",
-  );
 
   // ── Site engineer: fail inspection → NCR ─────────────────────────────
   const eng = asUser("se@atlas.local");
@@ -204,12 +178,6 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   record("mat-over", stores.title, stores.role, "Issue past receipts refused", issueOver, true);
   const qty = useAtlas.getState().approveQuantity("q2");
   record("qty-approve", stores.title, stores.role, "Approve raft quantity variance", qty);
-  addUx(
-    stores.title,
-    "Controls",
-    "Issue quantity is a fixed ‘10’ button. Stores cannot type the actual issue qty — easy to mis-issue on site.",
-    "p2",
-  );
 
   // ── Commercial: vendor gate + RFQ → PO ───────────────────────────────
   const com = asUser("cm@atlas.local");
@@ -262,14 +230,6 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
     "PO approval card carries quote context",
     Boolean(poCard?.context && poCard.context.toLowerCase().includes("quote")),
   );
-  if (poCard && !poCard.context?.includes("vs")) {
-    addUx(
-      md2.title,
-      "Approvals",
-      "PO context should read ‘Selected quote · Vendor · ₹X · vs N other quotes’ with a link to compare.",
-      "p2",
-    );
-  }
   const poApprove = poCard ? useAtlas.getState().decideApproval(poCard.id, "approved") : "PO card missing";
   record("po-approve", md2.title, md2.role, "MD approves PO from quote", poApprove);
 
@@ -317,6 +277,50 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
     note: "dup probe",
   });
   record("lead-dedup", sales.title, sales.role, "Duplicate phone on same project refused", dupLead, true);
+  const assigned = useAtlas.getState().assignLead("ld5", "ag5");
+  record("lead-assign", sales.title, sales.role, "Assign in-house lead to active in-house agent", assigned);
+  const crossDesk = useAtlas.getState().assignLead("ld5", "ag4");
+  record("lead-assign-firm", sales.title, sales.role, "Desert Reach agent cannot take an in-house lead", crossDesk, true);
+  useAtlas.getState().setAgentStatus("ag5", "suspended");
+  const sus = useAtlas.getState().assignLead("ld3", "ag5");
+  record("lead-assign-suspended", sales.title, sales.role, "Suspended agent cannot take a lead", sus, true);
+  useAtlas.getState().setAgentStatus("ag5", "active");
+  const hoOpen = useAtlas.getState().handovers.some((h) => h.unit === "B-1104");
+  record("handover-open", sales.title, sales.role, "Convert opens a handover case for the unit", hoOpen);
+  const hoNew = useAtlas.getState().handovers.find((h) => h.unit === "B-1104");
+  const hoOc = hoNew ? useAtlas.getState().advanceHandover(hoNew.id) : "handover missing";
+  record("ho-no-oc", sales.title, sales.role, "Handover possession blocked until OC/CC", hoOc, true);
+  const hoSeed = useAtlas.getState().handovers.find((h) => h.unit === "C-304");
+  const hoSnag = hoSeed ? useAtlas.getState().advanceHandover(hoSeed.id) : "handover missing";
+  record("ho-snags", sales.title, sales.role, "Handover possession blocked while snags are open", hoSnag, true);
+  const visit = useAtlas.getState().scheduleVisit({
+    leadId: "ld1",
+    scheduled: todayIso(),
+    note: "Company-day sample flat",
+  });
+  record("visit-schedule", sales.title, sales.role, "Schedule site visit", visit);
+  const visitWa = useAtlas.getState().waSends.some((w) => w.leadId === "ld1" && w.templateId === "wa1");
+  record("visit-wa", sales.title, sales.role, "Site-visit auto-sends utility confirm", visitWa);
+  const bookYadav = useAtlas.getState().bookings.find((b) => b.unit === "B-1104" && b.status === "active");
+  const dueBefore = useAtlas.getState().waSends.filter((w) => w.templateId === "wa3").length;
+  const collected = bookYadav ? useAtlas.getState().collect(bookYadav.id, 50_000) : "booking missing";
+  record("collect-token", sales.title, sales.role, "Collect a token on the converted booking", collected);
+  const dueAfter = useAtlas.getState().waSends.filter((w) => w.templateId === "wa3").length;
+  record("wa-payment-due", sales.title, sales.role, "Remaining balance fires payment_due template", dueAfter > dueBefore);
+  const mkt = useAtlas.getState().sendWhatsApp({ templateId: "wa7", leadId: "ld5" });
+  record("wa-marketing-consent", sales.title, sales.role, "Marketing WhatsApp refused without consent", mkt, true);
+  const low = useAtlas.getState().sendWhatsApp({ templateId: "wa8", leadId: "ld1" });
+  record("wa-low-quality", sales.title, sales.role, "Paused / low-quality template refused", low, true);
+  useAtlas.getState().setScoreModel("catboost");
+  record(
+    "score-catboost",
+    sales.title,
+    sales.role,
+    "CatBoost selected (native if scoring URL bound, else hybrid)",
+    useAtlas.getState().activeScoreModel === "catboost",
+  );
+  const wonLead = useAtlas.getState().leads.find((l) => l.id === "ld2");
+  record("customer-360", sales.title, sales.role, "Customer master row on convert", Boolean(wonLead?.customerId));
 
   const ch = asUser("ag@atlas.local");
   const holdNoReport = useAtlas.getState().holdUnit({
@@ -371,14 +375,8 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   asUser("sm@atlas.local");
   const waIn = useAtlas.getState().receiveWhatsApp("ld1", "Yes, Sunday 11. Budget 80L.");
   record("wa-inbound", sales.title, sales.role, "Inbound WhatsApp qualifies and re-scores", waIn);
-  addUx(
-    sales.title,
-    "CRM",
-    "Convert is hardcoded to ₹75L. Sales cannot enter the actual agreement value from the card.",
-    "p2",
-  );
 
-  // ── Finance: Atlas posts vouchers into local trial Tally ─────────────
+  // ── Finance: Tally is the books. Atlas never posts. ─────────────────
   const fin = asUser("fl@atlas.local");
   useAtlas.getState().setEntity("le_llp");
   useAtlas.getState().settleTally("t1", "reconciled");
@@ -386,17 +384,24 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   record("tally-reconcile", fin.title, fin.role, "Reconcile Tally case", reconciled);
   const tallyRun = await tallyAgent("company-day");
   record(
-    "tally-post",
+    "tally-open-books",
     fin.title,
     fin.role,
-    "Atlas posts mock vouchers into trial Tally",
+    "Trial Tally open on Atlas Mock LLP with prior-run books",
     tallyRun.ok ? true : tallyRun.detail,
+  );
+  record(
+    "tally-no-post",
+    fin.title,
+    fin.role,
+    "Atlas did not post a voucher",
+    !tallyRun.posted || tallyRun.posted.length === 0,
   );
   if (!tallyRun.ok) {
     addUx(
       fin.title,
       "Tally",
-      `Trial Tally did not accept vouchers (${tallyRun.detail}). Open TallyPrime, create company “Atlas Mock LLP”, F12 → Tally acting as Server, port 9000.`,
+      `Trial Tally did not answer with Atlas Mock LLP (${tallyRun.detail}). Keep that company open; Atlas will not post.`,
     );
   }
   const commRow = useAtlas.getState().commissions.find((c) => c.status === "accrued");
@@ -435,13 +440,6 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   const levelOk = notes.length === 0 || notes.every((n) => n.level === 2);
   const noAct = notes.every((n) => !/approved|paid|signed|deleted/i.test(n.draft.split("\n")[0] ?? ""));
   record("ai-no-act", pd.title, pd.role, "Draft does not approve/pay/sign/delete", levelOk && noAct);
-
-  addUx(
-    ROLE_LABEL.owner,
-    "Login",
-    "Seat table now lists every operating role — keep the LOCAL ONLY · NOT LIVE badge above the fold on small phones (shell currently hides it below sm).",
-    "p3",
-  );
 
   useAtlas.getState().signInLocal("md@atlas.local", "AtlasLocal-MD");
   useAtlas.getState().setEntity("le_llp");

@@ -46,7 +46,7 @@ docs/sales/0003_scores.sql              scoring_models + lead_scores
 
 **SQL:** `0002` + `0003`. Ingest, dedup (phone+project), hybrid score, CatBoost service seam, pipeline, 360, site visits.
 
-**CatBoost:** `services/scoring` — `Pool(..., cat_features=[0,1,2])`. Atlas does **not** re-implement Ordered Target Statistics. Bind `VITE_SCORING_URL` when serving.
+**CatBoost:** `services/scoring` — `Pool(..., cat_features=[0,1,2])`. Atlas does **not** re-implement Ordered Target Statistics. Bound on this host at `http://127.0.0.1:8091` (`npm run scoring`). Override with `VITE_SCORING_URL`.
 
 **POST /score** `{ cat_features, categoricals, numerics }` → `{ probability, score, band, top_reasons, shap_values }`.
 

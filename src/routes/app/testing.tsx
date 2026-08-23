@@ -27,9 +27,9 @@ function Testing() {
       <Card className="mb-6 p-5">
         <h2 className="font-display text-xl">Run the day</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted">
-          Seats log in as MD, Project Director, Site Engineer, Supervisor, Finance, Commercial, Sales, Land &amp;
-          Legal, Document Controller, and Stores. Failures are the point: a refuse for the right reason is a pass.
-          UI notes from each desk are listed after the run.
+          Twelve seats, including Pink City agent and company admin. Failures are the point: a refuse for the right
+          reason is a pass. Tally stays Atlas Mock LLP with prior-run books — Atlas never posts. UI notes from each
+          desk are listed after the run.
         </p>
         <Button
           className="mt-4 h-12"

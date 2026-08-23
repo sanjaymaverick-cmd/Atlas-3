@@ -1,8 +1,8 @@
 /**
  * Local trial TallyPrime XML client.
  *
- * Atlas posts vouchers into THIS laptop's empty educational Tally only
- * (loopback :9000). Not live. No real-company data.
+ * Tally remains the books. Atlas never posts vouchers from Company day.
+ * Ping / FY mock scripts may still talk to loopback :9000. Not live.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { spawn } from "node:child_process";
@@ -294,34 +294,20 @@ export async function handleTallyAction(payload) {
   }
   if (action === "company-day") {
     const ping = await pingTally();
-    if (!ping.status) {
-      return { action, live: false, ok: false, detail: ping.detail, company: MOCK_COMPANY, posted: [] };
-    }
-    const company = await tallyPost(createCompanyXml());
-    await bootstrapLedgers();
-    const posted = [];
-    const jobs = [
-      { type: "Receipt", amount: 845000, debit: "Atlas Cash", credit: "Kanakpura Collections", narration: "Company day — booking token A-1204 (mock)" },
-      { type: "Payment", amount: 1840000, debit: "Shakti Earthworks", credit: "Atlas Bank", narration: "Company day — PO-1018 RA (mock)" },
-      { type: "Journal", amount: 211250, debit: "Partner Commission", credit: "Atlas Bank", narration: "Company day — accrued commission (mock)" },
-    ];
-    for (const job of jobs) {
-      posted.push({ ...job, ...(await postMockVoucher(job)) });
-    }
-    const accepted = posted.filter((p) => p.ok).length;
-    const needCompany =
-      /could not set/i.test(company.detail + posted.map((p) => p.detail).join(" ")) ||
-      /could not find company/i.test(company.detail);
+    const open = Boolean(ping.status);
+    const listed = new RegExp(MOCK_COMPANY.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(ping.text || "");
     return {
       action,
       live: false,
-      ok: accepted > 0,
+      ok: open && (listed || (ping.text || "").length > 80),
       company: MOCK_COMPANY,
-      companyCreate: company,
-      detail: needCompany
-        ? "Tally is empty (0 companies). In TallyPrime create a company named exactly “Atlas Mock LLP”, then run Company day again. Atlas will then post vouchers into that trial company."
-        : accepted + "/" + posted.length + " vouchers accepted by trial Tally",
-      posted,
+      posted: [],
+      ping,
+      detail: !open
+        ? ping.detail
+        : listed || (ping.text || "").length > 80
+          ? `${MOCK_COMPANY} is open with prior-run books. Atlas did not post.`
+          : `Tally answered but ${MOCK_COMPANY} was not in the company list.`,
     };
   }
   return { ok: false, detail: "Unknown tally action", live: false };
