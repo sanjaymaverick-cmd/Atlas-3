@@ -93,7 +93,7 @@ function Customers() {
                   const isNext = unpaid && !payments.some((x) => x.bookingId === b.id && x.paid < x.amount && x.due < p.due);
                   return (
                   <li key={p.id} className={`flex justify-between gap-3 rounded-md px-2 py-1 ${isNext ? "bg-chip text-ink" : "text-muted"}`}>
-                    <span>{p.label} · {p.due}{isNext ? " · next" : ""}</span>
+                    <span>{p.label} · {p.due}{isNext ? " · next unpaid" : ""}</span>
                     <span className="tabular-nums">{inr(p.paid, true)} / {inr(p.amount, true)}</span>
                   </li>
                   );

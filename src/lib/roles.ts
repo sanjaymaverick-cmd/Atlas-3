@@ -1,7 +1,21 @@
 import type { Role } from "@/lib/types";
 
 /** Every operating seat a local real-estate developer needs to run Atlas. */
-export const ROLE_HOME: Record<Role, "/app" | "/app/approvals" | "/app/site" | "/app/finance" | "/app/commercial" | "/app/crm" | "/app/land" | "/app/documents" | "/app/controls"> =
+export const ROLE_HOME: Record<
+  Role,
+  | "/app"
+  | "/app/approvals"
+  | "/app/site"
+  | "/app/finance"
+  | "/app/commercial"
+  | "/app/crm"
+  | "/app/land"
+  | "/app/documents"
+  | "/app/controls"
+  | "/app/sales"
+  | "/app/sales/channel"
+  | "/app/sales/company"
+> =
   {
     owner: "/app/approvals",
     pm: "/app",
@@ -9,10 +23,12 @@ export const ROLE_HOME: Record<Role, "/app" | "/app/approvals" | "/app/site" | "
     supervisor: "/app/site",
     accountant: "/app/finance",
     commercial: "/app/commercial",
-    sales: "/app/crm",
+    sales: "/app/sales",
     legal: "/app/land",
     docs: "/app/documents",
     stores: "/app/controls",
+    channel: "/app/sales/channel",
+    channel_admin: "/app/sales/company",
   };
 
 export const ROLE_LABEL: Record<Role, string> = {
@@ -26,6 +42,8 @@ export const ROLE_LABEL: Record<Role, string> = {
   legal: "Land & Legal",
   docs: "Document Controller",
   stores: "Stores / QS",
+  channel: "Channel agent",
+  channel_admin: "Channel company admin",
 };
 
 export const ALL_ROLES: Role[] = [
@@ -39,6 +57,8 @@ export const ALL_ROLES: Role[] = [
   "legal",
   "docs",
   "stores",
+  "channel",
+  "channel_admin",
 ];
 
 const OFFICE: Role[] = ["owner", "pm", "accountant", "commercial", "sales", "legal", "docs"];
@@ -50,7 +70,7 @@ export const NAV_ROLES = {
   phases: EVERY,
   testing: ["owner"] as Role[],
   org: ["owner", "pm", "accountant"] as Role[],
-  approvals: ["owner", "pm", "accountant"] as Role[],
+  approvals: ["owner", "pm", "accountant", "sales"] as Role[],
   projects: EVERY,
   documents: ["owner", "pm", "engineer", "docs", "legal"] as Role[],
   land: ["owner", "pm", "accountant", "legal"] as Role[],
@@ -65,6 +85,18 @@ export const NAV_ROLES = {
   decisions: ["owner"] as Role[],
   audit: EVERY,
   assistant: [...OFFICE, "engineer", "supervisor", "stores"] as Role[],
+  portfolio: ["owner", "pm", "accountant"] as Role[],
+  capital: ["owner", "pm", "accountant"] as Role[],
+  sales: ["owner", "pm", "sales", "accountant", "channel", "channel_admin"] as Role[],
+  salesInventory: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
+  salesChannel: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
+  salesCompany: ["owner", "pm", "sales", "channel_admin"] as Role[],
+  salesPipeline: ["owner", "pm", "sales"] as Role[],
+  salesHandover: ["owner", "pm", "sales"] as Role[],
+  salesAnalytics: ["owner", "pm", "sales", "accountant"] as Role[],
+  salesIntegrations: ["owner", "pm", "sales"] as Role[],
+  salesWhatsApp: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
+  salesPeople: ["owner", "pm", "sales"] as Role[],
 };
 
 export function canSeeTally(role: Role | undefined) {
@@ -72,10 +104,11 @@ export function canSeeTally(role: Role | undefined) {
 }
 
 export function canDecideApprovals(role: Role | undefined) {
-  return role === "owner" || role === "pm" || role === "accountant";
+  return role === "owner" || role === "pm" || role === "accountant" || role === "sales";
 }
 
-export function homeForRole(role: Role | string | undefined) {
+export function homeForRole(role: Role | string | undefined, pendingApprovals = 0) {
+  if (role === "owner") return pendingApprovals > 0 ? "/app/approvals" : "/app";
   if (role && role in ROLE_HOME) return ROLE_HOME[role as Role];
   return "/app" as const;
 }

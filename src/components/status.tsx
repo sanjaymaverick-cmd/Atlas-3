@@ -57,9 +57,37 @@ const MAP: Record<string, { tone: "ok" | "warn" | "danger" | "default" | "ink" |
   handover: { tone: "ink" },
   restricted: { tone: "ink" },
   confidential: { tone: "warn" },
+  hot: { tone: "ok" },
+  warm: { tone: "warn" },
+  cold: { tone: "muted" },
+  available: { tone: "ok" },
+  held: { tone: "warn" },
+  booked: { tone: "ink" },
+  sold: { tone: "ok" },
+  dispute: { tone: "danger" },
+  documentation: { tone: "warn" },
+  snagging: { tone: "warn" },
+  society: { tone: "ok" },
+  defect: { tone: "warn" },
+  scheduled: { tone: "warn" },
+  done: { tone: "ok" },
+  received: { tone: "ok" },
+  expired: { tone: "muted" },
+  released: { tone: "muted" },
+  queued: { tone: "warn" },
+  applied: { tone: "ok" },
+  suspended: { tone: "danger" },
+  contacted: { tone: "warn" },
+  qualified: { tone: "warn" },
+  nurture: { tone: "muted" },
+  utility: { tone: "ok" },
+  marketing: { tone: "warn" },
+  paused: { tone: "danger" },
 };
 
 export function Status({ value }: { value: string }) {
   const m = MAP[value] ?? { tone: "default" as const };
   return <Badge tone={m.tone}>{m.label ?? value.replaceAll("_", " ")}</Badge>;
 }
+
+export const StatusChip = Status;

@@ -8,7 +8,9 @@ export type Role =
   | "sales"
   | "legal"
   | "docs"
-  | "stores";
+  | "stores"
+  | "channel"
+  | "channel_admin";
 
 export type WorkflowStatus =
   | "draft"
@@ -75,6 +77,17 @@ export interface Project {
   sold: number;
   start: string;
   possession: string;
+  /** Remaining work still expected (not yet in JTD spent). */
+  forecast: number;
+  /** Concept / land — planned is not committed capital until acquire/approve. */
+  concept: boolean;
+}
+
+export interface OwnerTodo {
+  id: string;
+  title: string;
+  detail: string;
+  status: "open" | "recorded";
 }
 
 export interface DocumentRevision {
@@ -327,7 +340,32 @@ export interface Partner {
   rate: number;
 }
 
-export type LeadStage = "inquiry" | "visit" | "negotiation" | "won" | "lost";
+export type LeadStage =
+  | "inquiry"
+  | "contacted"
+  | "qualified"
+  | "visit"
+  | "negotiation"
+  | "documentation"
+  | "handover"
+  | "won"
+  | "lost"
+  | "nurture";
+
+export type LeadSource =
+  | "walk-in"
+  | "website"
+  | "partner"
+  | "99acres"
+  | "magicbricks"
+  | "housing"
+  | "meta"
+  | "google";
+
+export type ScoreBand = "hot" | "warm" | "cold";
+export type ScoreModelKind = "hybrid" | "xgboost" | "lightgbm" | "catboost";
+export type UnitKind = "flat" | "shop" | "plot";
+export type UnitStatus = "available" | "held" | "booked" | "sold" | "cancelled" | "dispute";
 
 export interface Lead {
   id: string;
@@ -336,9 +374,205 @@ export interface Lead {
   phone: string;
   source: string;
   partnerId?: string;
+  agentId?: string;
   stage: LeadStage;
   unit: string;
   note: string;
+  budget?: number;
+  kind?: UnitKind;
+  score?: number;
+  band?: ScoreBand;
+  scoreReasons?: string[];
+  scoreModel?: string;
+  waConsent?: boolean;
+}
+
+export interface LeadActivity {
+  id: string;
+  leadId: string;
+  at: string;
+  kind: string;
+  note: string;
+}
+
+export interface Tower {
+  id: string;
+  projectId: string;
+  name: string;
+  kind: "tower" | "phase" | "pocket";
+}
+
+export interface InventoryUnit {
+  id: string;
+  projectId: string;
+  towerId: string;
+  code: string;
+  kind: UnitKind;
+  floor: string;
+  area: string;
+  price: number;
+  status: UnitStatus;
+}
+
+export interface UnitEvent {
+  id: string;
+  unitId: string;
+  at: string;
+  from: UnitStatus;
+  to: UnitStatus;
+  note: string;
+}
+
+export interface SalesAgent {
+  id: string;
+  name: string;
+  phone: string;
+  companyId?: string;
+  userId?: string;
+  inHouse: boolean;
+  status: "active" | "invited" | "suspended";
+}
+
+export interface ScoringModel {
+  id: string;
+  name: string;
+  kind: ScoreModelKind;
+  active: boolean;
+  note: string;
+}
+
+export interface LeadFeatureRow {
+  id: string;
+  leadId: string;
+  at: string;
+  features: Record<string, number>;
+}
+
+export interface LeadScoreHistory {
+  id: string;
+  leadId: string;
+  at: string;
+  score: number;
+  band: ScoreBand;
+  model: string;
+  reasons: string[];
+}
+
+export interface SiteVisit {
+  id: string;
+  leadId: string;
+  projectId: string;
+  unit: string;
+  scheduled: string;
+  status: "scheduled" | "done" | "no-show";
+  note: string;
+}
+
+export interface BookingDoc {
+  id: string;
+  bookingId: string;
+  title: string;
+  status: "open" | "received";
+}
+
+export type InboundKind =
+  | "99acres"
+  | "magicbricks"
+  | "housing"
+  | "meta"
+  | "google"
+  | "whatsapp"
+  | "email"
+  | "webhook"
+  | "razorpay"
+  | "esign";
+
+export interface InboundEvent {
+  id: string;
+  at: string;
+  kind: InboundKind;
+  status: "queued" | "applied" | "rejected";
+  projectId?: string;
+  phone?: string;
+  name?: string;
+  note: string;
+  leadId?: string;
+  bookingId?: string;
+}
+
+export type WaCategory = "utility" | "marketing";
+export type WaTrigger =
+  | "visit_scheduled"
+  | "visit_reminder"
+  | "payment_due"
+  | "document_request"
+  | "construction"
+  | "brochure"
+  | "channel_broadcast"
+  | "launch";
+
+export interface WaTemplate {
+  id: string;
+  name: string;
+  category: WaCategory;
+  language: "en" | "hi";
+  status: "draft" | "pending" | "approved" | "paused";
+  body: string;
+  variables: string[];
+  samples: string[];
+  trigger: WaTrigger;
+  quality: "high" | "medium" | "low";
+}
+
+export interface WaSend {
+  id: string;
+  templateId: string;
+  to: string;
+  at: string;
+  body: string;
+  leadId?: string;
+  direction: "in" | "out";
+}
+
+export interface SalesNotice {
+  id: string;
+  at: string;
+  title: string;
+  to: string;
+}
+
+export interface DailyReport {
+  id: string;
+  agentId: string;
+  date: string;
+  calls: number;
+  visits: number;
+  leads: number;
+  holds: number;
+  bookings: number;
+  cancellations: number;
+  notes: string;
+}
+
+export interface UnitHold {
+  id: string;
+  unitId: string;
+  projectId: string;
+  agentId: string;
+  customer: string;
+  until: string;
+  status: "held" | "booked" | "expired" | "released";
+  bookingRequested?: boolean;
+  bookingValue?: number;
+}
+
+export interface HandoverCase {
+  id: string;
+  projectId: string;
+  unit: string;
+  oc: "pending" | "received";
+  snagsOpen: number;
+  status: "snagging" | "possession" | "society" | "defect";
 }
 
 export interface Commission {

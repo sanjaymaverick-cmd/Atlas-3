@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,13 @@ function Crm() {
         title="Leads & partners"
         description="Owner decision: build in Atlas, not a third-party CRM. Commission accrues on conversion; payment still needs approval. Tally remains the books."
       />
+      <GateBanner>
+        Scoring, inventory lock, daily reports and the channel portal live on{" "}
+        <Link to="/app/sales" className="underline">
+          Sales command
+        </Link>
+        . This desk keeps partner KYC and commission send-for-approval.
+      </GateBanner>
 
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
@@ -82,7 +90,7 @@ function Crm() {
           <Button
             onClick={() => {
               if (!name) return toast("Name required.");
-              addLead({
+              const err = addLead({
                 projectId: pid,
                 name,
                 phone,
@@ -91,7 +99,7 @@ function Crm() {
                 unit,
                 note: "Captured locally",
               });
-              toast("Lead captured.");
+              toast(err ?? "Lead captured and scored.");
               setName("");
             }}
           >

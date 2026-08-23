@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,10 @@ function Commercial() {
         title="Commercial"
         description="Vendor must be Active before a PO. Prefer Quotations → select → Create PO so Approvals shows the quote trail."
       />
+      <GateBanner>
+        Purchase orders cannot be issued until the vendor is Active. Award path: Quotations → select quote → Create PO
+        → Approvals.
+      </GateBanner>
       <p className="mb-6">
         <Button asChild>
           <Link to="/app/quotations">Open Quotations — RFQ, compare, select, then PO</Link>

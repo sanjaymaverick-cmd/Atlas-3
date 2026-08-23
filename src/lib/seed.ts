@@ -29,6 +29,8 @@ export const USERS: User[] = [
   { id: "u_legal", name: "M. Iyer", role: "legal", title: "Land & Legal", email: "ll@atlas.local", password: "AtlasLocal-LL" },
   { id: "u_docs", name: "T. Joseph", role: "docs", title: "Document Controller", email: "dc@atlas.local", password: "AtlasLocal-DC" },
   { id: "u_stores", name: "H. Singh", role: "stores", title: "Stores / QS", email: "st@atlas.local", password: "AtlasLocal-ST" },
+  { id: "u_ch", name: "V. Meena", role: "channel", title: "Channel agent (Pink City)", email: "ag@atlas.local", password: "AtlasLocal-AG" },
+  { id: "u_ca", name: "K. Pink", role: "channel_admin", title: "Pink City company admin", email: "ca@atlas.local", password: "AtlasLocal-CA" },
   { id: "u_test", name: "UAT Tester", role: "owner", title: "Test owner (local only)", email: "test@atlas.local", password: "AtlasLocal-UAT" },
 ];
 
@@ -53,6 +55,8 @@ export const PROJECTS: Project[] = [
     sold: 61,
     start: "2024-11-01",
     possession: "2027-03-31",
+    forecast: 180_000_000,
+    concept: false,
   },
   {
     id: "p_baggad",
@@ -69,6 +73,8 @@ export const PROJECTS: Project[] = [
     sold: 12,
     start: "2025-06-15",
     possession: "2028-09-30",
+    forecast: 40_000_000,
+    concept: true,
   },
   {
     id: "p_mansar",
@@ -85,6 +91,8 @@ export const PROJECTS: Project[] = [
     sold: 88,
     start: "2023-02-01",
     possession: "2026-12-15",
+    forecast: 12_000_000,
+    concept: false,
   },
 ];
 

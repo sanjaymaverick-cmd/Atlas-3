@@ -3,13 +3,15 @@ import type { Commission, HostSite, Lead, Partner, PaymentStep, Snag } from "./t
 export const PARTNERS: Partner[] = [
   { id: "pt1", name: "Pink City Channel", city: "Jaipur", gstin: "08AAPCC2211H1Z4", status: "active", rate: 2.5 },
   { id: "pt2", name: "Agarwal Associates", city: "Jaipur", gstin: "08AAAGA9090B1Z8", status: "invited", rate: 2 },
+  { id: "pt3", name: "Desert Reach Channel", city: "Jaipur", gstin: "08AADCD3300F1Z1", status: "active", rate: 2 },
 ];
 
 export const LEADS: Lead[] = [
-  { id: "ld1", projectId: "p_kanak", name: "M. Saxena", phone: "98xxxx2101", source: "walk-in", partnerId: "pt1", stage: "visit", unit: "A-0802", note: "Wants west stack, 3 BHK" },
-  { id: "ld2", projectId: "p_kanak", name: "R. Yadav", phone: "97xxxx4412", source: "partner", partnerId: "pt1", stage: "negotiation", unit: "B-1104", note: "Asked for extra car park" },
-  { id: "ld3", projectId: "p_baggad", name: "S. Rathi", phone: "90xxxx1188", source: "website", stage: "inquiry", unit: "P-204", note: "First call 18 Aug" },
-  { id: "ld4", projectId: "p_mansar", name: "K. Sharma", phone: "93xxxx7700", source: "walk-in", stage: "lost", unit: "C-201", note: "Bought elsewhere" },
+  { id: "ld1", projectId: "p_kanak", name: "M. Saxena", phone: "98xxxx2101", source: "walk-in", partnerId: "pt1", agentId: "ag1", stage: "visit", unit: "A-0802", note: "Wants west stack, 3 BHK", budget: 8_200_000, kind: "flat", score: 78, band: "hot", scoreReasons: ["Walk-in", "Budget matches", "Site visit"], scoreModel: "rules+gbdt-lite", waConsent: true },
+  { id: "ld2", projectId: "p_kanak", name: "R. Yadav", phone: "97xxxx4412", source: "partner", partnerId: "pt1", agentId: "ag1", stage: "negotiation", unit: "B-1104", note: "Asked for extra car park", budget: 7_900_000, kind: "flat", score: 81, band: "hot", scoreReasons: ["Partner", "Late-funnel", "Car park intent"], scoreModel: "rules+gbdt-lite" },
+  { id: "ld3", projectId: "p_baggad", name: "S. Rathi", phone: "90xxxx1188", source: "99acres", stage: "inquiry", unit: "P-204", note: "First call 18 Aug", budget: 11_000_000, kind: "plot", score: 52, band: "warm", scoreReasons: ["99acres", "Plot interest"], scoreModel: "rules+gbdt-lite" },
+  { id: "ld4", projectId: "p_mansar", name: "K. Sharma", phone: "93xxxx7700", source: "walk-in", stage: "lost", unit: "C-201", note: "Bought elsewhere", kind: "flat", score: 22, band: "cold", scoreReasons: ["Lost"], scoreModel: "rules+gbdt-lite" },
+  { id: "ld5", projectId: "p_kanak", name: "P. Gupta", phone: "91xxxx4400", source: "magicbricks", stage: "inquiry", unit: "A-0101", note: "Shop for clinic", budget: 4_000_000, kind: "shop", score: 48, band: "warm", scoreReasons: ["MagicBricks", "Budget declared"], scoreModel: "rules+gbdt-lite" },
 ];
 
 export const COMMISSIONS: Commission[] = [

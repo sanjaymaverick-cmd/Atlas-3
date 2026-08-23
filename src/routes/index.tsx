@@ -23,8 +23,9 @@ function Gate() {
       setError(err);
       return;
     }
-    const user = useAtlas.getState().user;
-    navigate({ to: homeForRole(user?.role ?? "owner") });
+    const state = useAtlas.getState();
+    const pending = state.approvals.filter((a) => a.status === "pending").length;
+    navigate({ to: homeForRole(state.user?.role ?? "owner", pending) });
   }
 
   return (

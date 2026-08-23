@@ -30,9 +30,30 @@ Open the URL the terminal prints (usually port 8080).
 | Land & Legal | ll@atlas.local | AtlasLocal-LL |
 | Document Controller | dc@atlas.local | AtlasLocal-DC |
 | Stores / QS | st@atlas.local | AtlasLocal-ST |
+| Channel agent (Pink City) | ag@atlas.local | AtlasLocal-AG |
+| Channel company admin | ca@atlas.local | AtlasLocal-CA |
 | UAT tester | test@atlas.local | AtlasLocal-UAT |
 
 Do not use these on a public host.
+
+## Sales Command (local)
+
+Third-party portal first, in-house pipeline next. Inventory locks a unit on hold or booking. Commission accrues and never pays itself. Atlas never posts Tally.
+
+| Phase | What |
+|---|---|
+| 1 Inventory | Units, towers, status history |
+| 2 Third-party | Daily report → hold → book, company admin, scorecards |
+| 3 Ingest + score | Portal inbox, hybrid GBDT-lite |
+| 4 Handover + analytics | OC/snags, funnel, drift stub |
+
+Connectors (99acres, MagicBricks, Housing, Meta, Google, WhatsApp, Razorpay, e-sign, telephony) are an **inbound inbox**, not live APIs.
+
+WhatsApp: template registry (Utility vs Marketing), consent, quality-rating pause. Site-visit auto-sends confirm. Inbound replies re-score and can qualify. Business API is owner TODO.
+
+Partner hold → booking waits in Approvals. Inventory stays locked until approved.
+
+Architecture, ingest/score interfaces, and SQL contracts: `docs/sales/ARCHITECTURE.md`.
 
 ## After UAT
 

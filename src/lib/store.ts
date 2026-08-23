@@ -30,8 +30,33 @@ import {
   OBLIGATIONS,
   PARCELS,
   QUANTITIES,
+  OWNER_TODOS,
 } from "./extra-seed";
 import { COMMISSIONS, HOSTS, LEADS, PARTNERS, PAYMENTS, SNAGS } from "./crm-seed";
+import {
+  AGENTS,
+  BOOKING_DOCS,
+  DAILY_REPORTS,
+  HANDOVERS,
+  HOLDS,
+  LEAD_ACTIVITIES,
+  LEAD_FEATURES,
+  SCORE_HISTORY,
+  SCORE_MODELS,
+  SITE_VISITS,
+  TOWERS,
+  UNIT_EVENTS,
+  UNITS,
+  INBOUND,
+  WA_TEMPLATES,
+  WA_SENDS,
+} from "./sales-seed";
+import { scoreLead } from "./sales-score";
+import { refuseBook, refuseHold } from "./sales/inventory";
+import { refuseDailyReport, refuseHoldWithoutReport } from "./sales/channel";
+import { findDuplicate, normalizePhone } from "./sales/ingest";
+import { STAGE_NEXT } from "./sales/stages";
+import { fillTemplate, leadValues, readReply, refuseSend, templateByTrigger } from "./sales/whatsapp";
 import type {
   Approval,
   AuditEvent,
@@ -63,13 +88,33 @@ import type {
   AssistantNote,
   Partner,
   Lead,
-  LeadStage,
   Commission,
   PaymentStep,
   Snag,
   HostSite,
   Rfq,
   Quote,
+  OwnerTodo,
+  InventoryUnit,
+  Tower,
+  SalesAgent,
+  DailyReport,
+  UnitHold,
+  LeadActivity,
+  HandoverCase,
+  UnitEvent,
+  UnitStatus,
+  ScoringModel,
+  LeadFeatureRow,
+  LeadScoreHistory,
+  SiteVisit,
+  BookingDoc,
+  ScoreModelKind,
+  ScoreBand,
+  InboundEvent,
+  WaTemplate,
+  WaSend,
+  SalesNotice,
 } from "./types";
 import { todayIso, uid } from "./utils";
 import type { CompanyDayReport } from "./company-day";
@@ -97,6 +142,24 @@ interface AtlasState {
   payments: PaymentStep[];
   snags: Snag[];
   hosts: HostSite[];
+  towers: Tower[];
+  units: InventoryUnit[];
+  unitEvents: UnitEvent[];
+  agents: SalesAgent[];
+  dailyReports: DailyReport[];
+  holds: UnitHold[];
+  leadActivities: LeadActivity[];
+  handovers: HandoverCase[];
+  scoreModels: ScoringModel[];
+  leadFeatures: LeadFeatureRow[];
+  scoreHistory: LeadScoreHistory[];
+  siteVisits: SiteVisit[];
+  bookingDocs: BookingDoc[];
+  activeScoreModel: ScoreModelKind;
+  inbound: InboundEvent[];
+  waTemplates: WaTemplate[];
+  waSends: WaSend[];
+  notices: SalesNotice[];
   vendors: Vendor[];
   rfqs: Rfq[];
   quotes: Quote[];
@@ -109,6 +172,7 @@ interface AtlasState {
   bookings: Booking[];
   tally: TallyCase[];
   decisions: OwnerDecision[];
+  ownerTodos: OwnerTodo[];
   audit: AuditEvent[];
   signIn: (role: Role) => void;
   signInLocal: (email: string, password: string) => string | null;
@@ -158,7 +222,7 @@ interface AtlasState {
   markPossession: (id: string) => string | null;
   settleTally: (id: string, status: "reconciled" | "exception") => void;
   draftAdvice: (prompt: string) => string | null;
-  addLead: (input: Omit<Lead, "id" | "stage">) => void;
+  addLead: (input: Omit<Lead, "id" | "stage">) => string | null;
   advanceLead: (id: string) => string | null;
   loseLead: (id: string) => void;
   convertLead: (id: string, value: number) => string | null;
@@ -172,6 +236,37 @@ interface AtlasState {
   log: (action: string, entity: string) => void;
   companyDay: CompanyDayReport | null;
   runCompanyDay: () => Promise<CompanyDayReport>;
+  holdUnit: (input: { unitId: string; agentId: string; customer: string; until: string }) => string | null;
+  releaseHold: (holdId: string) => string | null;
+  bookHold: (holdId: string, value: number) => string | null;
+  fileDailyReport: (input: {
+    agentId: string;
+    calls: number;
+    visits: number;
+    leads: number;
+    holds?: number;
+    bookings?: number;
+    cancellations?: number;
+    notes: string;
+  }) => string | null;
+  ingestLead: (input: Omit<Lead, "id" | "stage" | "score" | "band" | "scoreReasons" | "scoreModel">) => string | null;
+  rescoreLead: (leadId: string, activity?: string) => string | null;
+  setUnitDispute: (unitId: string) => string | null;
+  advanceHandover: (id: string) => string | null;
+  setScoreModel: (kind: ScoreModelKind) => void;
+  scheduleVisit: (input: { leadId: string; scheduled: string; note: string }) => string | null;
+  completeVisit: (id: string, result: "done" | "no-show") => string | null;
+  toggleBookingDoc: (id: string) => string | null;
+  setHandoverOc: (id: string) => string | null;
+  acceptInbound: (id: string) => string | null;
+  rejectInbound: (id: string) => string | null;
+  inviteAgent: (input: { name: string; phone: string; companyId: string }) => string | null;
+  setAgentStatus: (id: string, status: "active" | "suspended") => string | null;
+  sendWhatsApp: (input: { templateId: string; leadId: string }) => string | null;
+  fireWaTrigger: (trigger: WaTemplate["trigger"], leadId: string) => string | null;
+  receiveWhatsApp: (leadId: string, text: string) => string | null;
+  toggleWaConsent: (leadId: string) => string | null;
+  nurtureLead: (id: string) => void;
 }
 
 const VENDOR_NEXT: Record<string, Vendor["stage"] | undefined> = {
@@ -186,6 +281,78 @@ const VENDOR_NEXT: Record<string, Vendor["stage"] | undefined> = {
 function nextRev(current: string) {
   const n = Number(current.replace(/\D/g, "")) || 0;
   return `R${n + 1}`;
+}
+
+function moveUnit(units: InventoryUnit[], events: UnitEvent[], unitId: string, to: UnitStatus, note: string) {
+  const u = units.find((x) => x.id === unitId);
+  if (!u) return { units, events };
+  const ev: UnitEvent = {
+    id: uid("ue"),
+    unitId,
+    at: new Date().toISOString(),
+    from: u.status,
+    to,
+    note,
+  };
+  return {
+    units: units.map((x) => (x.id === unitId ? { ...x, status: to } : x)),
+    events: [ev, ...events],
+  };
+}
+
+function accrueCommission(commissions: Commission[], partners: Partner[], booking: Booking, value: number) {
+  const partner = booking.partnerId ? partners.find((p) => p.id === booking.partnerId) : undefined;
+  if (!partner || partner.status !== "active") return commissions;
+  if (commissions.some((c) => c.bookingId === booking.id)) return commissions;
+  return [
+    {
+      id: uid("cm"),
+      partnerId: partner.id,
+      bookingId: booking.id,
+      projectId: booking.projectId,
+      amount: Math.round((value * partner.rate) / 100),
+      status: "accrued" as const,
+    },
+    ...commissions,
+  ];
+}
+
+function expireHolds(units: InventoryUnit[], events: UnitEvent[], holds: UnitHold[]) {
+  const today = todayIso();
+  let nextUnits = units;
+  let nextEvents = events;
+  const nextHolds = holds.map((h) => {
+    if (h.status !== "held" || h.until >= today) return h;
+    const moved = moveUnit(nextUnits, nextEvents, h.unitId, "available", "Hold expired");
+    nextUnits = moved.units;
+    nextEvents = moved.events;
+    return { ...h, status: "expired" as const };
+  });
+  return { units: nextUnits, events: nextEvents, holds: nextHolds };
+}
+
+function rememberScore(
+  leadId: string,
+  scored: ReturnType<typeof scoreLead>,
+  history: LeadScoreHistory[],
+  features: LeadFeatureRow[],
+) {
+  const at = new Date().toISOString();
+  return {
+    history: [
+      {
+        id: uid("sh"),
+        leadId,
+        at,
+        score: scored.score,
+        band: scored.band as ScoreBand,
+        model: scored.model,
+        reasons: scored.reasons,
+      },
+      ...history,
+    ].slice(0, 200),
+    features: [{ id: uid("lf"), leadId, at, features: scored.features }, ...features.filter((f) => f.leadId !== leadId)],
+  };
 }
 
 export const useAtlas = create<AtlasState>()(
@@ -213,6 +380,24 @@ export const useAtlas = create<AtlasState>()(
       payments: PAYMENTS,
       snags: SNAGS,
       hosts: HOSTS,
+      towers: TOWERS,
+      units: UNITS,
+      unitEvents: UNIT_EVENTS,
+      agents: AGENTS,
+      dailyReports: DAILY_REPORTS,
+      holds: HOLDS,
+      leadActivities: LEAD_ACTIVITIES,
+      handovers: HANDOVERS,
+      scoreModels: SCORE_MODELS,
+      leadFeatures: LEAD_FEATURES,
+      scoreHistory: SCORE_HISTORY,
+      siteVisits: SITE_VISITS,
+      bookingDocs: BOOKING_DOCS,
+      inbound: INBOUND,
+      waTemplates: WA_TEMPLATES,
+      waSends: WA_SENDS,
+      notices: [],
+      activeScoreModel: "hybrid",
       vendors: VENDORS,
       rfqs: RFQS,
       quotes: QUOTES,
@@ -225,6 +410,7 @@ export const useAtlas = create<AtlasState>()(
       bookings: BOOKINGS,
       tally: TALLY,
       decisions: DECISIONS,
+      ownerTodos: OWNER_TODOS,
       audit: AUDIT,
       companyDay: null,
       signIn: (role) => {
@@ -254,7 +440,15 @@ export const useAtlas = create<AtlasState>()(
         set({ audit: [event, ...get().audit].slice(0, 80) });
       },
       createProject: (p) => {
-        const project: Project = { ...p, id: uid("p"), spent: 0, progress: 0, sold: 0 };
+        const project: Project = {
+          ...p,
+          id: uid("p"),
+          spent: 0,
+          progress: 0,
+          sold: 0,
+          forecast: p.forecast ?? 0,
+          concept: p.concept ?? p.status === "planning",
+        };
         set({ projects: [project, ...get().projects] });
         get().log("Created project", project.name);
       },
@@ -319,6 +513,18 @@ export const useAtlas = create<AtlasState>()(
             ),
           });
         }
+        if (item.kind === "Hold booking" && item.refId) {
+          if (status === "approved") {
+            const err = get().bookHold(item.refId, item.amount ?? 0);
+            if (err && !/already/i.test(err)) return err;
+          } else {
+            set({
+              holds: get().holds.map((h) =>
+                h.id === item.refId ? { ...h, bookingRequested: false, bookingValue: undefined } : h,
+              ),
+            });
+          }
+        }
         get().log(status === "approved" ? "Approved" : "Rejected", item.title);
         return null;
       },
@@ -382,8 +588,14 @@ export const useAtlas = create<AtlasState>()(
         const b = get().bookings.find((x) => x.id === id);
         if (!b) return "Booking not found.";
         if (b.status === "possession") return "Possessed units cannot be cancelled here.";
+        const inv = get().units.find((u) => u.projectId === b.projectId && u.code === b.unit);
+        const moved = inv
+          ? moveUnit(get().units, get().unitEvents, inv.id, "available", "Booking cancelled")
+          : { units: get().units, events: get().unitEvents };
         set({
           bookings: get().bookings.map((x) => (x.id === id ? { ...x, status: "cancelled" } : x)),
+          units: moved.units,
+          unitEvents: moved.events,
         });
         get().log("Cancelled booking", b.unit);
         return null;
@@ -518,12 +730,26 @@ export const useAtlas = create<AtlasState>()(
         get().log(`Raised ${item.kind.toUpperCase()}`, item.title);
       },
       addBooking: (b) => {
-        const clash = get().bookings.find(
-          (x) => x.projectId === b.projectId && x.unit === b.unit && (x.status === "active" || x.status === "possession"),
-        );
-        if (clash) return `Unit ${b.unit} already has an active booking.`;
+        const inv = get().units.find((u) => u.projectId === b.projectId && u.code === b.unit);
+        const locked = refuseBook(inv, get().bookings, b.projectId, b.unit);
+        if (locked) return locked;
         const row: Booking = { ...b, id: uid("b"), collected: 0, status: "active" };
-        set({ bookings: [row, ...get().bookings] });
+        const moved = inv
+          ? moveUnit(get().units, get().unitEvents, inv.id, "booked", `Booking ${row.id}`)
+          : { units: get().units, events: get().unitEvents };
+        const commissions = accrueCommission(get().commissions, get().partners, row, row.value);
+        const docs: BookingDoc[] = [
+          { id: uid("bd"), bookingId: row.id, title: "PAN / Aadhaar KYC", status: "open" },
+          { id: uid("bd"), bookingId: row.id, title: "Allotment letter", status: "open" },
+          { id: uid("bd"), bookingId: row.id, title: "Agreement for sale", status: "open" },
+        ];
+        set({
+          bookings: [row, ...get().bookings],
+          units: moved.units,
+          unitEvents: moved.events,
+          commissions,
+          bookingDocs: [...docs, ...get().bookingDocs],
+        });
         get().log("Created booking", `${b.unit} · ${b.customer}`);
         return null;
       },
@@ -813,8 +1039,14 @@ export const useAtlas = create<AtlasState>()(
         const b = get().bookings.find((x) => x.id === id);
         if (!b) return "Booking not found.";
         if (b.collected < b.value) return "Possession requires the payment plan to be fully collected.";
+        const inv = get().units.find((u) => u.projectId === b.projectId && u.code === b.unit);
+        const moved = inv
+          ? moveUnit(get().units, get().unitEvents, inv.id, "sold", "Possession")
+          : { units: get().units, events: get().unitEvents };
         set({
           bookings: get().bookings.map((x) => (x.id === id ? { ...x, status: "possession" } : x)),
+          units: moved.units,
+          unitEvents: moved.events,
         });
         get().log("Possession recorded", b.unit);
         return null;
@@ -844,23 +1076,26 @@ export const useAtlas = create<AtlasState>()(
         return null;
       },
       addLead: (input) => {
-        const row: Lead = { ...input, id: uid("ld"), stage: "inquiry" };
-        set({ leads: [row, ...get().leads] });
-        get().log("Captured lead", row.name);
+        return get().ingestLead(input);
       },
       advanceLead: (id) => {
         const l = get().leads.find((x) => x.id === id);
         if (!l) return "Lead not found.";
-        const next: Record<LeadStage, LeadStage | undefined> = {
-          inquiry: "visit",
-          visit: "negotiation",
-          negotiation: "negotiation",
-          won: undefined,
-          lost: undefined,
-        };
-        const stage = next[l.stage];
-        if (!stage || stage === l.stage) return "Convert to booking instead of advancing.";
-        set({ leads: get().leads.map((x) => (x.id === id ? { ...x, stage } : x)) });
+        const stage = STAGE_NEXT[l.stage];
+        if (!stage) return "Convert to booking instead of advancing.";
+        const unit = get().units.find((u) => u.code === l.unit);
+        const acts = get().leadActivities.filter((a) => a.leadId === id);
+        const scored = scoreLead({ ...l, stage }, unit, acts, get().activeScoreModel);
+        const mem = rememberScore(id, scored, get().scoreHistory, get().leadFeatures);
+        set({
+          leads: get().leads.map((x) =>
+            x.id === id
+              ? { ...x, stage, score: scored.score, band: scored.band, scoreReasons: scored.reasons, scoreModel: scored.model }
+              : x,
+          ),
+          scoreHistory: mem.history,
+          leadFeatures: mem.features,
+        });
         get().log(`Lead moved to ${stage}`, l.name);
         return null;
       },
@@ -869,6 +1104,12 @@ export const useAtlas = create<AtlasState>()(
         if (!l) return;
         set({ leads: get().leads.map((x) => (x.id === id ? { ...x, stage: "lost" } : x)) });
         get().log("Lead lost", l.name);
+      },
+      nurtureLead: (id) => {
+        const l = get().leads.find((x) => x.id === id);
+        if (!l) return;
+        set({ leads: get().leads.map((x) => (x.id === id ? { ...x, stage: "nurture" } : x)) });
+        get().log("Lead to nurture", l.name);
       },
       convertLead: (id, value) => {
         const l = get().leads.find((x) => x.id === id);
@@ -879,6 +1120,10 @@ export const useAtlas = create<AtlasState>()(
           (x) => x.projectId === l.projectId && x.unit === l.unit && (x.status === "active" || x.status === "possession"),
         );
         if (clash) return `Unit ${l.unit} already has an active booking.`;
+        const inv = get().units.find((u) => u.projectId === l.projectId && u.code === l.unit);
+        if (inv && inv.status !== "available" && inv.status !== "held") {
+          return `Unit ${l.unit} is ${inv.status} and cannot be booked.`;
+        }
         const booking: Booking = {
           id: uid("b"),
           projectId: l.projectId,
@@ -896,26 +1141,23 @@ export const useAtlas = create<AtlasState>()(
           { id: uid("py"), bookingId: booking.id, label: "Construction", due: todayIso(), amount: Math.round(value * 0.4), paid: 0 },
           { id: uid("py"), bookingId: booking.id, label: "Possession", due: todayIso(), amount: value - token * 2 - Math.round(value * 0.4), paid: 0 },
         ];
-        let commissions = get().commissions;
-        const partner = l.partnerId ? get().partners.find((p) => p.id === l.partnerId) : undefined;
-        if (partner && partner.status === "active") {
-          commissions = [
-            {
-              id: uid("cm"),
-              partnerId: partner.id,
-              bookingId: booking.id,
-              projectId: l.projectId,
-              amount: Math.round((value * partner.rate) / 100),
-              status: "accrued",
-            },
-            ...commissions,
-          ];
-        }
+        const commissions = accrueCommission(get().commissions, get().partners, booking, value);
+        const moved = inv
+          ? moveUnit(get().units, get().unitEvents, inv.id, "booked", `Lead convert ${booking.id}`)
+          : { units: get().units, events: get().unitEvents };
+        const docs: BookingDoc[] = [
+          { id: uid("bd"), bookingId: booking.id, title: "PAN / Aadhaar KYC", status: "open" },
+          { id: uid("bd"), bookingId: booking.id, title: "Allotment letter", status: "open" },
+          { id: uid("bd"), bookingId: booking.id, title: "Agreement for sale", status: "open" },
+        ];
         set({
           bookings: [booking, ...get().bookings],
           leads: get().leads.map((x) => (x.id === id ? { ...x, stage: "won" } : x)),
           payments: [...steps, ...get().payments],
+          units: moved.units,
+          unitEvents: moved.events,
           commissions,
+          bookingDocs: [...docs, ...get().bookingDocs],
         });
         get().log("Converted lead to booking", `${l.name} · ${l.unit}`);
         return null;
@@ -966,12 +1208,389 @@ export const useAtlas = create<AtlasState>()(
         get().log("Raised snag", input.title);
       },
       closeSnag: (id) => {
-        set({ snags: get().snags.map((s) => (s.id === id ? { ...s, status: "closed" } : s)) });
+        const snag = get().snags.find((s) => s.id === id);
+        set({
+          snags: get().snags.map((s) => (s.id === id ? { ...s, status: "closed" } : s)),
+          handovers: snag
+            ? get().handovers.map((h) =>
+                h.unit === snag.unit ? { ...h, snagsOpen: Math.max(0, h.snagsOpen - 1) } : h,
+              )
+            : get().handovers,
+        });
         get().log("Closed snag", id);
       },
       markHostReady: (id) => {
         set({ hosts: get().hosts.map((h) => (h.id === id ? { ...h, status: "ready" } : h)) });
         get().log("Host marked ready (local ops)", id);
+      },
+      holdUnit: (input) => {
+        const stale = get().holds.some((h) => h.status === "held" && h.until < todayIso());
+        if (stale) {
+          const expired = expireHolds(get().units, get().unitEvents, get().holds);
+          set({ units: expired.units, unitEvents: expired.events, holds: expired.holds });
+        }
+        const gated = refuseHoldWithoutReport(get().user?.role, get().dailyReports, input.agentId);
+        if (gated) return gated;
+        const unit = get().units.find((u) => u.id === input.unitId);
+        const locked = refuseHold(unit);
+        if (locked || !unit) return locked ?? "Unit not found.";
+        const hold: UnitHold = {
+          id: uid("hd"),
+          unitId: unit.id,
+          projectId: unit.projectId,
+          agentId: input.agentId,
+          customer: input.customer,
+          until: input.until,
+          status: "held",
+        };
+        const moved = moveUnit(get().units, get().unitEvents, unit.id, "held", `Hold ${hold.id}`);
+        set({ holds: [hold, ...get().holds], units: moved.units, unitEvents: moved.events });
+        get().log("Unit held", `${unit.code} · ${input.customer}`);
+        return null;
+      },
+      releaseHold: (holdId) => {
+        const h = get().holds.find((x) => x.id === holdId);
+        if (!h || h.status !== "held") return "Hold not active.";
+        const moved = moveUnit(get().units, get().unitEvents, h.unitId, "available", "Hold released");
+        set({
+          holds: get().holds.map((x) => (x.id === holdId ? { ...x, status: "released" } : x)),
+          units: moved.units,
+          unitEvents: moved.events,
+        });
+        get().log("Hold released", h.unitId);
+        return null;
+      },
+      bookHold: (holdId, value) => {
+        const h = get().holds.find((x) => x.id === holdId);
+        if (!h || h.status !== "held") return "Hold not active.";
+        const unit = get().units.find((u) => u.id === h.unitId);
+        if (!unit) return "Unit not found.";
+        const agent = get().agents.find((a) => a.id === h.agentId);
+        const needsApproval = Boolean(agent && !agent.inHouse);
+        const pending = get().approvals.some(
+          (a) => a.kind === "Hold booking" && a.refId === holdId && a.status === "pending",
+        );
+        if (needsApproval && !h.bookingRequested) {
+          if (pending) return "This hold is already waiting in Approvals.";
+          const approval: Approval = {
+            id: uid("a"),
+            kind: "Hold booking",
+            title: `Hold → booking · ${unit.code} · ${h.customer}`,
+            projectId: h.projectId,
+            amount: value,
+            waitingOn: "Sales Manager / MD",
+            agingDays: 0,
+            status: "pending",
+            refId: holdId,
+            context: `${agent?.name ?? "Agent"} requested booking at ${value}. Unit stays locked until approved.`,
+          };
+          set({
+            approvals: [approval, ...get().approvals],
+            holds: get().holds.map((x) =>
+              x.id === holdId ? { ...x, bookingRequested: true, bookingValue: value } : x,
+            ),
+          });
+          get().log("Hold booking sent for approval", unit.code);
+          return null;
+        }
+        const err = get().addBooking({
+          projectId: h.projectId,
+          unit: unit.code,
+          customer: h.customer,
+          value: value || h.bookingValue || 0,
+          partnerId: agent?.companyId,
+        });
+        if (err) return err;
+        set({
+          holds: get().holds.map((x) =>
+            x.id === holdId ? { ...x, status: "booked", bookingRequested: false } : x,
+          ),
+        });
+        get().log("Hold converted to booking", unit.code);
+        return null;
+      },
+      fileDailyReport: (input) => {
+        const exists = refuseDailyReport(get().dailyReports, input.agentId);
+        if (exists) return exists;
+        const row: DailyReport = {
+          id: uid("dr"),
+          date: todayIso(),
+          holds: 0,
+          bookings: 0,
+          cancellations: 0,
+          ...input,
+        };
+        set({ dailyReports: [row, ...get().dailyReports] });
+        get().log("Daily sales report", input.agentId);
+        return null;
+      },
+      ingestLead: (input) => {
+        const phone = normalizePhone(input.phone);
+        const dup = findDuplicate(get().leads, phone, input.projectId);
+        if (dup) return `Duplicate lead on ${dup.phone} — already ${dup.stage}.`;
+        const unit = get().units.find((u) => u.code === input.unit);
+        const scored = scoreLead({ ...input, stage: "inquiry" }, unit, [], get().activeScoreModel);
+        const row: Lead = {
+          ...input,
+          phone,
+          id: uid("ld"),
+          stage: "inquiry",
+          score: scored.score,
+          band: scored.band,
+          scoreReasons: scored.reasons,
+          scoreModel: scored.model,
+        };
+        const mem = rememberScore(row.id, scored, get().scoreHistory, get().leadFeatures);
+        set({ leads: [row, ...get().leads], scoreHistory: mem.history, leadFeatures: mem.features });
+        get().log("Ingested lead", `${row.name} · ${row.band} ${row.score}`);
+        return null;
+      },
+      rescoreLead: (leadId, activity) => {
+        const l = get().leads.find((x) => x.id === leadId);
+        if (!l) return "Lead not found.";
+        const unit = get().units.find((u) => u.code === l.unit);
+        const act: LeadActivity | undefined = activity
+          ? {
+              id: uid("la"),
+              leadId,
+              at: new Date().toISOString(),
+              kind: activity,
+              note: `${activity} engagement`,
+            }
+          : undefined;
+        const acts = act ? [act, ...get().leadActivities.filter((a) => a.leadId === leadId)] : get().leadActivities.filter((a) => a.leadId === leadId);
+        const scored = scoreLead(l, unit, acts, get().activeScoreModel);
+        const mem = rememberScore(leadId, scored, get().scoreHistory, get().leadFeatures);
+        set({
+          leads: get().leads.map((x) =>
+            x.id === leadId
+              ? { ...x, score: scored.score, band: scored.band, scoreReasons: scored.reasons, scoreModel: scored.model }
+              : x,
+          ),
+          leadActivities: act ? [act, ...get().leadActivities] : get().leadActivities,
+          scoreHistory: mem.history,
+          leadFeatures: mem.features,
+        });
+        get().log("Lead re-scored", `${l.name} · ${scored.band}`);
+        return null;
+      },
+      setUnitDispute: (unitId) => {
+        const u = get().units.find((x) => x.id === unitId);
+        if (!u) return "Unit not found.";
+        const moved = moveUnit(get().units, get().unitEvents, unitId, "dispute", "Marked dispute");
+        set({ units: moved.units, unitEvents: moved.events });
+        get().log("Unit dispute", u.code);
+        return null;
+      },
+      advanceHandover: (id) => {
+        const h = get().handovers.find((x) => x.id === id);
+        if (!h) return "Handover not found.";
+        if (h.status === "snagging") {
+          if (h.oc !== "received") return "OC/CC must be received before possession.";
+          const open = get().snags.filter((s) => s.unit === h.unit && s.status === "open").length;
+          if (open > 0) return `${open} snag(s) still open — close them before possession.`;
+        }
+        const next: Record<HandoverCase["status"], HandoverCase["status"] | undefined> = {
+          snagging: "possession",
+          possession: "society",
+          society: "defect",
+          defect: undefined,
+        };
+        const status = next[h.status];
+        if (!status) return "Handover already at last stage.";
+        set({ handovers: get().handovers.map((x) => (x.id === id ? { ...x, status } : x)) });
+        get().log(`Handover ${status}`, h.unit);
+        return null;
+      },
+      setScoreModel: (kind) => {
+        set({
+          activeScoreModel: kind,
+          scoreModels: get().scoreModels.map((m) => ({ ...m, active: m.kind === kind })),
+        });
+        get().log("Scoring model selected", kind);
+      },
+      scheduleVisit: (input) => {
+        const l = get().leads.find((x) => x.id === input.leadId);
+        if (!l) return "Lead not found.";
+        const row: SiteVisit = {
+          id: uid("sv"),
+          leadId: l.id,
+          projectId: l.projectId,
+          unit: l.unit,
+          scheduled: input.scheduled,
+          status: "scheduled",
+          note: input.note,
+        };
+        set({ siteVisits: [row, ...get().siteVisits] });
+        get().log("Site visit scheduled", `${l.name} · ${row.scheduled}`);
+        get().fireWaTrigger("visit_scheduled", l.id);
+        return null;
+      },
+      completeVisit: (id, result) => {
+        const v = get().siteVisits.find((x) => x.id === id);
+        if (!v) return "Visit not found.";
+        set({ siteVisits: get().siteVisits.map((x) => (x.id === id ? { ...x, status: result } : x)) });
+        if (result === "done") {
+          const l = get().leads.find((x) => x.id === v.leadId);
+          if (l && (l.stage === "inquiry" || l.stage === "contacted" || l.stage === "qualified")) {
+            get().advanceLead(l.id);
+          }
+          get().rescoreLead(v.leadId, "visit");
+        }
+        get().log(`Site visit ${result}`, v.leadId);
+        return null;
+      },
+      toggleBookingDoc: (id) => {
+        const d = get().bookingDocs.find((x) => x.id === id);
+        if (!d) return "Checklist item not found.";
+        const status = d.status === "open" ? "received" : "open";
+        set({ bookingDocs: get().bookingDocs.map((x) => (x.id === id ? { ...x, status } : x)) });
+        get().log(`Booking document ${status}`, d.title);
+        return null;
+      },
+      setHandoverOc: (id) => {
+        const h = get().handovers.find((x) => x.id === id);
+        if (!h) return "Handover not found.";
+        set({ handovers: get().handovers.map((x) => (x.id === id ? { ...x, oc: "received" } : x)) });
+        get().log("OC/CC received", h.unit);
+        return null;
+      },
+      acceptInbound: (id) => {
+        const row = get().inbound.find((x) => x.id === id);
+        if (!row) return "Inbound event not found.";
+        if (row.status !== "queued") return "Already processed.";
+        if (row.kind === "whatsapp") {
+          const lead = row.leadId
+            ? get().leads.find((l) => l.id === row.leadId)
+            : get().leads.find((l) => l.phone === row.phone);
+          if (!lead) return "No matching lead for this WhatsApp reply.";
+          const err = get().receiveWhatsApp(lead.id, row.note);
+          if (err) return err;
+        } else if (row.kind === "razorpay") {
+          if (!row.bookingId) return "Payment event has no booking.";
+          const err = get().collect(row.bookingId, 84_500);
+          if (err) return err;
+        } else if (row.kind === "esign") {
+          const doc = get().bookingDocs.find((d) => d.bookingId === row.bookingId && d.title.includes("Agreement") && d.status === "open");
+          if (!doc) return "No open agreement to mark e-signed.";
+          const err = get().toggleBookingDoc(doc.id);
+          if (err) return err;
+        } else {
+          const source = row.kind === "email" || row.kind === "webhook" ? "website" : row.kind;
+          const err = get().ingestLead({
+            projectId: row.projectId ?? "p_kanak",
+            name: row.name ?? "Portal lead",
+            phone: row.phone ?? uid("ph"),
+            source,
+            unit: "",
+            note: row.note,
+          });
+          if (err) return err;
+        }
+        const lead = get().leads.find((l) => l.phone === row.phone);
+        set({
+          inbound: get().inbound.map((x) =>
+            x.id === id ? { ...x, status: "applied", leadId: lead?.id ?? x.leadId } : x,
+          ),
+        });
+        get().log("Inbound applied", row.kind);
+        return null;
+      },
+      rejectInbound: (id) => {
+        const row = get().inbound.find((x) => x.id === id);
+        if (!row) return "Inbound event not found.";
+        set({ inbound: get().inbound.map((x) => (x.id === id ? { ...x, status: "rejected" } : x)) });
+        get().log("Inbound rejected", row.kind);
+        return null;
+      },
+      inviteAgent: (input) => {
+        if (!input.name.trim() || !input.phone.trim()) return "Name and phone required.";
+        const row: SalesAgent = {
+          id: uid("ag"),
+          name: input.name.trim(),
+          phone: input.phone.trim(),
+          companyId: input.companyId,
+          inHouse: false,
+          status: "invited",
+        };
+        set({ agents: [row, ...get().agents] });
+        get().log("Invited channel agent", row.name);
+        return null;
+      },
+      setAgentStatus: (id, status) => {
+        const a = get().agents.find((x) => x.id === id);
+        if (!a) return "Agent not found.";
+        set({ agents: get().agents.map((x) => (x.id === id ? { ...x, status } : x)) });
+        get().log(`Agent ${status}`, a.name);
+        return null;
+      },
+      sendWhatsApp: (input) => {
+        const tpl = get().waTemplates.find((t) => t.id === input.templateId);
+        const lead = get().leads.find((l) => l.id === input.leadId);
+        const gated = refuseSend(tpl, lead, Boolean(lead?.waConsent));
+        if (gated || !tpl || !lead) return gated ?? "Cannot send.";
+        const body = fillTemplate(tpl.body, leadValues(lead, tpl.samples.slice(2)));
+        const row: WaSend = {
+          id: uid("wa"),
+          templateId: tpl.id,
+          to: lead.phone,
+          at: new Date().toISOString(),
+          body,
+          leadId: lead.id,
+          direction: "out",
+        };
+        const notice: SalesNotice = {
+          id: uid("nt"),
+          at: row.at,
+          title: `WhatsApp out · ${tpl.name} · ${lead.name}`,
+          to: "/app/sales/whatsapp",
+        };
+        set({ waSends: [row, ...get().waSends], notices: [notice, ...get().notices].slice(0, 20) });
+        get().rescoreLead(lead.id, tpl.trigger === "brochure" ? "brochure" : "whatsapp");
+        get().log(`WhatsApp ${tpl.name}`, lead.phone);
+        return null;
+      },
+      fireWaTrigger: (trigger, leadId) => {
+        const tpl = templateByTrigger(get().waTemplates, trigger);
+        if (!tpl) return "No approved template for this trigger.";
+        return get().sendWhatsApp({ templateId: tpl.id, leadId });
+      },
+      receiveWhatsApp: (leadId, text) => {
+        const lead = get().leads.find((l) => l.id === leadId);
+        if (!lead) return "Lead not found.";
+        const row: WaSend = {
+          id: uid("wa"),
+          templateId: "in",
+          to: lead.phone,
+          at: new Date().toISOString(),
+          body: text.trim(),
+          leadId: lead.id,
+          direction: "in",
+        };
+        const notice: SalesNotice = {
+          id: uid("nt"),
+          at: row.at,
+          title: `WhatsApp in · ${lead.name}`,
+          to: "/app/sales/whatsapp",
+        };
+        set({ waSends: [row, ...get().waSends], notices: [notice, ...get().notices].slice(0, 20) });
+        const kind = readReply(text);
+        if (kind === "confirm" && (lead.stage === "inquiry" || lead.stage === "contacted" || lead.stage === "qualified")) {
+          get().advanceLead(lead.id);
+        }
+        if (kind === "qualify" && (lead.stage === "inquiry" || lead.stage === "contacted")) {
+          get().advanceLead(lead.id);
+        }
+        get().rescoreLead(lead.id, "whatsapp");
+        get().log("WhatsApp inbound", `${lead.name} · ${kind}`);
+        return null;
+      },
+      toggleWaConsent: (leadId) => {
+        const l = get().leads.find((x) => x.id === leadId);
+        if (!l) return "Lead not found.";
+        set({ leads: get().leads.map((x) => (x.id === leadId ? { ...x, waConsent: !x.waConsent } : x)) });
+        get().log(l.waConsent ? "WhatsApp consent withdrawn" : "WhatsApp consent recorded", l.name);
+        return null;
       },
       runCompanyDay: async () => {
         const { executeCompanyDay } = await import("./company-day");
@@ -981,6 +1600,6 @@ export const useAtlas = create<AtlasState>()(
         return report;
       },
     }),
-    { name: "atlas3-company-day-v1" },
+    { name: "atlas3-sales-v5" },
   ),
 );

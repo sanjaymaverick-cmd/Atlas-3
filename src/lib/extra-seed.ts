@@ -1,6 +1,7 @@
 import type {
   AssistantNote,
   BudgetLine,
+  OwnerTodo,
   DiligenceItem,
   Emi,
   LandParcel,
@@ -58,3 +59,42 @@ export const QUANTITIES: QuantityItem[] = [
 ];
 
 export const NOTES: AssistantNote[] = [];
+
+export const OWNER_TODOS = [
+  {
+    id: "todo_funding",
+    title: "Funding-source module",
+    detail: "Whether to track lender / internal / JV funding inside Atlas. Stub only until go-live is decided.",
+    status: "open" as const,
+  },
+  {
+    id: "todo_auth",
+    title: "Production auth",
+    detail: "Passkeys / IdP only after UAT is signed. This host stays local test accounts.",
+    status: "open" as const,
+  },
+  {
+    id: "todo_tally_live",
+    title: "Live Tally sync",
+    detail: "Atlas must not post vouchers. A later cutover may reconcile to a live Tally company — owner decision.",
+    status: "open" as const,
+  },
+  {
+    id: "todo_hsm",
+    title: "HSM / Vault cutover drill",
+    detail: "First production key ceremony and restore drill against Aerovista / Acropolis.",
+    status: "open" as const,
+  },
+  {
+    id: "todo_portals",
+    title: "Portal / ads connectors",
+    detail: "99acres, MagicBricks, Housing.com, Meta, Google — ingest APIs after UAT. Seed uses source tags only.",
+    status: "open" as const,
+  },
+  {
+    id: "todo_gbdt",
+    title: "GBDT model lab",
+    detail: "Train/compare XGBoost, LightGBM, CatBoost off-host. This demo uses rules + GBDT-lite. SHAP stays a later swap.",
+    status: "open" as const,
+  },
+];

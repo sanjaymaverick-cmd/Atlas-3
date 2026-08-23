@@ -15,10 +15,12 @@ const ROLE_HOME = {
   supervisor: "/app/site",
   accountant: "/app/finance",
   commercial: "/app/commercial",
-  sales: "/app/crm",
+  sales: "/app/sales",
   legal: "/app/land",
   docs: "/app/documents",
   stores: "/app/controls",
+  channel: "/app/sales/channel",
+  channel_admin: "/app/sales/company",
 };
 
 const USERS = [
@@ -32,6 +34,8 @@ const USERS = [
   { id: "u_legal", role: "legal", title: "Land & Legal", email: "ll@atlas.local", password: "AtlasLocal-LL" },
   { id: "u_docs", role: "docs", title: "Document Controller", email: "dc@atlas.local", password: "AtlasLocal-DC" },
   { id: "u_stores", role: "stores", title: "Stores / QS", email: "st@atlas.local", password: "AtlasLocal-ST" },
+  { id: "u_ch", role: "channel", title: "Channel agent (Pink City)", email: "ag@atlas.local", password: "AtlasLocal-AG" },
+  { id: "u_ca", role: "channel_admin", title: "Pink City company admin", email: "ca@atlas.local", password: "AtlasLocal-CA" },
 ];
 
 const BASE = process.env.ATLAS_URL || "http://127.0.0.1:8080";
@@ -69,7 +73,15 @@ async function collectUx(page, seat, screen) {
 
 async function login(page, user) {
   await page.goto(BASE, { waitUntil: "networkidle", timeout: 30000 });
-  await page.evaluate(() => localStorage.removeItem("atlas3-company-day-v1"));
+  await page.evaluate(() => {
+    localStorage.removeItem("atlas3-company-day-v1");
+    localStorage.removeItem("atlas3-clt-v1");
+    localStorage.removeItem("atlas3-sales-v1");
+    localStorage.removeItem("atlas3-sales-v2");
+    localStorage.removeItem("atlas3-sales-v3");
+    localStorage.removeItem("atlas3-sales-v4");
+    localStorage.removeItem("atlas3-sales-v5");
+  });
   await page.reload({ waitUntil: "networkidle" });
   await page.locator("input").nth(0).fill(user.email);
   await page.locator("input[type='password']").fill(user.password);

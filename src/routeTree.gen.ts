@@ -15,6 +15,7 @@ import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppApprovalsRouteImport } from './routes/app/approvals'
 import { Route as AppAssistantRouteImport } from './routes/app/assistant'
 import { Route as AppAuditRouteImport } from './routes/app/audit'
+import { Route as AppCapitalRouteImport } from './routes/app/capital'
 import { Route as AppChangesRouteImport } from './routes/app/changes'
 import { Route as AppCommercialRouteImport } from './routes/app/commercial'
 import { Route as AppControlsRouteImport } from './routes/app/controls'
@@ -26,11 +27,23 @@ import { Route as AppFinanceRouteImport } from './routes/app/finance'
 import { Route as AppLandRouteImport } from './routes/app/land'
 import { Route as AppOrgRouteImport } from './routes/app/org'
 import { Route as AppPhasesRouteImport } from './routes/app/phases'
+import { Route as AppPortfolioRouteImport } from './routes/app/portfolio'
 import { Route as AppProjectsRouteImport } from './routes/app/projects'
 import { Route as AppQuotationsRouteImport } from './routes/app/quotations'
+import { Route as AppSalesRouteImport } from './routes/app/sales'
 import { Route as AppSiteRouteImport } from './routes/app/site'
 import { Route as AppTestingRouteImport } from './routes/app/testing'
 import { Route as AppProjectsIdRouteImport } from './routes/app/projects.$id'
+import { Route as AppSalesIndexRouteImport } from './routes/app/sales.index'
+import { Route as AppSalesAnalyticsRouteImport } from './routes/app/sales.analytics'
+import { Route as AppSalesChannelRouteImport } from './routes/app/sales.channel'
+import { Route as AppSalesCompanyRouteImport } from './routes/app/sales.company'
+import { Route as AppSalesHandoverRouteImport } from './routes/app/sales.handover'
+import { Route as AppSalesIntegrationsRouteImport } from './routes/app/sales.integrations'
+import { Route as AppSalesInventoryRouteImport } from './routes/app/sales.inventory'
+import { Route as AppSalesPeopleRouteImport } from './routes/app/sales.people'
+import { Route as AppSalesPipelineRouteImport } from './routes/app/sales.pipeline'
+import { Route as AppSalesWhatsappRouteImport } from './routes/app/sales.whatsapp'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -60,6 +73,11 @@ const AppAssistantRoute = AppAssistantRouteImport.update({
 const AppAuditRoute = AppAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCapitalRoute = AppCapitalRouteImport.update({
+  id: '/capital',
+  path: '/capital',
   getParentRoute: () => AppRoute,
 } as any)
 const AppChangesRoute = AppChangesRouteImport.update({
@@ -117,6 +135,11 @@ const AppPhasesRoute = AppPhasesRouteImport.update({
   path: '/phases',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPortfolioRoute = AppPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProjectsRoute = AppProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -125,6 +148,11 @@ const AppProjectsRoute = AppProjectsRouteImport.update({
 const AppQuotationsRoute = AppQuotationsRouteImport.update({
   id: '/quotations',
   path: '/quotations',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSalesRoute = AppSalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSiteRoute = AppSiteRouteImport.update({
@@ -142,6 +170,56 @@ const AppProjectsIdRoute = AppProjectsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppProjectsRoute,
 } as any)
+const AppSalesIndexRoute = AppSalesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesAnalyticsRoute = AppSalesAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesChannelRoute = AppSalesChannelRouteImport.update({
+  id: '/channel',
+  path: '/channel',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesCompanyRoute = AppSalesCompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesHandoverRoute = AppSalesHandoverRouteImport.update({
+  id: '/handover',
+  path: '/handover',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesIntegrationsRoute = AppSalesIntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesInventoryRoute = AppSalesInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesPeopleRoute = AppSalesPeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesPipelineRoute = AppSalesPipelineRouteImport.update({
+  id: '/pipeline',
+  path: '/pipeline',
+  getParentRoute: () => AppSalesRoute,
+} as any)
+const AppSalesWhatsappRoute = AppSalesWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => AppSalesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -149,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/app/approvals': typeof AppApprovalsRoute
   '/app/assistant': typeof AppAssistantRoute
   '/app/audit': typeof AppAuditRoute
+  '/app/capital': typeof AppCapitalRoute
   '/app/changes': typeof AppChangesRoute
   '/app/commercial': typeof AppCommercialRoute
   '/app/controls': typeof AppControlsRoute
@@ -160,18 +239,31 @@ export interface FileRoutesByFullPath {
   '/app/land': typeof AppLandRoute
   '/app/org': typeof AppOrgRoute
   '/app/phases': typeof AppPhasesRoute
+  '/app/portfolio': typeof AppPortfolioRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
   '/app/quotations': typeof AppQuotationsRoute
+  '/app/sales': typeof AppSalesRouteWithChildren
   '/app/site': typeof AppSiteRoute
   '/app/testing': typeof AppTestingRoute
   '/app/': typeof AppIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
+  '/app/sales/analytics': typeof AppSalesAnalyticsRoute
+  '/app/sales/channel': typeof AppSalesChannelRoute
+  '/app/sales/company': typeof AppSalesCompanyRoute
+  '/app/sales/handover': typeof AppSalesHandoverRoute
+  '/app/sales/integrations': typeof AppSalesIntegrationsRoute
+  '/app/sales/inventory': typeof AppSalesInventoryRoute
+  '/app/sales/people': typeof AppSalesPeopleRoute
+  '/app/sales/pipeline': typeof AppSalesPipelineRoute
+  '/app/sales/whatsapp': typeof AppSalesWhatsappRoute
+  '/app/sales/': typeof AppSalesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app/approvals': typeof AppApprovalsRoute
   '/app/assistant': typeof AppAssistantRoute
   '/app/audit': typeof AppAuditRoute
+  '/app/capital': typeof AppCapitalRoute
   '/app/changes': typeof AppChangesRoute
   '/app/commercial': typeof AppCommercialRoute
   '/app/controls': typeof AppControlsRoute
@@ -183,12 +275,23 @@ export interface FileRoutesByTo {
   '/app/land': typeof AppLandRoute
   '/app/org': typeof AppOrgRoute
   '/app/phases': typeof AppPhasesRoute
+  '/app/portfolio': typeof AppPortfolioRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
   '/app/quotations': typeof AppQuotationsRoute
   '/app/site': typeof AppSiteRoute
   '/app/testing': typeof AppTestingRoute
   '/app': typeof AppIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
+  '/app/sales/analytics': typeof AppSalesAnalyticsRoute
+  '/app/sales/channel': typeof AppSalesChannelRoute
+  '/app/sales/company': typeof AppSalesCompanyRoute
+  '/app/sales/handover': typeof AppSalesHandoverRoute
+  '/app/sales/integrations': typeof AppSalesIntegrationsRoute
+  '/app/sales/inventory': typeof AppSalesInventoryRoute
+  '/app/sales/people': typeof AppSalesPeopleRoute
+  '/app/sales/pipeline': typeof AppSalesPipelineRoute
+  '/app/sales/whatsapp': typeof AppSalesWhatsappRoute
+  '/app/sales': typeof AppSalesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -197,6 +300,7 @@ export interface FileRoutesById {
   '/app/approvals': typeof AppApprovalsRoute
   '/app/assistant': typeof AppAssistantRoute
   '/app/audit': typeof AppAuditRoute
+  '/app/capital': typeof AppCapitalRoute
   '/app/changes': typeof AppChangesRoute
   '/app/commercial': typeof AppCommercialRoute
   '/app/controls': typeof AppControlsRoute
@@ -208,12 +312,24 @@ export interface FileRoutesById {
   '/app/land': typeof AppLandRoute
   '/app/org': typeof AppOrgRoute
   '/app/phases': typeof AppPhasesRoute
+  '/app/portfolio': typeof AppPortfolioRoute
   '/app/projects': typeof AppProjectsRouteWithChildren
   '/app/quotations': typeof AppQuotationsRoute
+  '/app/sales': typeof AppSalesRouteWithChildren
   '/app/site': typeof AppSiteRoute
   '/app/testing': typeof AppTestingRoute
   '/app/': typeof AppIndexRoute
   '/app/projects/$id': typeof AppProjectsIdRoute
+  '/app/sales/analytics': typeof AppSalesAnalyticsRoute
+  '/app/sales/channel': typeof AppSalesChannelRoute
+  '/app/sales/company': typeof AppSalesCompanyRoute
+  '/app/sales/handover': typeof AppSalesHandoverRoute
+  '/app/sales/integrations': typeof AppSalesIntegrationsRoute
+  '/app/sales/inventory': typeof AppSalesInventoryRoute
+  '/app/sales/people': typeof AppSalesPeopleRoute
+  '/app/sales/pipeline': typeof AppSalesPipelineRoute
+  '/app/sales/whatsapp': typeof AppSalesWhatsappRoute
+  '/app/sales/': typeof AppSalesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -223,6 +339,7 @@ export interface FileRouteTypes {
     | '/app/approvals'
     | '/app/assistant'
     | '/app/audit'
+    | '/app/capital'
     | '/app/changes'
     | '/app/commercial'
     | '/app/controls'
@@ -234,18 +351,31 @@ export interface FileRouteTypes {
     | '/app/land'
     | '/app/org'
     | '/app/phases'
+    | '/app/portfolio'
     | '/app/projects'
     | '/app/quotations'
+    | '/app/sales'
     | '/app/site'
     | '/app/testing'
     | '/app/'
     | '/app/projects/$id'
+    | '/app/sales/analytics'
+    | '/app/sales/channel'
+    | '/app/sales/company'
+    | '/app/sales/handover'
+    | '/app/sales/integrations'
+    | '/app/sales/inventory'
+    | '/app/sales/people'
+    | '/app/sales/pipeline'
+    | '/app/sales/whatsapp'
+    | '/app/sales/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/app/approvals'
     | '/app/assistant'
     | '/app/audit'
+    | '/app/capital'
     | '/app/changes'
     | '/app/commercial'
     | '/app/controls'
@@ -257,12 +387,23 @@ export interface FileRouteTypes {
     | '/app/land'
     | '/app/org'
     | '/app/phases'
+    | '/app/portfolio'
     | '/app/projects'
     | '/app/quotations'
     | '/app/site'
     | '/app/testing'
     | '/app'
     | '/app/projects/$id'
+    | '/app/sales/analytics'
+    | '/app/sales/channel'
+    | '/app/sales/company'
+    | '/app/sales/handover'
+    | '/app/sales/integrations'
+    | '/app/sales/inventory'
+    | '/app/sales/people'
+    | '/app/sales/pipeline'
+    | '/app/sales/whatsapp'
+    | '/app/sales'
   id:
     | '__root__'
     | '/'
@@ -270,6 +411,7 @@ export interface FileRouteTypes {
     | '/app/approvals'
     | '/app/assistant'
     | '/app/audit'
+    | '/app/capital'
     | '/app/changes'
     | '/app/commercial'
     | '/app/controls'
@@ -281,12 +423,24 @@ export interface FileRouteTypes {
     | '/app/land'
     | '/app/org'
     | '/app/phases'
+    | '/app/portfolio'
     | '/app/projects'
     | '/app/quotations'
+    | '/app/sales'
     | '/app/site'
     | '/app/testing'
     | '/app/'
     | '/app/projects/$id'
+    | '/app/sales/analytics'
+    | '/app/sales/channel'
+    | '/app/sales/company'
+    | '/app/sales/handover'
+    | '/app/sales/integrations'
+    | '/app/sales/inventory'
+    | '/app/sales/people'
+    | '/app/sales/pipeline'
+    | '/app/sales/whatsapp'
+    | '/app/sales/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -336,6 +490,13 @@ declare module '@tanstack/react-router' {
       path: '/audit'
       fullPath: '/app/audit'
       preLoaderRoute: typeof AppAuditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/capital': {
+      id: '/app/capital'
+      path: '/capital'
+      fullPath: '/app/capital'
+      preLoaderRoute: typeof AppCapitalRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/changes': {
@@ -415,6 +576,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPhasesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/portfolio': {
+      id: '/app/portfolio'
+      path: '/portfolio'
+      fullPath: '/app/portfolio'
+      preLoaderRoute: typeof AppPortfolioRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/projects': {
       id: '/app/projects'
       path: '/projects'
@@ -427,6 +595,13 @@ declare module '@tanstack/react-router' {
       path: '/quotations'
       fullPath: '/app/quotations'
       preLoaderRoute: typeof AppQuotationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/sales': {
+      id: '/app/sales'
+      path: '/sales'
+      fullPath: '/app/sales'
+      preLoaderRoute: typeof AppSalesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/site': {
@@ -450,6 +625,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdRouteImport
       parentRoute: typeof AppProjectsRoute
     }
+    '/app/sales/': {
+      id: '/app/sales/'
+      path: '/'
+      fullPath: '/app/sales/'
+      preLoaderRoute: typeof AppSalesIndexRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/analytics': {
+      id: '/app/sales/analytics'
+      path: '/analytics'
+      fullPath: '/app/sales/analytics'
+      preLoaderRoute: typeof AppSalesAnalyticsRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/channel': {
+      id: '/app/sales/channel'
+      path: '/channel'
+      fullPath: '/app/sales/channel'
+      preLoaderRoute: typeof AppSalesChannelRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/company': {
+      id: '/app/sales/company'
+      path: '/company'
+      fullPath: '/app/sales/company'
+      preLoaderRoute: typeof AppSalesCompanyRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/handover': {
+      id: '/app/sales/handover'
+      path: '/handover'
+      fullPath: '/app/sales/handover'
+      preLoaderRoute: typeof AppSalesHandoverRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/integrations': {
+      id: '/app/sales/integrations'
+      path: '/integrations'
+      fullPath: '/app/sales/integrations'
+      preLoaderRoute: typeof AppSalesIntegrationsRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/inventory': {
+      id: '/app/sales/inventory'
+      path: '/inventory'
+      fullPath: '/app/sales/inventory'
+      preLoaderRoute: typeof AppSalesInventoryRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/people': {
+      id: '/app/sales/people'
+      path: '/people'
+      fullPath: '/app/sales/people'
+      preLoaderRoute: typeof AppSalesPeopleRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/pipeline': {
+      id: '/app/sales/pipeline'
+      path: '/pipeline'
+      fullPath: '/app/sales/pipeline'
+      preLoaderRoute: typeof AppSalesPipelineRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
+    '/app/sales/whatsapp': {
+      id: '/app/sales/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/app/sales/whatsapp'
+      preLoaderRoute: typeof AppSalesWhatsappRouteImport
+      parentRoute: typeof AppSalesRoute
+    }
   }
 }
 
@@ -465,10 +710,41 @@ const AppProjectsRouteWithChildren = AppProjectsRoute._addFileChildren(
   AppProjectsRouteChildren,
 )
 
+interface AppSalesRouteChildren {
+  AppSalesAnalyticsRoute: typeof AppSalesAnalyticsRoute
+  AppSalesChannelRoute: typeof AppSalesChannelRoute
+  AppSalesCompanyRoute: typeof AppSalesCompanyRoute
+  AppSalesHandoverRoute: typeof AppSalesHandoverRoute
+  AppSalesIntegrationsRoute: typeof AppSalesIntegrationsRoute
+  AppSalesInventoryRoute: typeof AppSalesInventoryRoute
+  AppSalesPeopleRoute: typeof AppSalesPeopleRoute
+  AppSalesPipelineRoute: typeof AppSalesPipelineRoute
+  AppSalesWhatsappRoute: typeof AppSalesWhatsappRoute
+  AppSalesIndexRoute: typeof AppSalesIndexRoute
+}
+
+const AppSalesRouteChildren: AppSalesRouteChildren = {
+  AppSalesAnalyticsRoute: AppSalesAnalyticsRoute,
+  AppSalesChannelRoute: AppSalesChannelRoute,
+  AppSalesCompanyRoute: AppSalesCompanyRoute,
+  AppSalesHandoverRoute: AppSalesHandoverRoute,
+  AppSalesIntegrationsRoute: AppSalesIntegrationsRoute,
+  AppSalesInventoryRoute: AppSalesInventoryRoute,
+  AppSalesPeopleRoute: AppSalesPeopleRoute,
+  AppSalesPipelineRoute: AppSalesPipelineRoute,
+  AppSalesWhatsappRoute: AppSalesWhatsappRoute,
+  AppSalesIndexRoute: AppSalesIndexRoute,
+}
+
+const AppSalesRouteWithChildren = AppSalesRoute._addFileChildren(
+  AppSalesRouteChildren,
+)
+
 interface AppRouteChildren {
   AppApprovalsRoute: typeof AppApprovalsRoute
   AppAssistantRoute: typeof AppAssistantRoute
   AppAuditRoute: typeof AppAuditRoute
+  AppCapitalRoute: typeof AppCapitalRoute
   AppChangesRoute: typeof AppChangesRoute
   AppCommercialRoute: typeof AppCommercialRoute
   AppControlsRoute: typeof AppControlsRoute
@@ -480,8 +756,10 @@ interface AppRouteChildren {
   AppLandRoute: typeof AppLandRoute
   AppOrgRoute: typeof AppOrgRoute
   AppPhasesRoute: typeof AppPhasesRoute
+  AppPortfolioRoute: typeof AppPortfolioRoute
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
   AppQuotationsRoute: typeof AppQuotationsRoute
+  AppSalesRoute: typeof AppSalesRouteWithChildren
   AppSiteRoute: typeof AppSiteRoute
   AppTestingRoute: typeof AppTestingRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -491,6 +769,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppApprovalsRoute: AppApprovalsRoute,
   AppAssistantRoute: AppAssistantRoute,
   AppAuditRoute: AppAuditRoute,
+  AppCapitalRoute: AppCapitalRoute,
   AppChangesRoute: AppChangesRoute,
   AppCommercialRoute: AppCommercialRoute,
   AppControlsRoute: AppControlsRoute,
@@ -502,8 +781,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppLandRoute: AppLandRoute,
   AppOrgRoute: AppOrgRoute,
   AppPhasesRoute: AppPhasesRoute,
+  AppPortfolioRoute: AppPortfolioRoute,
   AppProjectsRoute: AppProjectsRouteWithChildren,
   AppQuotationsRoute: AppQuotationsRoute,
+  AppSalesRoute: AppSalesRouteWithChildren,
   AppSiteRoute: AppSiteRoute,
   AppTestingRoute: AppTestingRoute,
   AppIndexRoute: AppIndexRoute,

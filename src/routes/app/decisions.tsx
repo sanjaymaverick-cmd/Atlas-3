@@ -12,7 +12,7 @@ import type { DecisionId } from "@/lib/types";
 export const Route = createFileRoute("/app/decisions")({ component: Decisions });
 
 function Decisions() {
-  const { decisions, recordDecision, reopenDecision, user } = useAtlas();
+  const { decisions, ownerTodos, recordDecision, reopenDecision, user } = useAtlas();
   const [notes, setNotes] = useState<Record<string, string>>({});
   const owner = user?.role === "owner";
 
@@ -21,8 +21,21 @@ function Decisions() {
       <PageHeader
         kicker="Blueprint §25"
         title="Owner decisions"
-        description="These six items were not silently decided in the rebuild. Record them here when you are ready."
+        description="Recorded policy stays here. Open TODOs are owner decisions — they do not block local testing."
       />
+      <h2 className="mb-3 font-display text-2xl">Open TODOs (do not block)</h2>
+      <ul className="mb-8 space-y-2">
+        {ownerTodos.map((t) => (
+          <li key={t.id} className="rounded-xl border border-line bg-surface px-4 py-3 text-sm">
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-medium">{t.title}</p>
+              <Status value={t.status === "open" ? "pending" : "recorded"} />
+            </div>
+            <p className="mt-1 text-muted">{t.detail}</p>
+          </li>
+        ))}
+      </ul>
+      <h2 className="mb-3 font-display text-2xl">Recorded policy</h2>
       <div className="space-y-4">
         {decisions.map((d) => (
           <Card key={d.id} className="p-5">

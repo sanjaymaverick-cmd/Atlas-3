@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Empty } from "@/components/empty";
+import { DecisionCard } from "@/components/decision-card";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 
@@ -29,7 +29,15 @@ function Approvals() {
         description="Material actions stay human. Step-up would be required in production."
       />
       {pending.length === 0 ? (
-        <Empty title="Queue is clear" body="New purchase orders, vendor activations, and exports will land here." />
+        <Empty
+          title="Queue is clear"
+          body="New purchase orders, vendor activations, and exports will land here."
+          action={
+            <Button asChild variant="outline">
+              <Link to="/app/quotations">Raise from Quotations</Link>
+            </Button>
+          }
+        />
       ) : (
         <div className="space-y-3">
           {pending.map((a) => {
@@ -46,48 +54,52 @@ function Approvals() {
                   (vendor ? `${vendor.name} · ${project?.code ?? ""}` : project?.name) ||
                   undefined;
             return (
-            <Card key={a.id} className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <p className="text-[11px] uppercase tracking-[0.14em] text-muted">{a.kind}</p>
-                <p className="font-display text-xl">{a.title}</p>
-                <p className="mt-1 text-sm text-muted">
-                  {a.waitingOn} · {a.agingDays} days waiting
-                  {a.amount ? ` · ${inr(a.amount, true)}` : ""}
-                </p>
-                {quoteLine ? <p className="mt-1 text-sm text-ink/80">{quoteLine}</p> : null}
-                {rfq ? (
-                  <Link
-                    to="/app/quotations"
-                    className="mt-2 inline-flex h-11 items-center text-sm text-primary underline-offset-4 hover:underline"
-                  >
-                    Compare quotes on {rfq.title}
-                  </Link>
-                ) : null}
-              </div>
-              {canAct ? (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      const err = decideApproval(a.id, "rejected");
-                      toast(err ?? "Rejected — recorded on the audit chain.");
-                    }}
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      const err = decideApproval(a.id, "approved");
-                      toast(err ?? "Approved — hash-chained in this session.");
-                    }}
-                  >
-                    Approve
-                  </Button>
-                </div>
-              ) : (
-                <p className="text-sm text-muted">View only for this role.</p>
-              )}
-            </Card>
+            <DecisionCard
+              key={a.id}
+              kind={a.kind}
+              title={a.title}
+              waitingOn={a.waitingOn}
+              agingDays={a.agingDays}
+              amount={a.amount ? inr(a.amount, true) : undefined}
+              context={
+                <>
+                  {quoteLine}
+                  {rfq ? (
+                    <>
+                      {" "}
+                      <Link to="/app/quotations" className="text-primary underline-offset-4 hover:underline">
+                        Compare quotes
+                      </Link>
+                    </>
+                  ) : null}
+                </>
+              }
+              actions={
+                canAct ? (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const err = decideApproval(a.id, "rejected");
+                        toast(err ?? "Rejected — recorded on the audit chain.");
+                      }}
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        const err = decideApproval(a.id, "approved");
+                        toast(err ?? "Approved — recorded on the audit chain.");
+                      }}
+                    >
+                      Approve
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted">View only for this role.</p>
+                )
+              }
+            />
           );
           })}
         </div>

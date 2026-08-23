@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { canSeeTally } from "@/lib/roles";
 import { useAtlas } from "@/lib/store";
-import { tallyAgent } from "@/lib/tally";
 import { inr } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/finance")({ component: Finance });
@@ -28,10 +28,13 @@ function Finance() {
   return (
     <div>
       <PageHeader
-        kicker="Phase 9 · trial Tally"
-        title="Tally"
-        description="This laptop’s empty educational Tally is the mock books. Atlas posts vouchers into that trial only. Not live. No real company data."
+        kicker="Phase 9"
+        title="Tally reconciliation"
+        description="Tally is the statutory book of record. Atlas never posts or amends vouchers."
       />
+      <GateBanner>
+        Reconcile or accept an exception here. Books stay in Tally. Local only — not live.
+      </GateBanner>
       <Card className="mb-6 p-5">
         <p className="text-sm text-muted">Legal entity</p>
         <p className="font-display text-2xl">{entity?.name}</p>
@@ -53,22 +56,10 @@ function Finance() {
                     variant="outline"
                     onClick={() => {
                       settleTally(t.id, "reconciled");
-                      void tallyAgent("voucher", {
-                        type: "Journal",
-                        amount: t.amount,
-                        narration: `Atlas · ${t.title} · mock trial`,
-                        debit: "Atlas Cash",
-                        credit: t.amount >= 0 ? "Kanakpura Collections" : "Shakti Earthworks",
-                      }).then((r) => {
-                        toast(
-                          r.ok
-                            ? "Posted into trial Tally (Atlas Mock LLP)."
-                            : `Tally did not take the voucher — ${r.detail}`,
-                        );
-                      });
+                      toast("Reconciled in Atlas. Tally remains the books — no voucher posted.");
                     }}
                   >
-                    Reconcile &amp; post
+                    Reconcile
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => settleTally(t.id, "exception")}>Accept exception</Button>
                 </>

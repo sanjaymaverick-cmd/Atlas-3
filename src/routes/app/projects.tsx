@@ -69,6 +69,8 @@ function Projects() {
                   units: Number(units) || 0,
                   start: new Date().toISOString().slice(0, 10),
                   possession: "2028-12-31",
+                  forecast: 0,
+                  concept: true,
                 });
                 toast("Project created.");
                 setOpen(false);

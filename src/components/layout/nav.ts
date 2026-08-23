@@ -17,6 +17,15 @@ import {
   Users,
   Handshake,
   Wallet,
+  Table2,
+  Layers,
+  Target,
+  BarChart3,
+  Workflow,
+  KeyRound,
+  Plug,
+  Contact,
+  MessageCircle,
 } from "lucide-react";
 import { NAV_ROLES } from "@/lib/roles";
 import type { Role } from "@/lib/types";
@@ -29,6 +38,8 @@ export const NAV: Array<{
   roles: Role[];
 }> = [
   { to: "/app", label: "Command", icon: LayoutDashboard, end: true, roles: NAV_ROLES.command },
+  { to: "/app/portfolio", label: "Owners Hub", icon: Layers, roles: NAV_ROLES.portfolio },
+  { to: "/app/capital", label: "Capital", icon: Table2, roles: NAV_ROLES.capital },
   { to: "/app/phases", label: "All phases", icon: Map, roles: NAV_ROLES.phases },
   { to: "/app/testing", label: "Test pack", icon: ClipboardList, roles: NAV_ROLES.testing },
   { to: "/app/org", label: "Organization", icon: Building2, roles: NAV_ROLES.org },
@@ -43,6 +54,16 @@ export const NAV: Array<{
   { to: "/app/changes", label: "Change control", icon: GitBranch, roles: NAV_ROLES.changes },
   { to: "/app/customers", label: "Customers", icon: Users, roles: NAV_ROLES.customers },
   { to: "/app/crm", label: "CRM", icon: Handshake, roles: NAV_ROLES.crm },
+  { to: "/app/sales", label: "Sales", icon: Target, end: true, roles: NAV_ROLES.sales },
+  { to: "/app/sales/inventory", label: "Inventory", icon: Layers, roles: NAV_ROLES.salesInventory },
+  { to: "/app/sales/channel", label: "Channel desk", icon: Handshake, roles: NAV_ROLES.salesChannel },
+  { to: "/app/sales/company", label: "Channel firm", icon: Contact, roles: NAV_ROLES.salesCompany },
+  { to: "/app/sales/pipeline", label: "Pipeline", icon: Workflow, roles: NAV_ROLES.salesPipeline },
+  { to: "/app/sales/handover", label: "Handover", icon: KeyRound, roles: NAV_ROLES.salesHandover },
+  { to: "/app/sales/analytics", label: "Sales analytics", icon: BarChart3, roles: NAV_ROLES.salesAnalytics },
+  { to: "/app/sales/integrations", label: "Inbound", icon: Plug, roles: NAV_ROLES.salesIntegrations },
+  { to: "/app/sales/whatsapp", label: "WhatsApp", icon: MessageCircle, roles: NAV_ROLES.salesWhatsApp },
+  { to: "/app/sales/people", label: "Customer 360", icon: Users, roles: NAV_ROLES.salesPeople },
   { to: "/app/finance", label: "Tally", icon: Scale, roles: NAV_ROLES.finance },
   { to: "/app/decisions", label: "Owner decisions", icon: Wallet, roles: NAV_ROLES.decisions },
   { to: "/app/audit", label: "Audit", icon: History, roles: NAV_ROLES.audit },

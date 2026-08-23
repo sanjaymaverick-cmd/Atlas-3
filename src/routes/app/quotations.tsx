@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,9 @@ function Quotations() {
         title="Quotations"
         description="RFQ → compare → select → PO. Selection does not pay. The PO still waits in Approvals."
       />
+      <GateBanner>
+        Cannot select a quote from a vendor that is not Active. Create PO only after Select. Atlas does not pay from this screen.
+      </GateBanner>
 
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">

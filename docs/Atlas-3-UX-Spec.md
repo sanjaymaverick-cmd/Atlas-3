@@ -449,6 +449,29 @@ SLA hours visible on RFI cards when set.
 
 ---
 
+## CLT checklist (pass / fail per screen)
+
+Pass = a first-time MD can answer the primary question in ~5–15s; ≤6 L1 chunks; RAG colour only; one primary action.
+
+| Screen | Primary question | ≤6 L1 | Queue/exceptions first | One visual | Site 48px | Pass? |
+|--------|------------------|-------|------------------------|------------|-----------|-------|
+| Gate | Who is testing, still local? | yes | LOCAL badge | — | n/a | |
+| Command | On track / what needs a decision? | yes | QueueStrip | Timeline only | n/a | |
+| Approvals | Enough context to decide here? | yes | DecisionCards | — | n/a | |
+| Quotations | Which quote wins, safe to PO? | yes | Compare table | — | n/a | |
+| Commercial | Can this vendor trade? | yes | GateBanner | — | n/a | |
+| Site | What do I seal or pass today? | yes | Diary hero | — | yes | |
+| Documents | Safe to use / who takes original? | yes | Status + hold reason | — | n/a | |
+| Customers | Unit free, collection honest? | yes | Next unpaid step | — | n/a | |
+| CRM | Funnel + commission accrued only? | yes | Convert value | — | n/a | |
+| Tally | Open cases; Atlas never posts? | yes | GateBanner | — | n/a | |
+| Portfolio | Open items + health by project? | yes | Role queue | — | n/a | |
+| Capital | Plan vs JTD vs remaining? | yes | Table | — | n/a | |
+| Test pack | Scripts prove invariants? | yes | Numbered scripts | — | n/a | |
+
+
+---
+
 ## Acceptance checks (UX, not just code)
 
 1. MD can approve PO-1042 without opening Commercial — context enough on card (or one expand).  

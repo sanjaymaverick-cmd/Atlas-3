@@ -6,11 +6,15 @@ export function Kpi({
   value,
   hint,
   tone,
+  vs,
+  trend,
 }: {
   label: string;
   value: string;
   hint?: string;
   tone?: "ok" | "warn" | "danger";
+  vs?: string;
+  trend?: "up" | "down" | "flat";
 }) {
   return (
     <Card className="flex min-h-[7.5rem] flex-col p-4 sm:p-5">
@@ -26,7 +30,17 @@ export function Kpi({
       >
         {value}
       </p>
-      {hint ? <p className="mt-auto pt-2 text-xs text-muted">{hint}</p> : null}
+      {vs || hint || trend ? (
+        <p className="mt-auto pt-2 text-xs text-muted">
+          {vs ? <span>{vs}</span> : null}
+          {vs && hint ? " · " : null}
+          {hint}
+          {trend === "up" ? " ↑" : trend === "down" ? " ↓" : ""}
+        </p>
+      ) : null}
     </Card>
   );
 }
+
+/** Alias — value + target + trend on the same card (CLT: no split attention). */
+export const KpiCard = Kpi;

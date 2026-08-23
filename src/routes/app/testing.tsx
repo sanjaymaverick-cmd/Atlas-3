@@ -21,7 +21,7 @@ function Testing() {
       <PageHeader
         kicker="UAT · not live"
         title="Company day"
-        description="Each operating seat acts in turn on this host. Atlas posts mock vouchers into the empty trial Tally on this laptop. No real company data."
+        description="Local UAT. Prove invariants on this host. Atlas never posts Tally vouchers. Not live."
       />
 
       <Card className="mb-6 p-5">
@@ -102,6 +102,23 @@ function Testing() {
         </ul>
       </Card>
 
+      <h2 className="mb-3 font-display text-2xl">UAT scripts</h2>
+      <ol className="mb-8 space-y-2">
+        {[
+          "MD Command: in 5–15s, say on track or needs a decision (queue strip + RAG).",
+          "Approve a PO whose card shows selected quote · vendor · amount · vs N other quotes.",
+          "Quotations: RFQ → compare → Select Active vendor → Create PO → Approvals.",
+          "Engineer: Seal today’s diary once; second seal same device+date refuses.",
+          "Select quote / PO against a non-Active vendor is refused.",
+          "Documents: quarantine → four-eyes export → single-use grant; preview is watermarked.",
+          "Capital: Remaining = Planned − JTD spent − Forecast; Baggad concept is not committed.",
+          "Windows: npm run typecheck and npm run dev (with-app-env spawns vite with shell on win32).",
+        ].map((s, i) => (
+          <li key={i} className="rounded-xl border border-line bg-surface px-4 py-3 text-sm">
+            <span className="font-mono text-xs text-muted">{i + 1}.</span> {s}
+          </li>
+        ))}
+      </ol>
       <h2 className="mb-3 font-display text-2xl">Phase coverage</h2>
       <ul className="grid gap-2 sm:grid-cols-2">
         {PHASES.map((p) => (

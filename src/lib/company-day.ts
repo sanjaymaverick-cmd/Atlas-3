@@ -308,6 +308,69 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   }
   const earlyPoss = useAtlas.getState().markPossession("b1");
   record("poss-early", sales.title, sales.role, "Possession before full collection refused", earlyPoss, true);
+  const dupLead = useAtlas.getState().ingestLead({
+    projectId: "p_kanak",
+    name: "Dup",
+    phone: "98xxxx2101",
+    source: "99acres",
+    unit: "A-0802",
+    note: "dup probe",
+  });
+  record("lead-dedup", sales.title, sales.role, "Duplicate phone on same project refused", dupLead, true);
+
+  const ch = asUser("ag@atlas.local");
+  const holdNoReport = useAtlas.getState().holdUnit({
+    unitId: "un3",
+    agentId: "ag1",
+    customer: "Hold probe",
+    until: todayIso(),
+  });
+  record("hold-no-report", ch.title, ch.role, "Channel hold refused until daily report", holdNoReport, true);
+  const filed = useAtlas.getState().fileDailyReport({
+    agentId: "ag1",
+    calls: 6,
+    visits: 1,
+    leads: 1,
+    notes: "company-day",
+  });
+  record("daily-report", ch.title, ch.role, "File mandatory daily report", filed);
+  const holdOk = useAtlas.getState().holdUnit({
+    unitId: "un3",
+    agentId: "ag1",
+    customer: "Hold probe",
+    until: todayIso(),
+  });
+  record("hold-lock", ch.title, ch.role, "Hold locks available unit", holdOk);
+  const holdClash = useAtlas.getState().holdUnit({
+    unitId: "un3",
+    agentId: "ag1",
+    customer: "Second probe",
+    until: todayIso(),
+  });
+  record("hold-clash", ch.title, ch.role, "Second hold on same unit refused", holdClash, true);
+  const desertHold = useAtlas.getState().holds.find((h) => h.id === "hd2" && h.status === "held");
+  const pinkHolds = useAtlas.getState().holds.filter((h) => h.status === "held" && h.agentId === "ag1");
+  record("channel-isolation", ch.title, ch.role, "Pink City hold exists; Desert Reach hold is a different firm", Boolean(desertHold && pinkHolds.length));
+  const released = useAtlas.getState().holds.find((h) => h.customer === "Hold probe" && h.status === "held");
+  const rel = released ? useAtlas.getState().releaseHold(released.id) : "hold missing";
+  record("hold-release", ch.title, ch.role, "Release hold returns unit to available", rel);
+  asUser("sm@atlas.local");
+  const inbound = useAtlas.getState().acceptInbound("in1");
+  record("inbound-portal", sales.title, sales.role, "Apply 99acres webhook into scored lead", inbound);
+  const ca = asUser("ca@atlas.local");
+  const invite = useAtlas.getState().inviteAgent({ name: "Probe Agent", phone: "90xxxx0001", companyId: "pt1" });
+  record("company-invite", ca.title, ca.role, "Company admin invites an agent", invite);
+  const ch2 = asUser("ag@atlas.local");
+  const held = useAtlas.getState().holds.find((h) => h.status === "held" && h.agentId === "ag1");
+  const req = held
+    ? useAtlas.getState().bookHold(held.id, 3_600_000)
+    : "no pink city hold";
+  record("hold-approve-queue", ch2.title, ch2.role, "Partner hold→booking waits in Approvals", req);
+  const queued = useAtlas.getState().approvals.some((a) => a.kind === "Hold booking" && a.status === "pending");
+  record("hold-approve-card", ch2.title, ch2.role, "Hold booking approval card exists", queued);
+  asUser("sm@atlas.local");
+  const waIn = useAtlas.getState().receiveWhatsApp("ld1", "Yes, Sunday 11. Budget 80L.");
+  record("wa-inbound", sales.title, sales.role, "Inbound WhatsApp qualifies and re-scores", waIn);
   addUx(
     sales.title,
     "CRM",
