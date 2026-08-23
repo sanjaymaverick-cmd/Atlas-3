@@ -72,6 +72,7 @@ import type {
   Quote,
 } from "./types";
 import { todayIso, uid } from "./utils";
+import type { CompanyDayReport } from "./company-day";
 
 interface AtlasState {
   user: User | null;
@@ -169,6 +170,8 @@ interface AtlasState {
   closeSnag: (id: string) => void;
   markHostReady: (id: string) => void;
   log: (action: string, entity: string) => void;
+  companyDay: CompanyDayReport | null;
+  runCompanyDay: () => Promise<CompanyDayReport>;
 }
 
 const VENDOR_NEXT: Record<string, Vendor["stage"] | undefined> = {
@@ -223,6 +226,7 @@ export const useAtlas = create<AtlasState>()(
       tally: TALLY,
       decisions: DECISIONS,
       audit: AUDIT,
+      companyDay: null,
       signIn: (role) => {
         const found = USERS.find((u) => u.role === role && u.id !== "u_test") ?? USERS[0];
         set({ user: { ...found, password: "" } });
@@ -479,6 +483,7 @@ export const useAtlas = create<AtlasState>()(
         const q = get().quotes.find((x) => x.id === quoteId);
         if (!q) return "Quote not found.";
         if (q.status !== "selected") return "Select the quote before creating a PO.";
+        if (get().pos.some((p) => p.quoteId === quoteId)) return "A PO already exists for this quote.";
         const rfq = get().rfqs.find((r) => r.id === q.rfqId);
         if (!rfq) return "RFQ not found.";
         return get().createPO({
@@ -514,7 +519,7 @@ export const useAtlas = create<AtlasState>()(
       },
       addBooking: (b) => {
         const clash = get().bookings.find(
-          (x) => x.projectId === b.projectId && x.unit === b.unit && x.status === "active",
+          (x) => x.projectId === b.projectId && x.unit === b.unit && (x.status === "active" || x.status === "possession"),
         );
         if (clash) return `Unit ${b.unit} already has an active booking.`;
         const row: Booking = { ...b, id: uid("b"), collected: 0, status: "active" };
@@ -871,7 +876,7 @@ export const useAtlas = create<AtlasState>()(
         if (l.stage === "lost" || l.stage === "won") return "This lead is closed.";
         if (!l.unit) return "Unit interest is required to convert.";
         const clash = get().bookings.find(
-          (x) => x.projectId === l.projectId && x.unit === l.unit && x.status === "active",
+          (x) => x.projectId === l.projectId && x.unit === l.unit && (x.status === "active" || x.status === "possession"),
         );
         if (clash) return `Unit ${l.unit} already has an active booking.`;
         const booking: Booking = {
@@ -928,6 +933,9 @@ export const useAtlas = create<AtlasState>()(
         const c = get().commissions.find((x) => x.id === id);
         if (!c) return "Commission not found.";
         if (c.status !== "accrued") return "Only accrued commission can be sent for approval.";
+        if (get().approvals.some((a) => a.kind === "Commission" && a.refId === id && a.status === "pending")) {
+          return "This commission is already waiting in Approvals.";
+        }
         const partner = get().partners.find((p) => p.id === c.partnerId);
         const approval: Approval = {
           id: uid("a"),
@@ -965,7 +973,14 @@ export const useAtlas = create<AtlasState>()(
         set({ hosts: get().hosts.map((h) => (h.id === id ? { ...h, status: "ready" } : h)) });
         get().log("Host marked ready (local ops)", id);
       },
+      runCompanyDay: async () => {
+        const { executeCompanyDay } = await import("./company-day");
+        const report = await executeCompanyDay();
+        set({ companyDay: report });
+        get().log("Company day (local test)", `${report.passed} passed · ${report.failed} failed · not live`);
+        return report;
+      },
     }),
-    { name: "atlas3-ux-p0p2" },
+    { name: "atlas3-company-day-v1" },
   ),
 );

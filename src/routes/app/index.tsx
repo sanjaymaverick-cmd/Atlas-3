@@ -7,6 +7,7 @@ import { ProjectTimeline } from "@/components/project-timeline";
 import { Status } from "@/components/status";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { useHasMounted } from "@/lib/hydrated";
+import { canSeeTally } from "@/lib/roles";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 
@@ -26,7 +27,9 @@ function Command() {
     decisions,
     obligations,
     emis,
+    user,
   } = useAtlas();
+  const siteDesk = user?.role === "engineer" || user?.role === "supervisor" || user?.role === "stores";
   const list = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
   const budget = list.reduce((s, p) => s + p.budget, 0);
   const spent = list.reduce((s, p) => s + p.spent, 0);
@@ -37,7 +40,10 @@ function Command() {
   const collections = scopedBookings.reduce((s, b) => s + b.collected, 0);
   const receivable = scopedBookings.reduce((s, b) => s + (b.value - b.collected), 0);
   const failed = inspections.filter((i) => i.result === "fail" && list.some((p) => p.id === i.projectId));
-  const openTally = tally.filter((t) => t.status === "open" || t.status === "review");
+  const openTally = tally.filter((t) => (t.status === "open" || t.status === "review") && t.entityId === entityId);
+  const openNcr = changes.filter(
+    (c) => c.kind === "ncr" && c.status !== "closed" && list.some((p) => p.id === c.projectId),
+  );
   const openDecisions = decisions.filter((d) => d.status === "open").length;
   const emiDue = emis.filter((e) => e.status === "due").reduce((s, e) => s + e.amount, 0);
   const obsOpen = obligations.filter((o) => list.some((p) => p.id === o.projectId) && o.status !== "filed").length;
@@ -61,47 +67,91 @@ function Command() {
       <PageHeader
         kicker="Command"
         title="What needs a decision"
-        description="Cash, time, quality, and gates on one screen."
+        description={
+          siteDesk
+            ? "Quality, NCRs, and programme. Money stays with office seats."
+            : "Cash, time, quality, and gates on one screen."
+        }
       />
 
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        <Link to="/app/approvals" className="rounded-xl border border-line bg-surface px-4 py-3 hover:bg-chip">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Approvals waiting</p>
-          <p className="font-display text-2xl tabular-nums">{pending.length}</p>
-        </Link>
+        {siteDesk ? (
+          <Link to="/app/site" className="rounded-xl border border-line bg-surface px-4 py-3 hover:bg-chip">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Failed inspections</p>
+            <p className="font-display text-2xl tabular-nums">{failed.length}</p>
+          </Link>
+        ) : (
+          <Link to="/app/approvals" className="rounded-xl border border-line bg-surface px-4 py-3 hover:bg-chip">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Approvals waiting</p>
+            <p className="font-display text-2xl tabular-nums">{pending.length}</p>
+          </Link>
+        )}
         <Link to="/app/changes" className="rounded-xl border border-line bg-surface px-4 py-3 hover:bg-chip">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Failed inspections / NCR</p>
-          <p className="font-display text-2xl tabular-nums">{failed.length}</p>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Open NCRs</p>
+          <p className="font-display text-2xl tabular-nums">{openNcr.length}</p>
         </Link>
         <Link to="/app/land" className="rounded-xl border border-line bg-surface px-4 py-3 hover:bg-chip">
           <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Statutory open</p>
           <p className="font-display text-2xl tabular-nums">{obsOpen}</p>
         </Link>
-        <Link to="/app/finance" className="rounded-xl border border-line bg-surface px-4 py-3 hover:bg-chip">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Tally cases</p>
-          <p className="font-display text-2xl tabular-nums">{openTally.length}</p>
-        </Link>
+        {canSeeTally(user?.role) ? (
+          <Link to="/app/finance" className="rounded-xl border border-line bg-surface px-4 py-3 hover:bg-chip">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Tally cases</p>
+            <p className="font-display text-2xl tabular-nums">{openTally.length}</p>
+          </Link>
+        ) : (
+          <Link to="/app/site" className="rounded-xl border border-line bg-surface px-4 py-3 hover:bg-chip">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Today’s site</p>
+            <p className="font-display text-2xl">Diary</p>
+          </Link>
+        )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi label="Cash committed" value={inr(spent, true)} hint={`of ${inr(budget, true)} budget`} />
-        <Kpi label="Receivable" value={inr(receivable, true)} hint={`${inr(collections, true)} collected`} tone="warn" />
-        <Kpi
-          label="Pending approvals"
-          value={String(pending.length)}
-          hint={pending.length ? `oldest ${Math.max(...pending.map((a) => a.agingDays))}d` : "Inbox clear"}
-          tone={pending.length ? "warn" : "ok"}
-        />
-        <Kpi
-          label="Failed inspections"
-          value={String(failed.length)}
-          tone={failed.length ? "danger" : "ok"}
-          hint={emiDue ? `EMI due ${inr(emiDue, true)}` : "Quality signal"}
-        />
+        {siteDesk ? (
+          <>
+            <Kpi
+              label="Failed inspections"
+              value={String(failed.length)}
+              tone={failed.length ? "danger" : "ok"}
+              hint="Quality signal"
+            />
+            <Kpi
+              label="Open NCRs"
+              value={String(openNcr.length)}
+              tone={openNcr.length ? "warn" : "ok"}
+              hint="Change control"
+            />
+            <Kpi label="Projects on this entity" value={String(list.length)} hint="Programme" />
+            <Kpi
+              label="Statutory open"
+              value={String(obsOpen)}
+              tone={obsOpen ? "warn" : "ok"}
+              hint="Land & legal"
+            />
+          </>
+        ) : (
+          <>
+            <Kpi label="Cash committed" value={inr(spent, true)} hint={`of ${inr(budget, true)} budget`} />
+            <Kpi label="Receivable" value={inr(receivable, true)} hint={`${inr(collections, true)} collected`} tone="warn" />
+            <Kpi
+              label="Pending approvals"
+              value={String(pending.length)}
+              hint={pending.length ? `oldest ${Math.max(...pending.map((a) => a.agingDays))}d` : "Inbox clear"}
+              tone={pending.length ? "warn" : "ok"}
+            />
+            <Kpi
+              label="Failed inspections"
+              value={String(failed.length)}
+              tone={failed.length ? "danger" : "ok"}
+              hint={emiDue ? `EMI due ${inr(emiDue, true)}` : "Quality signal"}
+            />
+          </>
+        )}
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
+        <Card className={siteDesk ? "lg:col-span-5" : "lg:col-span-3"}>
           <CardHeader>
             <CardTitle>Programme vs today</CardTitle>
           </CardHeader>
@@ -109,6 +159,7 @@ function Command() {
             <ProjectTimeline projects={list} />
           </CardBody>
         </Card>
+        {siteDesk ? null : (
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Budget draw</CardTitle>
@@ -132,9 +183,11 @@ function Command() {
             </p>
           </CardBody>
         </Card>
+        )}
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-5">
+        {siteDesk ? null : (
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Collections by project</CardTitle>
@@ -144,9 +197,10 @@ function Command() {
             <p className="mt-2 text-xs text-muted">Jade = collected. Limestone = still receivable.</p>
           </CardBody>
         </Card>
-        <Card className="lg:col-span-2">
+        )}
+        <Card className={siteDesk ? "lg:col-span-5" : "lg:col-span-2"}>
           <CardHeader>
-            <CardTitle>Approval aging</CardTitle>
+            <CardTitle>{siteDesk ? "Quality items" : "Approval aging"}</CardTitle>
           </CardHeader>
           <CardBody className="space-y-3">
             {pending.length === 0 ? (

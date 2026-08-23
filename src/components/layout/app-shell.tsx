@@ -57,7 +57,7 @@ export function AppShell() {
           <p className="text-sm">{user?.name}</p>
           <p className="text-xs text-sidebar-muted">{user?.title}</p>
           <button
-            className="mt-3 text-xs text-sidebar-muted underline-offset-4 hover:text-sidebar-fg hover:underline"
+            className="mt-3 flex h-11 w-full items-center rounded-md px-3 text-sm text-sidebar-muted hover:bg-white/10 hover:text-sidebar-fg"
             onClick={() => {
               signOut();
               navigate({ to: "/" });
@@ -100,9 +100,10 @@ export function AppShell() {
               </option>
             ))}
           </select>
-          <div className="hidden items-center gap-1 text-xs text-muted sm:flex">
+          <div className="flex shrink-0 items-center gap-1 rounded-full border border-line px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-muted sm:px-3">
             <Shield className="size-3.5" />
-            Local only
+            <span className="hidden sm:inline">Local only · not live</span>
+            <span className="sm:hidden">Local</span>
           </div>
         </header>
 
@@ -121,6 +122,17 @@ export function AppShell() {
                     {item.label}
                   </Link>
                 ))}
+                <button
+                  type="button"
+                  className="mt-2 flex h-11 w-full items-center rounded-md px-3 text-sm text-sidebar-muted hover:bg-white/10 hover:text-sidebar-fg"
+                  onClick={() => {
+                    setOpen(false);
+                    signOut();
+                    navigate({ to: "/" });
+                  }}
+                >
+                  End session
+                </button>
               </div>
             </div>
           </div>

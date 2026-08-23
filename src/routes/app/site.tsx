@@ -110,33 +110,28 @@ function Site() {
         </div>
       </Card>
       <h2 className="mb-3 font-display text-2xl">Inspections</h2>
-      <div className="overflow-x-auto rounded-xl border border-line bg-surface">
-        <table className="w-full min-w-[520px] text-left text-sm">
-          <thead className="text-[11px] uppercase tracking-[0.12em] text-muted">
-            <tr className="border-b border-line">
-              <th className="px-4 py-3 font-medium">Template</th>
-              <th className="px-4 py-3 font-medium">Location</th>
-              <th className="px-4 py-3 font-medium">Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            {insp.map((i) => (
-              <tr key={i.id} className="border-b border-line last:border-0">
-                <td className="px-4 py-3">{i.template}</td>
-                <td className="px-4 py-3">{i.location}</td>
-                <td className="px-4 py-3">
-                  <Status value={i.result} />
-                  {i.result === "pending" ? (
-                    <span className="ml-2 inline-flex flex-wrap gap-2">
-                      <Button className="min-h-11 min-w-[5.5rem]" variant="outline" onClick={() => { completeInspection(i.id, "pass"); toast("Passed."); }}>Pass</Button>
-                      <Button className="min-h-11 min-w-[5.5rem]" variant="outline" onClick={() => { completeInspection(i.id, "fail"); toast("Failed — NCR raised."); }}>Fail</Button>
-                    </span>
-                  ) : null}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="space-y-3">
+        {insp.map((i) => (
+          <Card key={i.id} className="p-4">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <p className="font-medium">{i.template}</p>
+                <p className="text-sm text-muted">{i.location}</p>
+              </div>
+              <Status value={i.result} />
+            </div>
+            {i.result === "pending" ? (
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Button className="h-12" variant="outline" onClick={() => { completeInspection(i.id, "pass"); toast("Passed."); }}>
+                  Pass
+                </Button>
+                <Button className="h-12" variant="outline" onClick={() => { completeInspection(i.id, "fail"); toast("Failed — NCR raised."); }}>
+                  Fail
+                </Button>
+              </div>
+            ) : null}
+          </Card>
+        ))}
       </div>
     </div>
   );

@@ -1,24 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { canSeeTally } from "@/lib/roles";
 import { useAtlas } from "@/lib/store";
+import { tallyAgent } from "@/lib/tally";
 import { inr } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/finance")({ component: Finance });
 
 function Finance() {
-  const { tally, entities, entityId, audit, settleTally } = useAtlas();
+  const { tally, entities, entityId, audit, settleTally, user } = useAtlas();
   const rows = tally.filter((t) => t.entityId === entityId);
   const entity = entities.find((e) => e.id === entityId);
+
+  if (!canSeeTally(user?.role)) {
+    return (
+      <div>
+        <PageHeader title="Tally" description="This desk does not post books. Local only." />
+        <p className="text-sm text-muted">View only is not offered to site seats. Tally stays with Finance / MD.</p>
+      </div>
+    );
+  }
 
   return (
     <div>
       <PageHeader
-        kicker="Phase 9"
-        title="Tally reconciliation"
-        description="Tally is the statutory book of record. Atlas never posts or amends vouchers."
+        kicker="Phase 9 · trial Tally"
+        title="Tally"
+        description="This laptop’s empty educational Tally is the mock books. Atlas posts vouchers into that trial only. Not live. No real company data."
       />
       <Card className="mb-6 p-5">
         <p className="text-sm text-muted">Legal entity</p>
@@ -36,7 +48,28 @@ function Finance() {
               <Status value={t.status} />
               {t.status === "open" || t.status === "review" ? (
                 <>
-                  <Button size="sm" variant="outline" onClick={() => settleTally(t.id, "reconciled")}>Reconcile</Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      settleTally(t.id, "reconciled");
+                      void tallyAgent("voucher", {
+                        type: "Journal",
+                        amount: t.amount,
+                        narration: `Atlas · ${t.title} · mock trial`,
+                        debit: "Atlas Cash",
+                        credit: t.amount >= 0 ? "Kanakpura Collections" : "Shakti Earthworks",
+                      }).then((r) => {
+                        toast(
+                          r.ok
+                            ? "Posted into trial Tally (Atlas Mock LLP)."
+                            : `Tally did not take the voucher — ${r.detail}`,
+                        );
+                      });
+                    }}
+                  >
+                    Reconcile &amp; post
+                  </Button>
                   <Button size="sm" variant="outline" onClick={() => settleTally(t.id, "exception")}>Accept exception</Button>
                 </>
               ) : null}

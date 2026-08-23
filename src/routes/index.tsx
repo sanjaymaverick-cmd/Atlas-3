@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ElevationMark } from "@/components/elevation-mark";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
+import { homeForRole } from "@/lib/roles";
 import { USERS } from "@/lib/seed";
 import { useAtlas } from "@/lib/store";
 
@@ -14,14 +15,6 @@ function Gate() {
   const [email, setEmail] = useState("md@atlas.local");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  function homeForRole(role: string) {
-    if (role === "engineer") return "/app/site" as const;
-    if (role === "accountant") return "/app/finance" as const;
-    // MD / PM / UAT: Approvals if anything pending is handled on Command; prefer Approvals for owners
-    if (role === "owner") return "/app/approvals" as const;
-    return "/app" as const;
-  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -48,7 +41,7 @@ function Gate() {
               <p className="text-[10px] uppercase tracking-[0.18em] text-sidebar-muted">Private real estate ERP</p>
             </div>
           </div>
-          <p className="rounded-full border border-white/15 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-sidebar-muted">
+          <p className="shrink-0 rounded-full border border-white/15 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-sidebar-muted">
             Local only · not live
           </p>
         </header>
@@ -113,7 +106,7 @@ function Gate() {
                       <td className="px-3 py-2">
                         <button
                           type="button"
-                          className="text-left hover:underline"
+                          className="flex min-h-11 w-full items-center text-left hover:underline"
                           onClick={() => {
                             setEmail(u.email);
                             setPassword(u.password);

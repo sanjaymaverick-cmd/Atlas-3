@@ -23,6 +23,7 @@ function Quotations() {
     submitQuote,
     selectQuote,
     createPOFromQuote,
+    pos,
   } = useAtlas();
 
   const scopedProjects = useMemo(
@@ -179,7 +180,7 @@ function Quotations() {
                               Select
                             </Button>
                           ) : null}
-                          {q.status === "selected" ? (
+                          {q.status === "selected" && !pos.some((p) => p.quoteId === q.id) ? (
                             <Button
                               size="sm"
                               onClick={() => {
@@ -189,6 +190,9 @@ function Quotations() {
                             >
                               Create PO
                             </Button>
+                          ) : null}
+                          {q.status === "selected" && pos.some((p) => p.quoteId === q.id) ? (
+                            <span className="text-xs text-muted">PO already raised</span>
                           ) : null}
                         </td>
                       </tr>

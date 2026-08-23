@@ -51,7 +51,7 @@ export const PHASES = [
     id: 9,
     title: "Tally",
     path: "/app/finance",
-    rule: "Atlas never posts a voucher. Exceptions are accepted, not rewritten.",
+    rule: "Local trial Tally is the mock books. Atlas posts vouchers into that empty educational company only. Not live.",
   },
   {
     id: 10,

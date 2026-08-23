@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 
@@ -35,6 +37,7 @@ function Controls() {
   const lines = budgetLines.filter((b) => ids.includes(b.projectId));
   const mats = materials.filter((m) => ids.includes(m.projectId));
   const qty = quantities.filter((q) => ids.includes(q.projectId));
+  const [issueQty, setIssueQty] = useState<Record<string, string>>({});
 
   return (
     <div>
@@ -76,18 +79,28 @@ function Controls() {
                 Issued {m.issued} / received {m.received} {m.unit}
               </p>
             </div>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => receiveMaterial(m.id, 10)}>
-                Receive 10
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                className="h-11 w-24"
+                type="number"
+                min={1}
+                value={issueQty[m.id] ?? "10"}
+                onChange={(e) => setIssueQty((q) => ({ ...q, [m.id]: e.target.value }))}
+                aria-label={`Quantity for ${m.name}`}
+              />
+              <Button size="sm" variant="outline" className="h-11" onClick={() => receiveMaterial(m.id, Number(issueQty[m.id]) || 10)}>
+                Receive
               </Button>
               <Button
                 size="sm"
+                className="h-11"
                 onClick={() => {
-                  const err = issueMaterial(m.id, 10);
-                  toast(err ?? "Issued 10.");
+                  const n = Number(issueQty[m.id]) || 0;
+                  const err = issueMaterial(m.id, n);
+                  toast(err ?? `Issued ${n} ${m.unit}.`);
                 }}
               >
-                Issue 10
+                Issue
               </Button>
             </div>
           </Card>

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Empty } from "@/components/empty";
@@ -38,10 +38,13 @@ function Approvals() {
             const vendor = po ? vendors.find((v) => v.id === po.vendorId) : undefined;
             const quote = po?.quoteId ? quotes.find((q) => q.id === po.quoteId) : undefined;
             const rfq = po?.rfqId ? rfqs.find((r) => r.id === po.rfqId) : undefined;
-            const context =
-              a.context ||
-              (vendor ? `${vendor.name} · ${project?.code ?? ""}` : project?.name) ||
-              undefined;
+            const others = rfq ? Math.max(0, quotes.filter((q) => q.rfqId === rfq.id).length - 1) : 0;
+            const quoteLine =
+              vendor && quote
+                ? `Selected quote · ${vendor.name} · ${inr(quote.amount, true)} · vs ${others} other quote${others === 1 ? "" : "s"}`
+                : a.context ||
+                  (vendor ? `${vendor.name} · ${project?.code ?? ""}` : project?.name) ||
+                  undefined;
             return (
             <Card key={a.id} className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
@@ -51,11 +54,14 @@ function Approvals() {
                   {a.waitingOn} · {a.agingDays} days waiting
                   {a.amount ? ` · ${inr(a.amount, true)}` : ""}
                 </p>
-                {context ? <p className="mt-1 text-sm text-ink/80">{context}</p> : null}
-                {quote && rfq ? (
-                  <p className="mt-1 text-xs text-muted">
-                    From RFQ {rfq.id.toUpperCase()} · selected quote {inr(quote.amount, true)}
-                  </p>
+                {quoteLine ? <p className="mt-1 text-sm text-ink/80">{quoteLine}</p> : null}
+                {rfq ? (
+                  <Link
+                    to="/app/quotations"
+                    className="mt-2 inline-flex h-11 items-center text-sm text-primary underline-offset-4 hover:underline"
+                  >
+                    Compare quotes on {rfq.title}
+                  </Link>
                 ) : null}
               </div>
               {canAct ? (

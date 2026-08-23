@@ -36,10 +36,10 @@ function Commercial() {
         title="Commercial"
         description="Vendor must be Active before a PO. Prefer Quotations → select → Create PO so Approvals shows the quote trail."
       />
-      <p className="mb-6 text-sm">
-        <Link to="/app/quotations" className="text-primary underline-offset-2 hover:underline">
-          Open Quotations — RFQ, compare, select, then PO
-        </Link>
+      <p className="mb-6">
+        <Button asChild>
+          <Link to="/app/quotations">Open Quotations — RFQ, compare, select, then PO</Link>
+        </Button>
       </p>
 
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">

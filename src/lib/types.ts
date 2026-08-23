@@ -1,4 +1,14 @@
-export type Role = "owner" | "pm" | "engineer" | "accountant";
+export type Role =
+  | "owner"
+  | "pm"
+  | "engineer"
+  | "supervisor"
+  | "accountant"
+  | "commercial"
+  | "sales"
+  | "legal"
+  | "docs"
+  | "stores";
 
 export type WorkflowStatus =
   | "draft"

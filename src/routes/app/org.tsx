@@ -14,7 +14,7 @@ function Org() {
       <PageHeader
         kicker="Phase 1"
         title="Identity & organization"
-        description="People, legal entities, and the last audit events. Production uses passkeys — this demo is role entry only."
+        description="People, legal entities, and the last audit events. Local test accounts only. Not live."
       />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-5">

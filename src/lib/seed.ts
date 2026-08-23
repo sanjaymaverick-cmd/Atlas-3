@@ -22,7 +22,13 @@ export const USERS: User[] = [
   { id: "u_owner", name: "S. Mehta", role: "owner", title: "Managing Director", email: "md@atlas.local", password: "AtlasLocal-MD" },
   { id: "u_pm", name: "R. Sharma", role: "pm", title: "Project Director", email: "pd@atlas.local", password: "AtlasLocal-PD" },
   { id: "u_eng", name: "K. Rathore", role: "engineer", title: "Site Engineer", email: "se@atlas.local", password: "AtlasLocal-SE" },
+  { id: "u_sup", name: "D. Chauhan", role: "supervisor", title: "Site Supervisor", email: "sv@atlas.local", password: "AtlasLocal-SV" },
   { id: "u_acc", name: "P. Jain", role: "accountant", title: "Finance Lead", email: "fl@atlas.local", password: "AtlasLocal-FL" },
+  { id: "u_com", name: "A. Kapoor", role: "commercial", title: "Commercial Manager", email: "cm@atlas.local", password: "AtlasLocal-CM" },
+  { id: "u_sales", name: "N. Bhatia", role: "sales", title: "Sales Manager", email: "sm@atlas.local", password: "AtlasLocal-SM" },
+  { id: "u_legal", name: "M. Iyer", role: "legal", title: "Land & Legal", email: "ll@atlas.local", password: "AtlasLocal-LL" },
+  { id: "u_docs", name: "T. Joseph", role: "docs", title: "Document Controller", email: "dc@atlas.local", password: "AtlasLocal-DC" },
+  { id: "u_stores", name: "H. Singh", role: "stores", title: "Stores / QS", email: "st@atlas.local", password: "AtlasLocal-ST" },
   { id: "u_test", name: "UAT Tester", role: "owner", title: "Test owner (local only)", email: "test@atlas.local", password: "AtlasLocal-UAT" },
 ];
 

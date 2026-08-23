@@ -111,10 +111,10 @@ function Land() {
                           variant="outline"
                           onClick={() => {
                             const err = payEmi(e.id);
-                            toast(err ?? "EMI recorded in operations. Posting stays in Tally.");
+                            toast(err ?? "Marked paid in operations. Books stay in Tally.");
                           }}
                         >
-                          Record paid
+                          Mark paid in ops
                         </Button>
                       ) : (
                         <Status value="approved" />

@@ -152,6 +152,11 @@ function DocumentsPage() {
                   <p className="mt-1 font-mono text-[11px] text-muted">
                     {d.revision} · {d.sha256} · {formatDate(d.uploadedAt)}
                   </p>
+                  {d.status === "quarantine" ? (
+                    <p className="mt-2 text-sm text-warn">
+                      Hold: {d.revisions.at(-1)?.notes || "Malware scan. Not usable on site until cleared."}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Status value={d.classification} />

@@ -23,7 +23,13 @@ Open the URL the terminal prints (usually port 8080).
 | Managing Director | md@atlas.local | AtlasLocal-MD |
 | Project Director | pd@atlas.local | AtlasLocal-PD |
 | Site Engineer | se@atlas.local | AtlasLocal-SE |
+| Site Supervisor | sv@atlas.local | AtlasLocal-SV |
 | Finance Lead | fl@atlas.local | AtlasLocal-FL |
+| Commercial Manager | cm@atlas.local | AtlasLocal-CM |
+| Sales Manager | sm@atlas.local | AtlasLocal-SM |
+| Land & Legal | ll@atlas.local | AtlasLocal-LL |
+| Document Controller | dc@atlas.local | AtlasLocal-DC |
+| Stores / QS | st@atlas.local | AtlasLocal-ST |
 | UAT tester | test@atlas.local | AtlasLocal-UAT |
 
 Do not use these on a public host.

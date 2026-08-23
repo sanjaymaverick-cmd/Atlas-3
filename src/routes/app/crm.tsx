@@ -26,6 +26,7 @@ function Crm() {
     addPartner,
     activatePartner,
     requestCommission,
+    approvals,
   } = useAtlas();
   const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
   const ids = scoped.map((p) => p.id);
@@ -38,6 +39,7 @@ function Crm() {
   const [partnerId, setPartnerId] = useState("");
   const [pname, setPname] = useState("");
   const [prate, setPrate] = useState("2.5");
+  const [convertValue, setConvertValue] = useState<Record<string, string>>({});
 
   return (
     <div>
@@ -124,14 +126,25 @@ function Crm() {
                 >
                   Advance
                 </Button>
+                <Input
+                  className="h-11 w-36"
+                  type="number"
+                  min={1}
+                  value={convertValue[l.id] ?? "7500000"}
+                  onChange={(e) => setConvertValue((v) => ({ ...v, [l.id]: e.target.value }))}
+                  aria-label={`Agreement value for ${l.name}`}
+                />
                 <Button
                   size="sm"
+                  className="h-11"
                   onClick={() => {
-                    const err = convertLead(l.id, 7_500_000);
+                    const value = Number(convertValue[l.id] ?? "7500000") || 0;
+                    if (value <= 0) return toast("Enter the agreement value.");
+                    const err = convertLead(l.id, value);
                     toast(err ?? "Booking created. Commission accrued if a partner is attached.");
                   }}
                 >
-                  Convert (₹75L)
+                  Convert
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => loseLead(l.id)}>
                   Lost
@@ -195,7 +208,8 @@ function Crm() {
             </div>
             <div className="flex items-center gap-2">
               <Status value={c.status} />
-              {c.status === "accrued" ? (
+              {c.status === "accrued" &&
+              !approvals.some((a) => a.kind === "Commission" && a.refId === c.id && a.status === "pending") ? (
                 <Button
                   size="sm"
                   onClick={() => {
@@ -205,6 +219,8 @@ function Crm() {
                 >
                   Send for approval
                 </Button>
+              ) : c.status === "accrued" ? (
+                <span className="text-xs text-muted">Waiting in Approvals</span>
               ) : null}
             </div>
           </Card>
