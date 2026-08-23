@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ function Controls() {
         title="Project controls"
         description="WBS / cost codes, quantities, and materials. Issuance cannot exceed accepted receipts."
       />
+      <GateBanner>Receipts here are quantities, not GRNs. No challan or vendor on this desk. Local only.</GateBanner>
 
       <h2 className="mb-3 font-display text-2xl">Budget vs committed</h2>
       <div className="space-y-3">
@@ -70,6 +72,9 @@ function Controls() {
       </div>
 
       <h2 className="mb-3 mt-8 font-display text-2xl">Materials</h2>
+      {mats.length === 0 ? (
+        <p className="mb-6 text-sm text-muted">No material lines for this entity / project.</p>
+      ) : null}
       <div className="space-y-3">
         {mats.map((m) => (
           <Card key={m.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
@@ -93,11 +98,14 @@ function Controls() {
               </Button>
               <Button
                 size="sm"
+                variant="outline"
                 className="h-11"
                 onClick={() => {
                   const n = Number(issueQty[m.id]) || 0;
                   const err = issueMaterial(m.id, n);
-                  toast(err ?? `Issued ${n} ${m.unit}.`);
+                  if (err) return toast(err);
+                  const now = useAtlas.getState().materials.find((x) => x.id === m.id);
+                  toast(`Issued ${n} ${m.unit}. Now ${now?.issued ?? "—"} / ${now?.received ?? "—"} ${m.unit}.`);
                 }}
               >
                 Issue

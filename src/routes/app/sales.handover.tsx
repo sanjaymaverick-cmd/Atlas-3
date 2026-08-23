@@ -30,25 +30,55 @@ function Handover() {
 
   if (isThirdParty(user?.role)) return <Navigate to="/app/sales/channel" />;
 
+  const steps = ["Docs", "OC", "Snags", "Possession", "Society", "DLP"] as const;
+
   return (
     <div>
       <PageHeader
         kicker="Handover"
         title="OC, snags, possession, society"
-        description="Possession waits on OC/CC and closed snags. Defect liability is the last stage. Local only."
+        description="Blocking stage first. Possession waits on OC/CC and closed snags. Local only."
       />
       <div className="space-y-3">
         {rows.map((h) => {
           const open = snags.filter((s) => s.unit === h.unit && s.status === "open");
+          const book = liveBooks.find((b) => b.unit === h.unit);
+          const docs = book ? bookingDocs.filter((d) => d.bookingId === book.id) : [];
+          const docsOpen = docs.some((d) => d.status === "open");
+          const current = docsOpen ? 0 : h.oc !== "received" ? 1 : open.length ? 2 : h.status === "possession" ? 3 : h.status === "society" ? 4 : 5;
           return (
             <Card key={h.id} className="p-5">
+              <div className="mb-3 flex flex-wrap gap-1 text-[10px] uppercase tracking-[0.12em]">
+                {steps.map((s, i) => (
+                  <span
+                    key={s}
+                    className={
+                      i === current
+                        ? "rounded-full bg-primary px-2 py-1 text-primary-fg"
+                        : i < current
+                          ? "rounded-full bg-ok/15 px-2 py-1 text-ok"
+                          : "rounded-full bg-chip px-2 py-1 text-muted"
+                    }
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
                     {h.unit} · OC {h.oc}
                   </p>
                   <p className="font-display text-2xl">{h.unit}</p>
-                  <p className="text-sm text-muted">{open.length} open snags</p>
+                  <p className="text-sm text-muted">
+                    {current === 0
+                      ? "Blocking: booking documents"
+                      : current === 1
+                        ? "Blocking: OC/CC"
+                        : current === 2
+                          ? `${open.length} open snags`
+                          : h.status}
+                  </p>
                 </div>
                 <Status value={h.status} />
               </div>
@@ -83,7 +113,7 @@ function Handover() {
           );
         })}
       </div>
-      <h2 className="mb-3 mt-8 font-display text-2xl">Booking documents</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">Stage 0 · Booking documents</h2>
       <div className="space-y-3">
         {liveBooks.map((b) => {
           const docs = bookingDocs.filter((d) => d.bookingId === b.id);

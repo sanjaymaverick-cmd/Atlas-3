@@ -89,6 +89,8 @@ async function login(page, user) {
       "atlas3-sales-v7",
       "atlas3-sales-v8",
       "atlas3-sales-v9",
+      "atlas3-sales-v10",
+      "atlas3-sales-v11",
     ]) {
       localStorage.removeItem(k);
     }

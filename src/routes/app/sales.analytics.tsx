@@ -109,7 +109,9 @@ function SalesAnalytics() {
                   {set.length} leads · {w} won
                 </p>
               </div>
-              <p className="tabular-nums text-sm text-muted">{set.length ? Math.round((w / set.length) * 100) : 0}%</p>
+              <p className="tabular-nums text-sm text-muted">
+                {w === 0 ? `${set.length} live · none booked yet` : `${Math.round((w / set.length) * 100)}% booked`}
+              </p>
             </Card>
           );
         })}

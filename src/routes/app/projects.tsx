@@ -6,6 +6,7 @@ import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
+import { isThirdParty } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 
@@ -101,6 +102,8 @@ function Projects() {
               <Status value={p.status} />
             </div>
             <dl className="mt-5 grid grid-cols-2 gap-3 text-sm">
+              {isThirdParty(user?.role) ? null : (
+                <>
               <div>
                 <dt className="text-muted">Budget</dt>
                 <dd className="tabular-nums">{inr(p.budget, true)}</dd>
@@ -109,6 +112,8 @@ function Projects() {
                 <dt className="text-muted">Spent</dt>
                 <dd className="tabular-nums">{inr(p.spent, true)}</dd>
               </div>
+                </>
+              )}
               <div>
                 <dt className="text-muted">Progress</dt>
                 <dd className="tabular-nums">{p.progress}%</dd>

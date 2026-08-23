@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
 import { companyAgentIds, myAgent, myCompanyId } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
-import { todayIso } from "@/lib/utils";
+import { holdExpiryLabel, todayIso } from "@/lib/utils";
 import { inr } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/sales/channel")({ component: ChannelDesk });
@@ -54,7 +54,16 @@ function ChannelDesk() {
   const [cancN, setCancN] = useState("0");
   const [notes, setNotes] = useState("");
   const [bookValue, setBookValue] = useState("6500000");
+  const [moreFields, setMoreFields] = useState(false);
   const firm = companyId ? partners.find((p) => p.id === companyId)?.name : "All channel firms";
+
+  useEffect(() => {
+    const pre = sessionStorage.getItem("atlas-hold-unit");
+    if (pre) {
+      setUnitId(pre);
+      sessionStorage.removeItem("atlas-hold-unit");
+    }
+  }, []);
 
   return (
     <div>
@@ -67,8 +76,9 @@ function ChannelDesk() {
         <GateBanner>Mandatory daily activity report — hold is refused until today’s report is filed.</GateBanner>
       )}
 
+      {reportedToday ? null : (
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
-        <h2 className="font-display text-xl sm:col-span-2">Today’s report</h2>
+        <h2 className="font-display text-xl sm:col-span-2">1 · Today’s report</h2>
         {fieldAgent ? null : (
           <Field label="Agent">
             <select
@@ -85,29 +95,37 @@ function ChannelDesk() {
           </Field>
         )}
         <Field label="Calls">
-          <Input type="number" value={calls} onChange={(e) => setCalls(e.target.value)} />
+          <Input type="number" inputMode="numeric" value={calls} onChange={(e) => setCalls(e.target.value)} />
         </Field>
         <Field label="Site visits">
-          <Input type="number" value={visits} onChange={(e) => setVisits(e.target.value)} />
-        </Field>
-        <Field label="Leads worked">
-          <Input type="number" value={leadsN} onChange={(e) => setLeadsN(e.target.value)} />
-        </Field>
-        <Field label="Holds">
-          <Input type="number" value={holdsN} onChange={(e) => setHoldsN(e.target.value)} />
-        </Field>
-        <Field label="Bookings">
-          <Input type="number" value={booksN} onChange={(e) => setBooksN(e.target.value)} />
-        </Field>
-        <Field label="Cancellations">
-          <Input type="number" value={cancN} onChange={(e) => setCancN(e.target.value)} />
+          <Input type="number" inputMode="numeric" value={visits} onChange={(e) => setVisits(e.target.value)} />
         </Field>
         <Field label="Notes">
           <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
         </Field>
+        {moreFields ? (
+          <>
+            <Field label="Leads worked">
+              <Input type="number" inputMode="numeric" value={leadsN} onChange={(e) => setLeadsN(e.target.value)} />
+            </Field>
+            <Field label="Holds">
+              <Input type="number" inputMode="numeric" value={holdsN} onChange={(e) => setHoldsN(e.target.value)} />
+            </Field>
+            <Field label="Bookings">
+              <Input type="number" inputMode="numeric" value={booksN} onChange={(e) => setBooksN(e.target.value)} />
+            </Field>
+            <Field label="Cancellations">
+              <Input type="number" inputMode="numeric" value={cancN} onChange={(e) => setCancN(e.target.value)} />
+            </Field>
+          </>
+        ) : (
+          <button type="button" className="text-left text-sm text-muted underline-offset-4 hover:underline" onClick={() => setMoreFields(true)}>
+            More fields
+          </button>
+        )}
         <div className="sm:col-span-2">
           <Button
-            className="h-12 w-full sm:w-auto"
+            className="h-12 w-full"
             onClick={() => {
               const err = fileDailyReport({
                 agentId,
@@ -126,8 +144,9 @@ function ChannelDesk() {
           </Button>
         </div>
       </Card>
+      )}
 
-      <h2 className="mb-3 font-display text-2xl">Hold a unit</h2>
+      <h2 className="mb-3 font-display text-2xl">2 · Hold a unit</h2>
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Available unit">
           <select
@@ -150,8 +169,7 @@ function ChannelDesk() {
         </Field>
         <div className="flex items-end">
           <Button
-            className="h-12"
-            variant="outline"
+            className="h-12 w-full sm:w-auto"
             onClick={() => {
               if (!customer) return toast("Customer name required.");
               const err = holdUnit({ unitId, agentId, customer, until });
@@ -163,7 +181,7 @@ function ChannelDesk() {
         </div>
       </Card>
 
-      <h2 className="mb-3 font-display text-2xl">Live holds</h2>
+      <h2 className="mb-3 font-display text-2xl">3 · Live holds</h2>
       <div className="space-y-3">
         {liveHolds.map((h) => {
           const u = units.find((x) => x.id === h.unitId);
@@ -175,7 +193,7 @@ function ChannelDesk() {
                   {u?.code} · {h.customer}
                 </p>
                 <p className="text-xs text-muted">
-                  {ag?.name} · until {h.until} · {partners.find((p) => p.id === ag?.companyId)?.name}
+                  {ag?.name} · {holdExpiryLabel(h.until)} · {partners.find((p) => p.id === ag?.companyId)?.name}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -189,6 +207,7 @@ function ChannelDesk() {
                 <Button
                   size="sm"
                   className="h-11"
+                  variant="outline"
                   onClick={() => {
                     const err = bookHold(h.id, Number(bookValue) || 0);
                     toast(

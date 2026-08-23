@@ -1,8 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { DecisionCard } from "@/components/decision-card";
 import { Kpi } from "@/components/kpi";
 import { PageHeader } from "@/components/page-header";
 import { ProjectTimeline } from "@/components/project-timeline";
 import { QueueStrip } from "@/components/queue-strip";
+import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { canSeeTally } from "@/lib/roles";
 import { companyAgentIds, myCompanyId } from "@/lib/sales-scope";
@@ -28,10 +30,24 @@ function Command() {
     holds,
     dailyReports,
     agents,
+    quantities,
+    materials,
+    parcels,
+    diligence,
+    emis,
+    documents,
+    exports,
+    pos,
+    rfqs,
   } = useAtlas();
-  const siteDesk = user?.role === "engineer" || user?.role === "supervisor" || user?.role === "stores";
-  const channelDesk = user?.role === "channel" || user?.role === "channel_admin";
-  const salesDesk = user?.role === "sales";
+  const role = user?.role;
+  const siteDesk = role === "engineer" || role === "supervisor";
+  const storesDesk = role === "stores";
+  const channelDesk = role === "channel" || role === "channel_admin";
+  const salesDesk = role === "sales";
+  const legalDesk = role === "legal";
+  const docsDesk = role === "docs";
+  const commercialDesk = role === "commercial";
   const companyId = myCompanyId(user, agents);
   const agentIds = companyAgentIds(agents, companyId);
   const list = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
@@ -39,6 +55,7 @@ function Command() {
   const spent = list.filter((p) => !p.concept).reduce((s, p) => s + p.spent, 0);
   const pending = approvals.filter((a) => a.status === "pending" && list.some((p) => p.id === a.projectId));
   const oldest = pending.length ? Math.max(...pending.map((a) => a.agingDays)) : 0;
+  const oldestRow = pending.slice().sort((a, b) => b.agingDays - a.agingDays)[0];
   const scopedBookings = bookings.filter((b) => list.some((p) => p.id === b.projectId));
   const collections = scopedBookings.reduce((s, b) => s + b.collected, 0);
   const receivable = scopedBookings.reduce((s, b) => s + (b.value - b.collected), 0);
@@ -49,8 +66,8 @@ function Command() {
   const openTally = tally.filter((t) => (t.status === "open" || t.status === "review") && t.entityId === entityId);
   const obsOpen = obligations.filter((o) => list.some((p) => p.id === o.projectId) && o.status !== "filed").length;
   const overdueObs = obligations.filter(
-    (o) => list.some((p) => p.id === o.projectId) && o.status === "overdue",
-  ).length;
+    (o) => list.some((p) => p.id === o.projectId) && (o.status === "overdue" || o.status === "open"),
+  );
   const salesScope = channelDesk ? projects : list;
   const pipeline = leads.filter((l) => {
     if (!salesScope.some((p) => p.id === l.projectId) || l.stage === "lost" || l.stage === "won") return false;
@@ -61,15 +78,35 @@ function Command() {
   const available = units.filter((u) => salesScope.some((p) => p.id === u.projectId) && u.status === "available");
   const held = holds.filter((h) => h.status === "held" && salesScope.some((p) => p.id === h.projectId) && agentIds.includes(h.agentId));
   const todayRep = dailyReports.filter((d) => d.date === todayIso() && agentIds.includes(d.agentId));
+  const unfiled = (companyId ? agents.filter((a) => a.companyId === companyId && a.status === "active") : []).filter(
+    (a) => !todayRep.some((d) => d.agentId === a.id),
+  );
   const spendPct = budget ? Math.round((spent / budget) * 100) : 0;
-  const rag: "ok" | "warn" | "danger" = overdueObs || failed.length >= 2 ? "danger" : pending.length || failed.length ? "warn" : "ok";
-  const ragLabel = rag === "ok" ? "On track" : rag === "warn" ? "Needs a decision" : "Elevated";
+  const variance = quantities.filter((q) => q.status === "variance" && list.some((p) => p.id === q.projectId));
+  const tightStock = materials.filter(
+    (m) => list.some((p) => p.id === m.projectId) && m.received > 0 && m.issued / m.received >= 0.9,
+  );
+  const openDiligence = diligence.filter((d) => {
+    if (d.status === "clear") return false;
+    const parcel = parcels.find((x) => x.id === d.parcelId);
+    return parcel ? list.some((p) => p.id === parcel.projectId) : false;
+  });
+  const emiDue = emis.filter((e) => {
+    if (e.status !== "due") return false;
+    const parcel = parcels.find((x) => x.id === e.parcelId);
+    return parcel ? list.some((p) => p.id === parcel.projectId) : false;
+  });
+  const quarantine = documents.filter((d) => d.status === "quarantine" && list.some((p) => p.id === d.projectId));
+  const exportLive = exports.filter((e) => e.status === "pending" || e.status === "granted");
+  const poReview = pos.filter((p) => (p.status === "review" || p.status === "submitted") && list.some((x) => x.id === p.projectId));
+  const openRfq = rfqs.filter((r) => r.status === "open" && list.some((p) => p.id === r.projectId));
+  const zeroCall = agents.filter((a) => !a.inHouse).filter((a) => dailyReports.filter((d) => d.agentId === a.id).reduce((s, d) => s + d.calls, 0) === 0);
 
   const queue = channelDesk
     ? [
+        { to: "/app/sales/channel", label: "Unfiled today", count: unfiled.length },
         { to: "/app/sales/channel", label: "Units on hold", count: held.length },
-        { to: "/app/sales/channel", label: "Daily reports today", count: todayRep.length },
-        { to: "/app/sales/channel", label: "Available to hold", count: available.length },
+        { to: "/app/sales/inventory", label: "Available to hold", count: available.length },
         { to: "/app/sales", label: "Hot (your firm)", count: hot.length },
       ]
     : salesDesk
@@ -79,105 +116,127 @@ function Command() {
           { to: "/app/sales/pipeline", label: "Hot leads", count: hot.length },
           { to: "/app/approvals", label: "Approvals waiting", count: pending.length },
         ]
-      : siteDesk
+      : storesDesk
         ? [
+            { to: "/app/controls", label: "Quantity variance", count: variance.length },
+            { to: "/app/controls", label: "Near stock-out", count: tightStock.length },
             { to: "/app/site", label: "Failed inspections", count: failed.length },
-            { to: "/app/changes", label: "Open NCRs", count: openNcr.length },
-            { to: "/app/land", label: "Statutory open", count: obsOpen },
-            { to: "/app/site", label: "Today’s site", count: "Diary" },
+            { to: "/app/controls", label: "Material lines", count: materials.filter((m) => list.some((p) => p.id === m.projectId)).length },
           ]
-        : [
-            { to: "/app/approvals", label: "Approvals waiting", count: pending.length },
-            { to: "/app/site", label: "Failed inspections", count: failed.length },
-            { to: "/app/changes", label: "Open NCRs", count: openNcr.length },
-            ...(canSeeTally(user?.role)
-              ? [{ to: "/app/finance", label: "Tally cases", count: openTally.length }]
-              : overdueObs
-                ? [{ to: "/app/land", label: "Statutory overdue", count: overdueObs }]
-                : [{ to: "/app/customers", label: "Receivable", count: inr(receivable, true) }]),
-          ];
+        : siteDesk
+          ? [
+              { to: "/app/site", label: "Failed inspections", count: failed.length },
+              { to: "/app/changes", label: "Open NCRs", count: openNcr.length },
+              { to: "/app/site", label: "Today’s diary", count: "Seal" },
+            ]
+          : legalDesk
+            ? [
+                { to: "/app/land", label: "Statutory open", count: overdueObs.length },
+                { to: "/app/land", label: "Open diligence", count: openDiligence.length },
+                { to: "/app/land", label: "EMI due (ops)", count: emiDue.length },
+              ]
+            : docsDesk
+              ? [
+                  { to: "/app/documents", label: "In quarantine", count: quarantine.length },
+                  { to: "/app/documents", label: "Export grants", count: exportLive.length },
+                ]
+              : commercialDesk
+                ? [
+                    { to: "/app/commercial", label: "POs in review", count: poReview.length },
+                    { to: "/app/quotations", label: "Open RFQs", count: openRfq.length },
+                  ]
+                : [
+                    { to: "/app/approvals", label: "Approvals waiting", count: pending.length },
+                    { to: "/app/site", label: "Failed inspections", count: failed.length },
+                    { to: "/app/changes", label: "Open NCRs", count: openNcr.length },
+                    ...(canSeeTally(role)
+                      ? [{ to: "/app/finance", label: "Tally cases", count: openTally.length }]
+                      : overdueObs.length
+                        ? [{ to: "/app/land", label: "Statutory overdue", count: overdueObs.filter((o) => o.status === "overdue").length }]
+                        : [{ to: "/app/customers", label: "Receivable", count: inr(receivable, true) }]),
+                  ];
 
-  const exceptions = [
-    failed.length ? `${failed.length} failed inspection${failed.length === 1 ? "" : "s"}` : null,
-    overdueObs ? `${overdueObs} statutory overdue` : null,
-    pending.length ? `${pending.length} approvals · oldest ${oldest}d` : null,
-    openNcr.length ? `${openNcr.length} NCR still open` : null,
-    !siteDesk && !channelDesk && receivable > 50_000_000 ? `Collections still open ${inr(receivable, true)}` : null,
-  ]
-    .filter(Boolean)
-    .slice(0, 5) as string[];
+  const exceptionLinks: Array<{ to: string; label: string }> = [];
+  if (!channelDesk && !storesDesk && !legalDesk && !docsDesk && !commercialDesk) {
+    if (failed.length) exceptionLinks.push({ to: "/app/site", label: `${failed.length} failed inspection${failed.length === 1 ? "" : "s"}` });
+    if (openNcr.length) exceptionLinks.push({ to: "/app/changes", label: `${openNcr.length} NCR still open` });
+    if (pending.length) exceptionLinks.push({ to: "/app/approvals", label: `${pending.length} approvals · oldest ${oldest}d` });
+    if (canSeeTally(role) && openTally.length) exceptionLinks.push({ to: "/app/finance", label: `${openTally.length} Tally cases` });
+    if (role !== "engineer" && role !== "supervisor" && overdueObs.some((o) => o.status === "overdue")) {
+      exceptionLinks.push({ to: "/app/land", label: `${overdueObs.filter((o) => o.status === "overdue").length} statutory overdue` });
+    }
+    if (salesDesk && receivable > 0) exceptionLinks.push({ to: "/app/customers", label: `Collections still open ${inr(receivable, true)}` });
+  }
+  if (legalDesk && overdueObs.filter((o) => o.status === "overdue").length) {
+    exceptionLinks.push({
+      to: "/app/land",
+      label: `${overdueObs.filter((o) => o.status === "overdue").length} statutory overdue`,
+    });
+  }
+
+  const showMoney = !siteDesk && !storesDesk && !channelDesk && !legalDesk && !docsDesk && !commercialDesk;
+  const showSalesLine = role === "owner" || role === "pm";
 
   return (
     <div>
       <PageHeader
         kicker="Command"
         title="Are we on track, and what needs a decision?"
-        description="Five seconds: status, cash vs plan, open gates. Local only."
+        description="Five seconds: status, cash vs plan, what needs a human. Local only."
       />
 
       <QueueStrip items={queue} />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {channelDesk ? (
-          <>
-            <Kpi label="Available units" value={String(available.length)} hint="Hold from Channel desk" />
-            <Kpi label="Your holds" value={String(held.length)} tone={held.length ? "warn" : "ok"} />
-            <Kpi label="Reports today" value={String(todayRep.length)} hint="Mandatory before a hold" tone={todayRep.length ? "ok" : "warn"} />
-            <Kpi label="Hot leads" value={String(hot.length)} vs={`${pipeline.length} live`} />
-          </>
-        ) : salesDesk ? (
-          <>
-            <Kpi label="Available units" value={String(available.length)} hint="Inventory lock" />
-            <Kpi label="Live pipeline" value={String(pipeline.length)} vs={`${hot.length} hot`} tone={hot.length ? "ok" : "warn"} />
-            <Kpi label="Units on hold" value={String(held.length)} tone={held.length ? "warn" : "ok"} />
+      {showMoney ? (
+        <div className="mb-6 grid gap-3 sm:grid-cols-2">
+          <Kpi
+            label="Collections / cash-in"
+            value={inr(collections, true)}
+            vs={`still ${inr(receivable, true)}`}
+            tone={receivable > collections ? "warn" : "ok"}
+            hint={spendPct ? `${spendPct}% spent vs budget (concept excluded)` : undefined}
+          />
+          {showSalesLine ? (
             <Kpi
-              label="Collections / cash-in"
-              value={inr(collections, true)}
-              vs={`still ${inr(receivable, true)}`}
-              tone={receivable > collections ? "warn" : "ok"}
+              label="Sales heat"
+              value={`${hot.length} hot`}
+              vs={`${held.length} holds · ${zeroCall.length} agents at 0 calls`}
+              hint="Open analytics for the scorecard"
             />
-          </>
-        ) : siteDesk ? (
-          <>
-            <Kpi label="Portfolio" value={ragLabel} tone={rag} hint="Quality first on this seat" />
-            <Kpi label="Failed inspections" value={String(failed.length)} tone={failed.length ? "danger" : "ok"} hint="Site & quality" />
-            <Kpi label="Open NCRs" value={String(openNcr.length)} tone={openNcr.length ? "warn" : "ok"} hint="Change control" />
-            <Kpi label="Statutory open" value={String(obsOpen)} tone={obsOpen ? "warn" : "ok"} vs="filed vs overdue" />
-          </>
-        ) : (
-          <>
-            <Kpi
-              label="Collections / cash-in"
-              value={inr(collections, true)}
-              vs={`still ${inr(receivable, true)}`}
-              hint={ragLabel}
-              tone={receivable > collections ? "warn" : rag}
-            />
-            <Kpi
-              label="Open gates"
-              value={String(pending.length)}
-              vs={pending.length ? `oldest ${oldest}d` : "Inbox clear"}
-              hint="Approvals waiting"
-              tone={pending.length ? "warn" : "ok"}
-            />
-            <Kpi
-              label="Quality"
-              value={String(failed.length)}
-              hint="Failed inspections"
-              tone={failed.length ? "danger" : "ok"}
-            />
-            <Kpi
-              label="Spent vs budget"
-              value={`${spendPct}%`}
-              vs={`${inr(spent, true)} of ${inr(budget, true)}`}
-              hint="Concept land excluded from committed"
-              tone={spendPct > 70 ? "warn" : "ok"}
-            />
-          </>
-        )}
-      </div>
+          ) : null}
+        </div>
+      ) : null}
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-5">
+      {salesDesk ? (
+        <div className="mb-6">
+          <Kpi
+            label="Collections / cash-in"
+            value={inr(collections, true)}
+            vs={`still ${inr(receivable, true)}`}
+            tone={receivable > collections ? "warn" : "ok"}
+          />
+        </div>
+      ) : null}
+
+      {oldestRow && (role === "owner" || role === "pm" || role === "accountant") ? (
+        <div className="mb-6">
+          <DecisionCard
+            kind={oldestRow.kind}
+            title={oldestRow.title}
+            waitingOn={oldestRow.waitingOn}
+            agingDays={oldestRow.agingDays}
+            amount={oldestRow.amount ? inr(oldestRow.amount, true) : undefined}
+            context="Oldest open gate"
+            actions={
+              <Button asChild>
+                <Link to="/app/approvals">Open queue</Link>
+              </Button>
+            }
+          />
+        </div>
+      ) : null}
+
+      <div className="mt-2 grid gap-4 lg:grid-cols-5">
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Programme vs today</CardTitle>
@@ -191,13 +250,17 @@ function Command() {
             <CardTitle>Exceptions</CardTitle>
           </CardHeader>
           <CardBody className="space-y-2 text-sm">
-            {exceptions.length === 0 ? (
+            {exceptionLinks.length === 0 ? (
               <p className="text-muted">Nothing elevated.</p>
             ) : (
-              exceptions.map((line) => (
-                <p key={line} className="rounded-md border border-line px-3 py-2">
-                  {line}
-                </p>
+              exceptionLinks.map((line) => (
+                <Link
+                  key={line.label}
+                  to={line.to as "/app"}
+                  className="block rounded-md border border-line px-3 py-2 hover:bg-chip"
+                >
+                  {line.label}
+                </Link>
               ))
             )}
           </CardBody>

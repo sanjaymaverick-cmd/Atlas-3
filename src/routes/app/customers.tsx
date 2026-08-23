@@ -53,6 +53,7 @@ function Customers() {
         </Field>
         <div className="sm:col-span-2">
           <Button
+            variant="outline"
             onClick={() => {
               const err = addBooking({
                 projectId: pid,
@@ -69,6 +70,36 @@ function Customers() {
         </div>
       </Card>
 
+      {(() => {
+        const overdue = rows.filter((b) => {
+          const next = payments.find((p) => p.bookingId === b.id && p.paid < p.amount);
+          if (!next) return false;
+          const days = Math.round((Date.now() - new Date(next.due).getTime()) / 86_400_000);
+          return days > 0;
+        });
+        const d30 = overdue.filter((b) => {
+          const next = payments.find((p) => p.bookingId === b.id && p.paid < p.amount);
+          const days = next ? Math.round((Date.now() - new Date(next.due).getTime()) / 86_400_000) : 0;
+          return days > 0 && days <= 30;
+        }).length;
+        const d60 = overdue.filter((b) => {
+          const next = payments.find((p) => p.bookingId === b.id && p.paid < p.amount);
+          const days = next ? Math.round((Date.now() - new Date(next.due).getTime()) / 86_400_000) : 0;
+          return days > 30 && days <= 60;
+        }).length;
+        const d90 = overdue.filter((b) => {
+          const next = payments.find((p) => p.bookingId === b.id && p.paid < p.amount);
+          const days = next ? Math.round((Date.now() - new Date(next.due).getTime()) / 86_400_000) : 0;
+          return days > 60;
+        }).length;
+        return (
+          <div className="mb-6 flex flex-wrap gap-2 text-sm">
+            <span className="rounded-full border border-line px-3 py-1">0–30d {d30}</span>
+            <span className="rounded-full border border-line px-3 py-1">31–60d {d60}</span>
+            <span className="rounded-full border border-line px-3 py-1">90d+ {d90}</span>
+          </div>
+        );
+      })()}
       <div className="space-y-3">
         {rows.map((b) => {
           const pct = b.value ? Math.round((b.collected / b.value) * 100) : 0;
@@ -115,7 +146,6 @@ function Customers() {
                 <Button
                   size="sm"
                   className="mt-4"
-                  variant="outline"
                   onClick={() => {
                     const steps = payments.filter((p) => p.bookingId === b.id);
                     const next = steps.find((p) => p.paid < p.amount);
@@ -132,6 +162,7 @@ function Customers() {
                 <Button
                   size="sm"
                   className="mt-4 ml-2"
+                  variant="outline"
                   onClick={() => {
                     const err = markPossession(b.id);
                     toast(err ?? "Possession recorded.");

@@ -38,3 +38,18 @@ export function uid(prefix = "id") {
 export function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
+
+/** Whole days from today to ISO date (negative = overdue). */
+export function daysUntil(iso: string) {
+  const a = new Date(iso.slice(0, 10) + "T00:00:00");
+  const b = new Date(todayIso() + "T00:00:00");
+  return Math.round((a.getTime() - b.getTime()) / 86_400_000);
+}
+
+export function holdExpiryLabel(until: string) {
+  const d = daysUntil(until);
+  if (d < 0) return `Expired ${Math.abs(d)}d ago`;
+  if (d === 0) return "Expires today";
+  if (d === 1) return "Expires in 1d";
+  return `Expires in ${d}d`;
+}

@@ -207,6 +207,7 @@ interface AtlasState {
     kind: DocKind;
     classification: DocClass;
     sheet: string;
+    fileName?: string;
   }) => void;
   clearQuarantine: (documentId: string) => string | null;
   issueDocument: (documentId: string) => string | null;
@@ -214,7 +215,9 @@ interface AtlasState {
   requestExport: (documentId: string) => string | null;
   consumeExport: (grantId: string) => string | null;
   setDiligence: (id: string, status: DiligenceItem["status"]) => void;
-  fileObligation: (id: string) => void;
+  fileObligation: (id: string, ack: string) => string | null;
+  addParcel: (input: { projectId: string; name: string; khasra: string; area: string; rera: string }) => string | null;
+  addObligation: (input: { projectId: string; kind: Obligation["kind"]; title: string; due: string }) => string | null;
   payEmi: (id: string) => string | null;
   acquireParcel: (id: string) => string | null;
   executeContract: (id: string, evidenceId: string) => string | null;
@@ -886,7 +889,7 @@ export const useAtlas = create<AtlasState>()(
       },
       registerDocument: (input) => {
         const actor = get().user?.name ?? "User";
-        const payload = `${input.title}|${todayIso()}|${actor}`;
+        const payload = `${input.title}|${input.fileName ?? ""}|${todayIso()}|${actor}`;
         const hash = sha256demo(payload);
         const doc: Document = {
           id: uid("d"),
@@ -907,7 +910,9 @@ export const useAtlas = create<AtlasState>()(
               sha256: hash,
               uploadedAt: todayIso(),
               uploadedBy: actor,
-              notes: "Registered — in malware quarantine",
+              notes: input.fileName
+                ? `Local demo hash of ${input.fileName} — file is not stored`
+                : "Registered — in malware quarantine",
             },
           ],
         };
@@ -1022,11 +1027,48 @@ export const useAtlas = create<AtlasState>()(
         set({ diligence: get().diligence.map((d) => (d.id === id ? { ...d, status } : d)) });
         get().log(`Due diligence ${status}`, item.title);
       },
-      fileObligation: (id) => {
+      fileObligation: (id, ack) => {
         const o = get().obligations.find((x) => x.id === id);
-        if (!o) return;
-        set({ obligations: get().obligations.map((x) => (x.id === id ? { ...x, status: "filed" } : x)) });
-        get().log("Filed obligation", o.title);
+        if (!o) return "Obligation not found.";
+        const ref = ack.trim();
+        if (!ref) return "Acknowledgement / challan number required.";
+        set({
+          obligations: get().obligations.map((x) =>
+            x.id === id ? { ...x, status: "filed", filedRef: ref } : x,
+          ),
+        });
+        get().log("Filed obligation", `${o.title} · ${ref}`);
+        return null;
+      },
+      addParcel: (input) => {
+        if (!input.name.trim() || !input.khasra.trim()) return "Name and khasra required.";
+        const row: LandParcel = {
+          id: uid("lp"),
+          projectId: input.projectId,
+          name: input.name.trim(),
+          khasra: input.khasra.trim(),
+          area: input.area.trim() || "—",
+          status: "identified",
+          rera: input.rera.trim() || "—",
+          loan: 0,
+        };
+        set({ parcels: [row, ...get().parcels] });
+        get().log("Added land parcel", row.name);
+        return null;
+      },
+      addObligation: (input) => {
+        if (!input.title.trim() || !input.due) return "Title and due date required.";
+        const row: Obligation = {
+          id: uid("ob"),
+          projectId: input.projectId,
+          kind: input.kind,
+          title: input.title.trim(),
+          due: input.due,
+          status: "open",
+        };
+        set({ obligations: [row, ...get().obligations] });
+        get().log("Added statutory obligation", row.title);
+        return null;
       },
       payEmi: (id) => {
         const e = get().emis.find((x) => x.id === id);
@@ -1805,6 +1847,6 @@ export const useAtlas = create<AtlasState>()(
         return report;
       },
     }),
-    { name: "atlas3-sales-v10" },
+    { name: "atlas3-sales-v11" },
   ),
 );
