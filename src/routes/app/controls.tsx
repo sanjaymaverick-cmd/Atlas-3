@@ -1,0 +1,128 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { PageHeader } from "@/components/page-header";
+import { Status } from "@/components/status";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useAtlas } from "@/lib/store";
+import { inr } from "@/lib/utils";
+
+export const Route = createFileRoute("/app/controls")({ component: Controls });
+
+function scopedIds(
+  projects: { id: string; entityId: string }[],
+  entityId: string,
+  projectId: string | "all",
+) {
+  return projects
+    .filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId))
+    .map((p) => p.id);
+}
+
+function Controls() {
+  const {
+    projects,
+    entityId,
+    projectId,
+    budgetLines,
+    materials,
+    quantities,
+    receiveMaterial,
+    issueMaterial,
+    approveQuantity,
+  } = useAtlas();
+  const ids = scopedIds(projects, entityId, projectId);
+  const lines = budgetLines.filter((b) => ids.includes(b.projectId));
+  const mats = materials.filter((m) => ids.includes(m.projectId));
+  const qty = quantities.filter((q) => ids.includes(q.projectId));
+
+  return (
+    <div>
+      <PageHeader
+        kicker="Phase 6"
+        title="Project controls"
+        description="WBS / cost codes, quantities, and materials. Issuance cannot exceed accepted receipts."
+      />
+
+      <h2 className="mb-3 font-display text-2xl">Budget vs committed</h2>
+      <div className="space-y-3">
+        {lines.map((l) => {
+          const pct = l.budget ? Math.min(100, Math.round((l.committed / l.budget) * 100)) : 0;
+          return (
+            <Card key={l.id} className="p-4">
+              <div className="flex justify-between gap-3 text-sm">
+                <p>
+                  <span className="font-mono text-xs text-muted">{l.code}</span> {l.name}
+                </p>
+                <p className="tabular-nums">
+                  {inr(l.committed, true)} / {inr(l.budget, true)}
+                </p>
+              </div>
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-chip">
+                <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      <h2 className="mb-3 mt-8 font-display text-2xl">Materials</h2>
+      <div className="space-y-3">
+        {mats.map((m) => (
+          <Card key={m.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div>
+              <p className="font-medium">{m.name}</p>
+              <p className="text-xs tabular-nums text-muted">
+                Issued {m.issued} / received {m.received} {m.unit}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => receiveMaterial(m.id, 10)}>
+                Receive 10
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  const err = issueMaterial(m.id, 10);
+                  toast(err ?? "Issued 10.");
+                }}
+              >
+                Issue 10
+              </Button>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <h2 className="mb-3 mt-8 font-display text-2xl">Quantity verification</h2>
+      <div className="space-y-3">
+        {qty.map((q) => (
+          <Card key={q.id} className="p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.14em] text-muted">{q.wbs}</p>
+                <p className="font-medium">{q.name}</p>
+                <p className="text-xs tabular-nums text-muted">
+                  BIM {q.bimQty} · site {q.siteQty}
+                </p>
+              </div>
+              <Status value={q.status === "variance" ? "review" : q.status === "approved" ? "approved" : "pending"} />
+            </div>
+            {q.status !== "approved" ? (
+              <Button
+                className="mt-3"
+                size="sm"
+                onClick={() => {
+                  const err = approveQuantity(q.id);
+                  toast(err ?? "Quantity locked.");
+                }}
+              >
+                Approve quantity
+              </Button>
+            ) : null}
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
