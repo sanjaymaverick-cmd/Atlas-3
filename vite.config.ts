@@ -62,6 +62,59 @@ function pgliteBootstrapPlugin(): Plugin {
  * (full-page OAuth redirect), so `apply: "serve"` is enough.
  */
 /** Local trial Tally XML bridge — Atlas posts vouchers to loopback :9000 only. */
+/** Live portal ingest — 99acres / MagicBricks / Housing + email fallback. */
+function ingestApiPlugin(): Plugin {
+  return {
+    name: "atlas:portal-ingest",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const pathOnly = (req.url ?? "").split("?", 1)[0] ?? "";
+        if (!pathOnly.startsWith("/api/ingest")) {
+          next();
+          return;
+        }
+        try {
+          const chunks: Buffer[] = [];
+          if ((req.method ?? "GET").toUpperCase() !== "GET") {
+            for await (const chunk of req) {
+              chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+            }
+          }
+          const raw = Buffer.concat(chunks).toString("utf8");
+          const requestHeaders = new Headers();
+          for (const [key, value] of Object.entries(req.headers)) {
+            if (value === undefined) continue;
+            if (Array.isArray(value)) {
+              for (const v of value) requestHeaders.append(key, v);
+            } else {
+              requestHeaders.set(key, value);
+            }
+          }
+          const request = new Request(`http://atlas.local${pathOnly}`, {
+            method: req.method ?? "GET",
+            headers: requestHeaders,
+            body: (req.method ?? "GET").toUpperCase() === "GET" ? undefined : raw,
+          });
+          const mod = (await server.ssrLoadModule("/src/lib/sales/portal-http.ts")) as {
+            handleIngestHttp: (req: Request) => Promise<Response>;
+          };
+          const response = await mod.handleIngestHttp(request);
+          res.statusCode = response.status;
+          response.headers.forEach((value, key) => {
+            res.setHeader(key, value);
+          });
+          res.end(Buffer.from(await response.arrayBuffer()));
+        } catch (err) {
+          res.statusCode = 500;
+          res.setHeader("content-type", "application/json; charset=utf-8");
+          res.end(JSON.stringify({ ok: false, error: String((err as Error)?.message || err) }));
+        }
+      });
+    },
+  };
+}
+
 function tallyApiPlugin(): Plugin {
   return {
     name: "atlas:tally-xml",
@@ -206,6 +259,7 @@ export default defineConfig(({ command, isPreview }) => ({
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),
     tallyApiPlugin(),
+    ingestApiPlugin(),
     // Dev-only /__app-env, read by scripts/check-auth-invariant.mjs.
     appEnvPlugin(),
     // PWA head + ?install=1 tutorial page; runs before Start/Nitro.

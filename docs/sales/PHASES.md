@@ -91,4 +91,4 @@ Handover (OC/snags/possession/society), booking docs, WhatsApp templates (Utilit
 | `/app/sales/handover` | 3 |
 | `/app/sales/analytics` | 3 |
 
-Live portal APIs, WhatsApp Business, payment gateway, and trained CatBoost on this machine remain owner TODOs to **bind**, not to re-scaffold.
+99acres / MagicBricks / Housing.com webhooks are bound (`POST /api/ingest/…`). WhatsApp Business, payment gateway, and live ads remain owner TODOs to **bind**, not to re-scaffold.

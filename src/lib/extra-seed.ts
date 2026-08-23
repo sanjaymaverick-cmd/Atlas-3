@@ -88,7 +88,7 @@ export const OWNER_TODOS = [
   {
     id: "todo_portals",
     title: "Portal / ads connectors",
-    detail: "99acres, MagicBricks, Housing.com, Meta, Google — ingest APIs after UAT. Seed uses source tags only.",
+    detail: "99acres, MagicBricks, Housing.com webhooks are bound on this host. Meta / Google Lead Ads and live WhatsApp Business remain owner TODOs. Account Managers must still enable the URL.",
     status: "open" as const,
   },
   {

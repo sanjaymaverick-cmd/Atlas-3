@@ -27,3 +27,4 @@ test-results/
 services/scoring/.venv/
 services/scoring/__pycache__/
 catboost_info/
+data/portal-journal.json

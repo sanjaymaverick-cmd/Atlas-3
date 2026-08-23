@@ -56,7 +56,8 @@ import { scoreLead } from "./sales-score";
 import { score as scoreNative } from "./sales/scoring";
 import { refuseBook, refuseHold } from "./sales/inventory";
 import { refuseDailyReport, refuseHoldWithoutReport } from "./sales/channel";
-import { findDuplicate, normalizePhone } from "./sales/ingest";
+import { findDuplicate, ingestErrorToResult, normalizePhone } from "./sales/ingest";
+import type { IngestRequest, IngestResult } from "./sales/ingest";
 import { STAGE_NEXT } from "./sales/stages";
 import { fillTemplate, leadValues, readReply, refuseSend, templateByTrigger } from "./sales/whatsapp";
 import type {
@@ -254,6 +255,8 @@ interface AtlasState {
     notes: string;
   }) => string | null;
   ingestLead: (input: Omit<Lead, "id" | "stage" | "score" | "band" | "scoreReasons" | "scoreModel">) => string | null;
+  ingestFromRequest: (input: IngestRequest) => IngestResult;
+  pullPortalJournal: () => Promise<{ pulled: number; errors: string[] }>;
   assignLead: (leadId: string, agentId: string) => string | null;
   rescoreLead: (leadId: string, activity?: string) => string | null;
   setUnitDispute: (unitId: string) => string | null;
@@ -1458,6 +1461,79 @@ export const useAtlas = create<AtlasState>()(
         get().log("Ingested lead", `${row.name} · ${row.band} ${row.score}`);
         queueNativeScore(row.id, "arrival", input.source);
         return null;
+      },
+      ingestFromRequest: (input) => {
+        const phone = normalizePhone(input.phone);
+        const dup = findDuplicate(get().leads, phone, input.projectId);
+        const err = get().ingestLead({
+          projectId: input.projectId,
+          name: input.name,
+          phone,
+          source: input.source,
+          unit: input.unit ?? "",
+          note: input.note ?? "",
+          budget: input.budget,
+          partnerId: input.partnerId,
+          agentId: input.agentId,
+          kind: input.kind,
+        });
+        if (!err) {
+          const lead = get().leads.find((l) => normalizePhone(l.phone) === phone && l.projectId === input.projectId);
+          return { ok: true, leadId: lead?.id };
+        }
+        return ingestErrorToResult(err, dup?.id);
+      },
+      pullPortalJournal: async () => {
+        try {
+          const res = await fetch("/api/ingest/journal");
+          if (!res.ok) return { pulled: 0, errors: [`journal HTTP ${res.status}`] };
+          const body = (await res.json()) as {
+            events?: Array<{
+              id: string;
+              at: string;
+              portal: string;
+              ingest?: IngestRequest;
+            }>;
+          };
+          const events = body.events ?? [];
+          const acked: string[] = [];
+          const errors: string[] = [];
+          let pulled = 0;
+          for (const ev of events) {
+            if (!ev.ingest) continue;
+            const r = get().ingestFromRequest(ev.ingest);
+            const kind = (
+              ["99acres", "magicbricks", "housing", "email"].includes(ev.ingest.source) ? ev.ingest.source : ev.portal
+            ) as InboundEvent["kind"];
+            const row: InboundEvent = {
+              id: ev.id,
+              at: ev.at,
+              kind,
+              status: r.ok || r.duplicateOf ? "applied" : "queued",
+              projectId: ev.ingest.projectId,
+              phone: ev.ingest.phone,
+              name: ev.ingest.name,
+              note: ev.ingest.note ?? "",
+              leadId: r.leadId ?? r.duplicateOf,
+            };
+            set({ inbound: [row, ...get().inbound.filter((x) => x.id !== row.id)] });
+            if (r.ok || r.duplicateOf) {
+              acked.push(ev.id);
+              pulled += 1;
+            } else if (r.error) errors.push(r.error);
+          }
+          if (acked.length) {
+            await fetch("/api/ingest/ack", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ ids: acked }),
+            });
+          }
+          if (pulled) get().log("Portal journal pulled", `${pulled} event(s)`);
+          return { pulled, errors };
+        } catch (err) {
+          return { pulled: 0, errors: [err instanceof Error ? err.message : "journal pull failed"] };
+        }
       },
       rescoreLead: (leadId, activity) => {
         const l = get().leads.find((x) => x.id === leadId);

@@ -34,3 +34,66 @@ export function findDuplicate(leads: Lead[], phone: string, projectId: string) {
 export function isPortalSource(source: string) {
   return PORTALS.has(source);
 }
+
+const PROJECT_ALIASES: Record<string, string> = {
+  p_kanak: "p_kanak",
+  kanakpura: "p_kanak",
+  "kanakpura residences": "p_kanak",
+  "kpr-01": "p_kanak",
+  p_baggad: "p_baggad",
+  baggad: "p_baggad",
+  "baggad heights": "p_baggad",
+  "bgh-02": "p_baggad",
+  p_mansar: "p_mansar",
+  mansar: "p_mansar",
+  mansarovar: "p_mansar",
+  "mansarovar enclave": "p_mansar",
+  "mse-03": "p_mansar",
+};
+
+export function mapProject(raw?: string | null) {
+  if (!raw) return "p_kanak";
+  const key = raw.trim().toLowerCase();
+  return PROJECT_ALIASES[key] ?? (PROJECT_ALIASES[key.replace(/\s+/g, " ")] ?? "p_kanak");
+}
+
+export function mapKind(raw?: string | null): Lead["kind"] | undefined {
+  if (!raw) return undefined;
+  const s = raw.toLowerCase();
+  if (/plot|land/.test(s)) return "plot";
+  if (/shop|retail|showroom|clinic/.test(s)) return "shop";
+  if (/flat|apartment|bhk|residen/.test(s)) return "flat";
+  return undefined;
+}
+
+export function asRecord(payload: unknown): Record<string, unknown> {
+  if (payload && typeof payload === "object" && !Array.isArray(payload)) return payload as Record<string, unknown>;
+  return {};
+}
+
+export function pickString(row: Record<string, unknown>, keys: string[]) {
+  for (const key of keys) {
+    const v = row[key];
+    if (typeof v === "string" && v.trim()) return v.trim();
+    if (typeof v === "number" && Number.isFinite(v)) return String(v);
+  }
+  return "";
+}
+
+export function pickNumber(row: Record<string, unknown>, keys: string[]) {
+  for (const key of keys) {
+    const v = row[key];
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+    if (typeof v === "string" && v.trim()) {
+      const n = Number(v.replace(/[,\s]/g, "").replace(/lakh|lac/i, "00000").replace(/cr/i, "0000000"));
+      if (Number.isFinite(n) && n > 0) return n;
+    }
+  }
+  return undefined;
+}
+
+export function ingestErrorToResult(err: string | null, duplicateId?: string): IngestResult {
+  if (!err) return { ok: true };
+  if (/duplicate/i.test(err)) return { ok: false, duplicateOf: duplicateId, error: err };
+  return { ok: false, error: err };
+}
