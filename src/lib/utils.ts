@@ -65,6 +65,11 @@ export function daysUntil(iso: string) {
   return Math.round((a.getTime() - b.getTime()) / 86_400_000);
 }
 
+/** Whole days a due date is past today (0 if not yet due). Honours the trial clock. */
+export function daysOverdue(iso: string) {
+  return Math.max(0, -daysUntil(iso));
+}
+
 export function holdExpiryLabel(until: string) {
   const d = daysUntil(until);
   if (d < 0) return `Expired ${Math.abs(d)}d ago`;

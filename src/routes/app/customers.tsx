@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
 import { useAtlas } from "@/lib/store";
-import { inr } from "@/lib/utils";
+import { daysOverdue, inr } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/customers")({ component: Customers });
 
@@ -71,32 +71,20 @@ function Customers() {
       </Card>
 
       {(() => {
-        const overdue = rows.filter((b) => {
+        const overdueDays = rows.map((b) => {
           const next = payments.find((p) => p.bookingId === b.id && p.paid < p.amount);
-          if (!next) return false;
-          const days = Math.round((Date.now() - new Date(next.due).getTime()) / 86_400_000);
-          return days > 0;
+          return next ? daysOverdue(next.due) : 0;
         });
-        const d30 = overdue.filter((b) => {
-          const next = payments.find((p) => p.bookingId === b.id && p.paid < p.amount);
-          const days = next ? Math.round((Date.now() - new Date(next.due).getTime()) / 86_400_000) : 0;
-          return days > 0 && days <= 30;
-        }).length;
-        const d60 = overdue.filter((b) => {
-          const next = payments.find((p) => p.bookingId === b.id && p.paid < p.amount);
-          const days = next ? Math.round((Date.now() - new Date(next.due).getTime()) / 86_400_000) : 0;
-          return days > 30 && days <= 60;
-        }).length;
-        const d90 = overdue.filter((b) => {
-          const next = payments.find((p) => p.bookingId === b.id && p.paid < p.amount);
-          const days = next ? Math.round((Date.now() - new Date(next.due).getTime()) / 86_400_000) : 0;
-          return days > 60;
-        }).length;
+        const d30 = overdueDays.filter((d) => d > 0 && d <= 30).length;
+        const d60 = overdueDays.filter((d) => d > 30 && d <= 60).length;
+        const d90 = overdueDays.filter((d) => d > 60 && d <= 90).length;
+        const d90plus = overdueDays.filter((d) => d > 90).length;
         return (
           <div className="mb-6 flex flex-wrap gap-2 text-sm">
             <span className="rounded-full border border-line px-3 py-1">0–30d {d30}</span>
             <span className="rounded-full border border-line px-3 py-1">31–60d {d60}</span>
-            <span className="rounded-full border border-line px-3 py-1">90d+ {d90}</span>
+            <span className="rounded-full border border-line px-3 py-1">61–90d {d90}</span>
+            <span className="rounded-full border border-line px-3 py-1">90d+ {d90plus}</span>
           </div>
         );
       })()}
