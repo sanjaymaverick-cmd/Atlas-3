@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({ component: Gate });
 function Gate() {
   const navigate = useNavigate();
   const signInLocal = useAtlas((s) => s.signInLocal);
-  const [email, setEmail] = useState("md@atlas.local");
+  const [email, setEmail] = useState("md@dukia.local");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 

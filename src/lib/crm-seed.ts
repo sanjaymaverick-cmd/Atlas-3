@@ -1,41 +1,13 @@
-import type { Commission, HostSite, Lead, Partner, PaymentStep, Snag } from "./types";
+import type { Commission, HostSite, Lead, PaymentStep, Snag } from "./types";
 
-export const PARTNERS: Partner[] = [
-  { id: "pt1", name: "Pink City Channel", city: "Jaipur", gstin: "08AAPCC2211H1Z4", status: "active", rate: 2.5 },
-  { id: "pt2", name: "Agarwal Associates", city: "Jaipur", gstin: "08AAAGA9090B1Z8", status: "invited", rate: 2 },
-  { id: "pt3", name: "Desert Reach Channel", city: "Jaipur", gstin: "08AADCD3300F1Z1", status: "active", rate: 2 },
-];
+export { DUKIA_PARTNERS as PARTNERS } from "./dukia-seed";
 
-export const LEADS: Lead[] = [
-  { id: "ld1", projectId: "p_kanak", name: "M. Saxena", phone: "98xxxx2101", source: "walk-in", partnerId: "pt1", agentId: "ag1", customerId: "cu5", stage: "visit", unit: "A-0802", note: "Wants west stack, 3 BHK", budget: 8_200_000, kind: "flat", score: 78, band: "hot", scoreReasons: ["Walk-in", "Budget matches", "Site visit"], scoreModel: "hybrid", currentScore: 78, currentBand: "hot", currentProbability: 0.78, currentScoreReasons: ["Walk-in", "Budget matches", "Site visit"], currentModelId: "m_hybrid", lastScoredAt: "2026-08-20T11:00:00+05:30", waConsent: true },
-  { id: "ld2", projectId: "p_kanak", name: "R. Yadav", phone: "97xxxx4412", source: "partner", partnerId: "pt1", agentId: "ag1", stage: "negotiation", unit: "B-1104", note: "Asked for extra car park", budget: 7_900_000, kind: "flat", score: 81, band: "hot", scoreReasons: ["Partner", "Late-funnel", "Car park intent"], scoreModel: "rules+gbdt-lite" },
-  { id: "ld3", projectId: "p_baggad", name: "S. Rathi", phone: "90xxxx1188", source: "99acres", stage: "inquiry", unit: "P-204", note: "First call 18 Aug", budget: 11_000_000, kind: "plot", score: 52, band: "warm", scoreReasons: ["99acres", "Plot interest"], scoreModel: "rules+gbdt-lite" },
-  { id: "ld4", projectId: "p_mansar", name: "K. Sharma", phone: "93xxxx7700", source: "walk-in", stage: "lost", unit: "C-201", note: "Bought elsewhere", kind: "flat", score: 22, band: "cold", scoreReasons: ["Lost"], scoreModel: "rules+gbdt-lite" },
-  { id: "ld5", projectId: "p_kanak", name: "P. Gupta", phone: "91xxxx4400", source: "magicbricks", stage: "inquiry", unit: "A-0101", note: "Shop for clinic", budget: 4_000_000, kind: "shop", score: 48, band: "warm", scoreReasons: ["MagicBricks", "Budget declared"], scoreModel: "rules+gbdt-lite" },
-];
-
-export const COMMISSIONS: Commission[] = [
-  { id: "cm1", partnerId: "pt1", bookingId: "b1", projectId: "p_kanak", amount: 211_250, status: "accrued" },
-];
-
-export const PAYMENTS: PaymentStep[] = [
-  { id: "py1", bookingId: "b1", label: "Booking token", due: "2025-11-01", amount: 845_000, paid: 845_000 },
-  { id: "py2", bookingId: "b1", label: "10% agreement", due: "2025-12-15", amount: 845_000, paid: 845_000 },
-  { id: "py3", bookingId: "b1", label: "On foundation", due: "2026-04-01", amount: 1_690_000, paid: 1_690_000 },
-  { id: "py4", bookingId: "b1", label: "On slab 12", due: "2026-09-30", amount: 1_690_000, paid: 0 },
-  { id: "py5", bookingId: "b1", label: "Possession", due: "2027-03-01", amount: 3_380_000, paid: 0 },
-  { id: "py6", bookingId: "b2", label: "Full (collected)", due: "2026-01-10", amount: 6_920_000, paid: 6_920_000 },
-  { id: "py7", bookingId: "b4", label: "Token", due: "2026-06-01", amount: 1_120_000, paid: 1_120_000 },
-  { id: "py8", bookingId: "b4", label: "Balance", due: "2027-01-15", amount: 10_080_000, paid: 0 },
-];
-
-export const SNAGS: Snag[] = [
-  { id: "sg1", projectId: "p_mansar", unit: "C-304", title: "Paint touch-up living wall", status: "open" },
-  { id: "sg2", projectId: "p_mansar", unit: "C-512", title: "Window leak (linked NCR)", status: "open" },
-  { id: "sg3", projectId: "p_kanak", unit: "B-0302", title: "Kitchen hob alignment", status: "closed" },
-];
+export const LEADS: Lead[] = [];
+export const COMMISSIONS: Commission[] = [];
+export const PAYMENTS: PaymentStep[] = [];
+export const SNAGS: Snag[] = [];
 
 export const HOSTS: HostSite[] = [
-  { id: "hs1", name: "Aerovista", city: "Jaipur", role: "primary", status: "named" },
-  { id: "hs2", name: "Acropolis", city: "Jaipur", role: "standby", status: "named" },
+  { id: "hs1", name: "DUKIA House", city: "Jaipur", role: "primary", status: "named" },
+  { id: "hs2", name: "Muhana site office", city: "Jaipur", role: "standby", status: "named" },
 ];

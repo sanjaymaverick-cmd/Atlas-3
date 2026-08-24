@@ -450,7 +450,7 @@ export const useAtlas = create<AtlasState>()(
     (set, get) => ({
       user: null,
       simDate: null,
-      entityId: "le_llp",
+      entityId: "le_sbc",
       projectId: "all",
       users: USERS,
       entities: ENTITIES,
@@ -637,7 +637,7 @@ export const useAtlas = create<AtlasState>()(
             id: uid("a"),
             kind: "Vendor",
             title: `Activate ${v.name}`,
-            projectId: get().projects[0]?.id ?? "p_kanak",
+            projectId: get().projects[0]?.id ?? "p_av",
             waitingOn: "Managing Director",
             agingDays: 0,
             status: "pending",
@@ -1733,7 +1733,7 @@ export const useAtlas = create<AtlasState>()(
         } else {
           const source = row.kind === "email" || row.kind === "webhook" ? "website" : row.kind;
           const err = get().ingestLead({
-            projectId: row.projectId ?? "p_kanak",
+            projectId: row.projectId ?? "p_av",
             name: row.name ?? "Portal lead",
             phone: row.phone ?? uid("ph"),
             source,
@@ -1855,7 +1855,7 @@ export const useAtlas = create<AtlasState>()(
         return report;
       },
     }),
-    { name: "atlas3-sales-v11" },
+    { name: "atlas3-dukia-v1" },
   ),
 );
 

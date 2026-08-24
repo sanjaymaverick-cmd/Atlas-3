@@ -36,25 +36,21 @@ export function isPortalSource(source: string) {
 }
 
 const PROJECT_ALIASES: Record<string, string> = {
-  p_kanak: "p_kanak",
-  kanakpura: "p_kanak",
-  "kanakpura residences": "p_kanak",
-  "kpr-01": "p_kanak",
-  p_baggad: "p_baggad",
-  baggad: "p_baggad",
-  "baggad heights": "p_baggad",
-  "bgh-02": "p_baggad",
-  p_mansar: "p_mansar",
-  mansar: "p_mansar",
-  mansarovar: "p_mansar",
-  "mansarovar enclave": "p_mansar",
-  "mse-03": "p_mansar",
+  p_av: "p_av",
+  aerovista: "p_av",
+  "av-01": "p_av",
+  p_sf: "p_sf",
+  sunflower: "p_sf",
+  "sf-01": "p_sf",
+  p_ac: "p_ac",
+  acropolis: "p_ac",
+  "ac-01": "p_ac",
 };
 
 export function mapProject(raw?: string | null) {
-  if (!raw) return "p_kanak";
+  if (!raw) return "p_av";
   const key = raw.trim().toLowerCase();
-  return PROJECT_ALIASES[key] ?? (PROJECT_ALIASES[key.replace(/\s+/g, " ")] ?? "p_kanak");
+  return PROJECT_ALIASES[key] ?? (PROJECT_ALIASES[key.replace(/\s+/g, " ")] ?? "p_av");
 }
 
 export function mapKind(raw?: string | null): Lead["kind"] | undefined {
