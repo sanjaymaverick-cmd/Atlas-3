@@ -31,9 +31,9 @@ import type {
 
 /** Shared group + per-project + three broker firms. One person, one login. */
 export const DUKIA_USERS: User[] = [
-  { id: "u_md", name: "R. Dukia", role: "owner", title: "Managing Director", email: "md@dukia.local", password: "AtlasLocal-MD" },
-  { id: "u_dir1", name: "A. Sharma", role: "owner", title: "Director (group)", email: "dir1@dukia.local", password: "AtlasLocal-DIR1" },
-  { id: "u_dir2", name: "K. Mehta", role: "owner", title: "Director (group)", email: "dir2@dukia.local", password: "AtlasLocal-DIR2" },
+  { id: "u_md", name: "R. Dukia", role: "owner", title: "Managing Director", email: "md@dukia.local", password: "AtlasLocal-MD", grade: "md" },
+  { id: "u_dir1", name: "A. Sharma", role: "owner", title: "Director (group)", email: "dir1@dukia.local", password: "AtlasLocal-DIR1", grade: "director" },
+  { id: "u_dir2", name: "K. Mehta", role: "owner", title: "Director (group)", email: "dir2@dukia.local", password: "AtlasLocal-DIR2", grade: "director" },
   { id: "u_fl", name: "P. Jain", role: "accountant", title: "Finance Lead", email: "fl@dukia.local", password: "AtlasLocal-FL" },
   { id: "u_fl2", name: "S. Gupta", role: "accountant", title: "Finance (group books)", email: "fl2@dukia.local", password: "AtlasLocal-FL2" },
   { id: "u_cm", name: "A. Kapoor", role: "commercial", title: "Commercial Manager", email: "cm@dukia.local", password: "AtlasLocal-CM" },

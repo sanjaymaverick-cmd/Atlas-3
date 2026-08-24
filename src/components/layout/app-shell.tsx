@@ -162,7 +162,9 @@ export function AppShell() {
         </nav>
         <div className="border-t border-white/10 p-4">
           <p className="text-sm">{user?.name}</p>
-          <p className="text-xs text-sidebar-muted">{user?.title}</p>
+          <p className="text-xs text-sidebar-muted">
+            {user?.grade === "md" ? "Managing Director" : user?.grade === "director" ? "Director (group)" : user?.title}
+          </p>
           <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-sidebar-muted">Ctrl/⌘ K to jump</p>
           <button
             className="mt-3 flex h-11 w-full items-center rounded-md px-3 text-sm text-sidebar-muted hover:bg-white/10 hover:text-sidebar-fg"
@@ -235,7 +237,7 @@ export function AppShell() {
             <div className="h-full w-64 overflow-y-auto bg-sidebar p-4 text-sidebar-fg" onClick={(e) => e.stopPropagation()}>
               <p className="mb-1 font-display text-xl">Atlas</p>
               <p className="mb-4 text-xs text-sidebar-muted">
-                {user?.name} · {user?.title}
+                {user?.name} · {user?.grade === "md" ? "Managing Director" : user?.grade === "director" ? "Director" : user?.title}
               </p>
               <div className="space-y-1">
                 <NavLinks grouped={false} onPick={() => setOpen(false)} />

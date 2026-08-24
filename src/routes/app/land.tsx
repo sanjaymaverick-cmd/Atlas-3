@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { EntityChip } from "@/components/entity-chip";
+import { GateBanner } from "@/components/gate-banner";
 import { Hint } from "@/components/hint";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
@@ -32,6 +33,7 @@ function Land() {
     recordParcelDeed,
     startDiligencePack,
     clearDiligencePack,
+    fundingSanctions,
   } = useAtlas();
   const [deed, setDeed] = useState<Record<string, { inr: string; no: string; date: string; advocate: string }>>({});
   const [ack, setAck] = useState<Record<string, string>>({});
@@ -139,6 +141,8 @@ function Land() {
           const p = projects.find((x) => x.id === r.projectId);
           const items = diligence.filter((d) => d.parcelId === r.id);
           const loanEmis = emis.filter((e) => e.parcelId === r.id);
+          const fund = fundingSanctions.find((f) => f.projectId === r.projectId);
+          const readyToBuy = r.status !== "acquired" && items.length > 0 && items.every((i) => i.status === "clear");
           return (
             <Card key={r.id} className="p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -157,6 +161,18 @@ function Land() {
                     ) : null}
                   </p>
                   <EntityChip projectId={r.projectId} />
+                  {fund ? (
+                    <p className="mt-1 text-xs text-muted">
+                      Construction finance: {fund.bank} {fund.loanPct}/{fund.equityPct} · {fund.sanctionNo}
+                    </p>
+                  ) : r.status === "acquired" ? (
+                    <p className="mt-1 text-xs text-muted">
+                      No sanction on this project.{" "}
+                      <Link to="/app/finance" className="underline-offset-4 hover:underline">
+                        Record on Company accounts
+                      </Link>
+                    </p>
+                  ) : null}
                 </div>
                 <Status value={r.status === "acquired" ? "approved" : r.status === "diligence" ? "review" : r.status} />
               </div>
@@ -250,8 +266,11 @@ function Land() {
                   ))}
                 </ul>
               ) : null}
+              {readyToBuy ? (
+                <GateBanner>Title pack is clear. Enter consideration and sale deed, then complete acquisition.</GateBanner>
+              ) : null}
               {r.status !== "acquired" ? (
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className={`mt-4 grid gap-3 sm:grid-cols-2 ${readyToBuy ? "rounded-xl border border-primary/40 p-4" : ""}`}>
                   <Field label="Consideration (₹)">
                     <Input
                       type="number"
@@ -350,16 +369,20 @@ function Land() {
             <div className="flex items-center gap-2">
               <Status value={o.status === "filed" ? "approved" : o.status === "overdue" ? "fail" : "pending"} />
               {o.status !== "filed" ? (
-                <div className="flex flex-wrap items-center gap-2">
-                  <Input
-                    className="h-11 w-40"
-                    placeholder="Challan / ack no."
-                    value={ack[o.id] ?? ""}
-                    onChange={(e) => setAck((s) => ({ ...s, [o.id]: e.target.value }))}
-                  />
+                <div className="flex flex-wrap items-end gap-2">
+                  <Field label="Challan / acknowledgement (required)">
+                    <Input
+                      className="h-11 w-48"
+                      placeholder="e.g. ACK-RAJ/P/2024/2144"
+                      value={ack[o.id] ?? ""}
+                      onChange={(e) => setAck((s) => ({ ...s, [o.id]: e.target.value }))}
+                      aria-required
+                    />
+                  </Field>
                   <Button
                     size="sm"
                     variant="outline"
+                    className="mb-0.5"
                     onClick={() => {
                       const err = fileObligation(o.id, ack[o.id] ?? "");
                       toast(err ?? "Marked filed.");

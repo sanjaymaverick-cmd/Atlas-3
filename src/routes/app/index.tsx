@@ -7,7 +7,7 @@ import { QueueStrip } from "@/components/queue-strip";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { GroupStrip } from "@/components/group-strip";
-import { canSeeBooks } from "@/lib/roles";
+import { canSeeBooks, isGroupDirector, isManagingDirector } from "@/lib/roles";
 import { companyAgentIds, myCompanyId, scopedLeads, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr, todayIso } from "@/lib/utils";
@@ -146,7 +146,7 @@ function Command() {
                     { to: "/app/quotations", label: "Price requests open", count: openRfq.length },
                   ]
                 : [
-                    { to: "/app/approvals", label: "Waiting for a yes", count: pending.length },
+                    { to: "/app/approvals", label: "Approvals", count: pending.length },
                     { to: "/app/site", label: "Failed inspections", count: failed.length },
                     { to: "/app/changes", label: "Failed work still open", count: openNcr.length },
                     ...(canSeeBooks(role)
@@ -160,7 +160,7 @@ function Command() {
   if (!channelDesk && !storesDesk && !legalDesk && !docsDesk && !commercialDesk) {
     if (failed.length) exceptionLinks.push({ to: "/app/site", label: `${failed.length} failed inspection${failed.length === 1 ? "" : "s"}` });
     if (openNcr.length) exceptionLinks.push({ to: "/app/changes", label: `${openNcr.length} failed work still open` });
-    if (pending.length) exceptionLinks.push({ to: "/app/approvals", label: `${pending.length} waiting for a yes · oldest ${oldest}d` });
+    if (pending.length) exceptionLinks.push({ to: "/app/approvals", label: `${pending.length} approvals · oldest ${oldest}d` });
     if (canSeeBooks(role) && openTally.length) exceptionLinks.push({ to: "/app/finance", label: `${openTally.length} account mismatches` });
     if (role !== "engineer" && role !== "supervisor" && overdueObs.some((o) => o.status === "overdue")) {
       exceptionLinks.push({ to: "/app/land", label: `${overdueObs.filter((o) => o.status === "overdue").length} late government filings` });
@@ -176,21 +176,58 @@ function Command() {
 
   const showMoney = !siteDesk && !storesDesk && !channelDesk && !legalDesk && !docsDesk && !commercialDesk;
   const showSalesLine = role === "owner" || role === "pm";
+  const capitalParcels = role === "owner" ? parcels : parcels.filter((p) => list.some((x) => x.id === p.projectId));
+  const capitalDeployed = capitalParcels
+    .filter((p) => p.status === "acquired")
+    .reduce((s, p) => s + (p.considerationInr ?? 0), 0);
+  const landClosedToday = capitalParcels.filter(
+    (p) => p.status === "acquired" && p.saleDeedDate === todayIso(),
+  );
 
   return (
     <div>
       <PageHeader
         kicker="Command"
         title="Are we on track, and what needs a yes today?"
-        description="In five seconds: status, cash vs plan, what a person must do. Local only."
+        description={
+          isManagingDirector(user)
+            ? "Managing Director — group view. Local only."
+            : isGroupDirector(user)
+              ? "Director — group view. Activation yes stays with the Managing Director. Local only."
+              : "In five seconds: status, cash vs plan, what a person must do. Local only."
+        }
       />
 
       <QueueStrip items={queue} />
 
       {role === "owner" ? <GroupStrip /> : null}
 
+      {landClosedToday.length > 0 ? (
+        <Card className="mb-6 border-ok/40 p-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-ok">Land closed today</p>
+          <p className="font-display text-2xl">
+            {landClosedToday.map((p) => p.name.replace(/ — .*/, "")).join(" · ")}
+          </p>
+          <p className="text-sm text-muted">
+            {inr(
+              landClosedToday.reduce((s, p) => s + (p.considerationInr ?? 0), 0),
+              true,
+            )}{" "}
+            consideration · open Land & acquisition for the deed
+          </p>
+        </Card>
+      ) : null}
+
       {showMoney ? (
         <div className="mb-6 grid gap-3 sm:grid-cols-2">
+          {role === "owner" ? (
+            <Kpi
+              label="Capital deployed (land)"
+              value={capitalDeployed ? inr(capitalDeployed, true) : "₹ —"}
+              vs={`${capitalParcels.filter((p) => p.status === "acquired").length} parcels acquired`}
+              hint="Consideration on acquired khasra. Books stay in ERPNext."
+            />
+          ) : null}
           <Kpi
             label="Collections / cash-in"
             value={inr(collections, true)}

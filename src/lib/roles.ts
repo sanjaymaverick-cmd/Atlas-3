@@ -140,12 +140,34 @@ function readMdBypass(): boolean {
 
 export const MD_BYPASS_FOUR_EYES = readMdBypass();
 
-/** Approve/Reject only if this seat is the named waiter. */
-export function canActOnApproval(role: Role | undefined, waitingOn: WaitingOn | string, _kind = "") {
+export function isManagingDirector(user?: { grade?: string; title?: string; role?: Role } | null) {
+  if (!user) return false;
+  if (user.grade === "md") return true;
+  if (user.grade === "director") return false;
+  return user.role === "owner" && /managing director/i.test(user.title ?? "");
+}
+
+export function isGroupDirector(user?: { grade?: string; title?: string } | null) {
+  if (!user) return false;
+  if (user.grade === "director") return true;
+  return /^director\b/i.test(user.title ?? "") && !/managing/i.test(user.title ?? "");
+}
+
+/** Approve/Reject only if this seat is the named waiter. Directors are not the MD. */
+export function canActOnApproval(
+  role: Role | undefined,
+  waitingOn: WaitingOn | string,
+  _kind = "",
+  user?: { grade?: string; title?: string; role?: Role } | null,
+) {
   if (!role || !canDecideApprovals(role)) return false;
-  if (role === "owner" && MD_BYPASS_FOUR_EYES) return true;
+  if (isGroupDirector(user) && waitingOn === "Managing Director") return false;
+  if (role === "owner" && MD_BYPASS_FOUR_EYES && !isGroupDirector(user)) return true;
   const mapped = WAITING_ON_ROLES[waitingOn as WaitingOn];
-  if (mapped?.includes(role)) return true;
+  if (mapped?.includes(role)) {
+    if (waitingOn === "Managing Director" && isGroupDirector(user)) return false;
+    return true;
+  }
   return false;
 }
 

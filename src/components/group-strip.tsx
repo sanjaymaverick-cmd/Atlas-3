@@ -37,7 +37,7 @@ export function GroupStrip() {
               {land ? ` · land ${inr(land, true)}` : " · land ₹ —"}
             </p>
             <p className="text-xs text-muted">
-              {pending} waiting for a yes
+              {pending} approvals open
               {funding[0] ? ` · ${funding[0].bank} ${funding[0].loanPct}/${funding[0].equityPct}` : " · no sanction on file"}
             </p>
             <p className="mt-2 text-xs">

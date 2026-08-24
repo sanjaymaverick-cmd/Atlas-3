@@ -57,6 +57,8 @@ export interface User {
   title: string;
   email: string;
   password: string;
+  /** Distinguishes MD from group Directors who share the owner role. */
+  grade?: "md" | "director";
 }
 
 export interface LegalEntity {
@@ -226,6 +228,9 @@ export interface DiaryEntry {
   date: string;
   weather: string;
   labour: number;
+  labourCivil?: number;
+  labourMep?: number;
+  labourFinish?: number;
   work: string;
   materials: string;
   safety: string;

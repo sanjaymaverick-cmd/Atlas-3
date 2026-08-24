@@ -75,7 +75,7 @@ function Approvals() {
                 </>
               }
               actions={
-                canActOnApproval(role, a.waitingOn, a.kind) ? (
+                canActOnApproval(role, a.waitingOn, a.kind, user) ? (
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -96,7 +96,10 @@ function Approvals() {
                     </Button>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted">Waiting on {a.waitingOn}.</p>
+                  <p className="text-sm text-muted">
+                    Waiting on {a.waitingOn}
+                    {user?.grade === "director" && a.waitingOn === "Managing Director" ? " — Directors cannot activate. Ask the MD." : "."}
+                  </p>
                 )
               }
             />

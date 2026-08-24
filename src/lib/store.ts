@@ -290,6 +290,7 @@ interface AtlasState {
   completeVisit: (id: string, result: "done" | "no-show") => string | null;
   toggleBookingDoc: (id: string) => string | null;
   setHandoverOc: (id: string) => string | null;
+  setHandoverOcForProject: (projectId: string) => string | null;
   acceptInbound: (id: string) => string | null;
   rejectInbound: (id: string) => string | null;
   inviteAgent: (input: { name: string; phone: string; companyId: string }) => string | null;
@@ -353,10 +354,16 @@ function migratePersisted(state: unknown) {
     saleDeedDate: p.saleDeedDate ?? "",
     advocateName: p.advocateName ?? "",
   }));
+  const gradeOf = (id?: string, grade?: User["grade"]) =>
+    grade ?? (id === "u_md" ? "md" : id === "u_dir1" || id === "u_dir2" ? "director" : undefined);
+  const users = (s.users ?? []).map((u) => ({ ...u, grade: gradeOf(u.id, u.grade) }));
+  const user = s.user ? { ...s.user, grade: gradeOf(s.user.id, s.user.grade) } : s.user;
   return {
     ...s,
     projects,
     parcels,
+    users,
+    user,
     approvals: ensureVendorActivationCards(s.vendors ?? [], s.approvals ?? [], projects),
     fundingSanctions: s.fundingSanctions ?? [],
     entityByUser: s.entityByUser ?? {},
@@ -632,8 +639,10 @@ export const useAtlas = create<AtlasState>()(
           (d) => d.projectId === entry.projectId && d.date === entry.date && d.deviceKey === entry.deviceKey,
         );
         if (exists) return "A diary for this device and date already exists.";
+        const trades = (entry.labourCivil ?? 0) + (entry.labourMep ?? 0) + (entry.labourFinish ?? 0);
         const row: DiaryEntry = {
           ...entry,
+          labour: entry.labour || trades,
           id: uid("dy"),
           author: get().user?.name ?? "Site",
         };
@@ -1323,6 +1332,9 @@ export const useAtlas = create<AtlasState>()(
           date: todayIso(),
           weather: last.weather,
           labour: last.labour,
+          labourCivil: last.labourCivil,
+          labourMep: last.labourMep,
+          labourFinish: last.labourFinish,
           work: last.work,
           materials: last.materials,
           safety: last.safety,
@@ -1979,6 +1991,15 @@ export const useAtlas = create<AtlasState>()(
         get().log("OC/CC received", h.unit);
         return null;
       },
+      setHandoverOcForProject: (projectId) => {
+        const rows = get().handovers.filter((h) => h.projectId === projectId && h.oc !== "received");
+        if (!rows.length) return "Every unit on this project already has permission to live, or none are in handover.";
+        set({
+          handovers: get().handovers.map((h) => (h.projectId === projectId ? { ...h, oc: "received" } : h)),
+        });
+        get().log("OC/CC received for project", `${projectId} · ${rows.length} units`);
+        return null;
+      },
       acceptInbound: (id) => {
         const row = get().inbound.find((x) => x.id === id);
         if (!row) return "Inbound event not found.";
@@ -2126,7 +2147,7 @@ export const useAtlas = create<AtlasState>()(
     }),
     {
       name: "atlas3-dukia-v1",
-      version: 2,
+      version: 3,
       migrate: (persisted) => migratePersisted(persisted),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<AtlasState>;

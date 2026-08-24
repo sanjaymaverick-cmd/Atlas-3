@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { EntityChip } from "@/components/entity-chip";
+import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -12,13 +14,17 @@ import { todayIso } from "@/lib/utils";
 export const Route = createFileRoute("/app/site")({ component: Site });
 
 function Site() {
-  const { diaries, inspections, projects, entityId, projectId, snags, user, addDiary, copyForwardDiary, completeInspection, scheduleInspection, closeSnag } = useAtlas();
+  const { diaries, inspections, projects, entityId, projectId, snags, pos, user, addDiary, copyForwardDiary, completeInspection, scheduleInspection, closeSnag } = useAtlas();
   const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
   const ids = scoped.map((p) => p.id);
   const [pid, setPid] = useState(ids[0] ?? "");
   const [work, setWork] = useState("");
   const [labour, setLabour] = useState("80");
+  const [civil, setCivil] = useState("");
+  const [mep, setMep] = useState("");
+  const [finish, setFinish] = useState("");
   const [weather, setWeather] = useState("Clear");
+  const noPo = Boolean(pid) && !pos.some((p) => p.projectId === pid && (p.status === "approved" || p.status === "execution" || p.status === "executed"));
 
   const diaryRows = diaries.filter((d) => ids.includes(d.projectId));
   const insp = inspections.filter((i) => ids.includes(i.projectId));
@@ -44,6 +50,14 @@ function Site() {
             ? ` Build window ${projects.find((p) => p.id === pid)?.constructionStart} → ${projects.find((p) => p.id === pid)?.constructionEnd ?? "—"}.`
             : ""}
         </p>
+        <div className="mt-2">
+          <EntityChip projectId={pid} />
+        </div>
+        {noPo ? (
+          <GateBanner>
+            No approved purchase order on this project yet. You can still seal a diary — the civil package is not in the books.
+          </GateBanner>
+        ) : null}
         <div className="mt-4 grid gap-3">
           <Field label="Project">
             <select
@@ -58,8 +72,17 @@ function Site() {
               ))}
             </select>
           </Field>
-          <Field label="Labour on site">
+          <Field label="Labour on site (total)">
             <Input type="number" value={labour} onChange={(e) => setLabour(e.target.value)} />
+          </Field>
+          <Field label="Civil">
+            <Input type="number" value={civil} onChange={(e) => setCivil(e.target.value)} placeholder="optional" />
+          </Field>
+          <Field label="MEP">
+            <Input type="number" value={mep} onChange={(e) => setMep(e.target.value)} placeholder="optional" />
+          </Field>
+          <Field label="Finishing">
+            <Input type="number" value={finish} onChange={(e) => setFinish(e.target.value)} placeholder="optional" />
           </Field>
           <Field label="Weather">
             <Input value={weather} onChange={(e) => setWeather(e.target.value)} />
@@ -88,7 +111,10 @@ function Site() {
               projectId: pid,
               date: todayIso(),
               weather,
-              labour: Number(labour) || 0,
+              labour: Number(labour) || Number(civil) + Number(mep) + Number(finish) || 0,
+              labourCivil: civil ? Number(civil) : undefined,
+              labourMep: mep ? Number(mep) : undefined,
+              labourFinish: finish ? Number(finish) : undefined,
               work: work || "Progress as planned.",
               materials: "See store.",
               safety: "Nil.",
@@ -112,7 +138,12 @@ function Site() {
               <p className="text-sm text-muted">
                 {d.date} · {d.author} · {d.weather}
               </p>
-              <p className="text-sm tabular-nums">{d.labour} labour</p>
+              <p className="text-sm tabular-nums">
+                {d.labour} labour
+                {d.labourCivil || d.labourMep || d.labourFinish
+                  ? ` · civil ${d.labourCivil ?? 0} / MEP ${d.labourMep ?? 0} / finish ${d.labourFinish ?? 0}`
+                  : ""}
+              </p>
             </div>
             <p className="mt-2 text-sm">{d.work}</p>
             <p className="mt-1 text-xs text-muted">{d.safety}</p>

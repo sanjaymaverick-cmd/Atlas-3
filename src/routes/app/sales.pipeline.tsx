@@ -97,19 +97,37 @@ function Pipeline() {
         </Card>
       </details>
 
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <EntityChip projectId={pid} />
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            const proj = projects.find((p) => p.id === pid);
-            toast(setProjectLaunch(pid) ?? `Launch recorded${proj?.exclusivePartnerId ? " · exclusive channel locked" : ""}.`);
-          }}
-        >
-          Freeze price list / launch
-        </Button>
-      </div>
+      {(() => {
+        const proj = projects.find((p) => p.id === pid);
+        const exclusive = partners.find((p) => p.id === proj?.exclusivePartnerId);
+        return (
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <EntityChip projectId={pid} />
+              {proj?.launchedAt ? (
+                <p className="text-xs text-muted">
+                  Launched {proj.launchedAt}
+                  {proj.priceListFrozen ? " · price list frozen" : ""}
+                  {exclusive ? ` · exclusive ${exclusive.name} ${exclusive.rate}%` : ""}
+                </p>
+              ) : exclusive ? (
+                <p className="text-xs text-muted">
+                  Exclusive channel {exclusive.name} {exclusive.rate}% — freeze the price list on launch day.
+                </p>
+              ) : null}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                toast(setProjectLaunch(pid) ?? `Launch recorded${exclusive ? ` · locked to ${exclusive.name}` : ""}.`);
+              }}
+            >
+              {proj?.launchedAt ? "Re-freeze price list" : "Launch day — freeze prices"}
+            </Button>
+          </div>
+        );
+      })()}
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
           <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={pid} onChange={(e) => setPid(e.target.value)}>
