@@ -85,6 +85,30 @@ export interface Project {
   forecast: number;
   /** Concept / land — planned is not committed capital until acquire/approve. */
   concept: boolean;
+  constructionStart?: string;
+  constructionEnd?: string;
+  /** Channel firm locked to this project. Other brokers cannot hold or book. */
+  exclusivePartnerId?: string;
+  launchedAt?: string;
+  priceListFrozen?: boolean;
+}
+
+export interface FundingSanction {
+  id: string;
+  projectId: string;
+  bank: string;
+  sanctionNo: string;
+  loanPct: number;
+  equityPct: number;
+  amount: number;
+  status: "draft" | "sanctioned" | "disbursing" | "closed";
+}
+
+export interface ParcelAcquireDetails {
+  considerationInr: number;
+  saleDeedNo: string;
+  saleDeedDate?: string;
+  advocateName?: string;
 }
 
 export interface OwnerTodo {
@@ -283,6 +307,10 @@ export interface LandParcel {
   status: "identified" | "diligence" | "acquired" | "closed";
   rera: string;
   loan: number;
+  considerationInr?: number;
+  saleDeedNo?: string;
+  saleDeedDate?: string;
+  advocateName?: string;
 }
 
 export interface DiligenceItem {

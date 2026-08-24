@@ -6,6 +6,56 @@ import { Card } from "@/components/ui/card";
 import { useAtlas } from "@/lib/store";
 import { formatDate, inr } from "@/lib/utils";
 
+function ProjectGates({ projectId }: { projectId: string }) {
+  const { parcels, diligence, obligations, rfqs, pos, partners, fundingSanctions, units, projects } = useAtlas();
+  const p = projects.find((x) => x.id === projectId);
+  const parcel = parcels.find((x) => x.projectId === projectId);
+  const openDd = parcel ? diligence.filter((d) => d.parcelId === parcel.id && d.status !== "clear").length : 0;
+  const reraFiled = obligations.some((o) => o.projectId === projectId && o.kind === "rera" && o.status === "filed");
+  const reraOpen = obligations.filter((o) => o.projectId === projectId && o.kind === "rera");
+  const rfqRows = rfqs.filter((r) => r.projectId === projectId);
+  const poRows = pos.filter((x) => x.projectId === projectId);
+  const firm = partners.find((x) => x.id === p?.exclusivePartnerId);
+  const fund = fundingSanctions.find((f) => f.projectId === projectId);
+  const sold = units.filter((u) => u.projectId === projectId && (u.status === "booked" || u.status === "sold")).length;
+  const free = units.filter((u) => u.projectId === projectId && u.status === "available").length;
+  const landGate =
+    !parcel ? "No parcel" : parcel.status === "acquired" ? "Land acquired" : openDd ? `Land checks open (${openDd})` : "Ready to acquire";
+  return (
+    <Card className="mt-6 grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Land</p>
+        <p className="font-medium">{landGate}</p>
+        <p className="text-xs text-muted">{parcel?.considerationInr ? inr(parcel.considerationInr, true) : "No ₹ on file"}</p>
+      </div>
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.14em] text-muted">RERA</p>
+        <p className="font-medium">{reraFiled ? "Filed" : "Target only — not registered yet"}</p>
+        <p className="text-xs text-muted">
+          {reraFiled ? reraOpen.find((o) => o.status === "filed")?.filedRef ?? parcel?.rera : `Target ${parcel?.rera ?? "—"}`}
+        </p>
+      </div>
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.14em] text-muted">RFQ / orders</p>
+        <p className="font-medium">
+          {rfqRows.length} price request{rfqRows.length === 1 ? "" : "s"} · {poRows.length} PO
+        </p>
+        <p className="text-xs text-muted">{fund ? `${fund.bank} ${fund.loanPct}/${fund.equityPct}` : "No sanction master"}</p>
+      </div>
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Sales</p>
+        <p className="font-medium">
+          {sold} sold · {free} free
+        </p>
+        <p className="text-xs text-muted">
+          {firm ? `Exclusive: ${firm.name} ${firm.rate}%` : "No exclusive channel"}
+          {p?.constructionStart ? ` · build ${p.constructionStart}` : ""}
+        </p>
+      </div>
+    </Card>
+  );
+}
+
 export const Route = createFileRoute("/app/projects/$id")({ component: ProjectDetail });
 
 function ProjectDetail() {
@@ -50,6 +100,7 @@ function ProjectDetail() {
       <div className="h-1.5 overflow-hidden rounded-full bg-chip">
         <div className="h-full bg-primary" style={{ width: `${p.progress}%` }} />
       </div>
+      <ProjectGates projectId={p.id} />
       <Card className="mt-6 overflow-hidden p-4">
         <ElevationMark className="w-full text-ink" />
       </Card>

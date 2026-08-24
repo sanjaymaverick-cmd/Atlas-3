@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MoreMenu } from "@/components/more-menu";
 import { Field, Input } from "@/components/ui/input";
+import { EntityChip } from "@/components/entity-chip";
 import { isThirdParty } from "@/lib/sales-scope";
 import { STAGE_LABEL } from "@/lib/sales/stages";
 import type { LeadStage } from "@/lib/types";
@@ -37,6 +38,8 @@ function Pipeline() {
     leadActivities,
     scoreHistory,
     siteVisits,
+    partners,
+    setProjectLaunch,
     ingestLead,
     assignLead,
     advanceLead,
@@ -94,6 +97,19 @@ function Pipeline() {
         </Card>
       </details>
 
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <EntityChip projectId={pid} />
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            const proj = projects.find((p) => p.id === pid);
+            toast(setProjectLaunch(pid) ?? `Launch recorded${proj?.exclusivePartnerId ? " · exclusive channel locked" : ""}.`);
+          }}
+        >
+          Freeze price list / launch
+        </Button>
+      </div>
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
           <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={pid} onChange={(e) => setPid(e.target.value)}>
@@ -237,6 +253,19 @@ function Pipeline() {
                     >
                       Book unit
                     </Button>
+                    {(() => {
+                      const partner = partners.find((p) => p.id === l.partnerId);
+                      const proj = projects.find((p) => p.id === l.projectId);
+                      const exclusive = partners.find((p) => p.id === proj?.exclusivePartnerId);
+                      return (
+                        <p className="w-full px-2 text-xs text-muted">
+                          {partner
+                            ? `Commission ${partner.rate}% · ${partner.name}`
+                            : "In-house — no channel commission"}
+                          {exclusive ? ` · project locked to ${exclusive.name}` : ""}
+                        </p>
+                      );
+                    })()}
                     <Button size="sm" variant="ghost" className="h-11 w-full justify-start" onClick={() => loseLead(l.id)}>
                       Lost
                     </Button>

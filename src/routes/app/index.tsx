@@ -6,8 +6,9 @@ import { ProjectTimeline } from "@/components/project-timeline";
 import { QueueStrip } from "@/components/queue-strip";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { GroupStrip } from "@/components/group-strip";
 import { canSeeBooks } from "@/lib/roles";
-import { companyAgentIds, myCompanyId } from "@/lib/sales-scope";
+import { companyAgentIds, myCompanyId, scopedLeads, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr, todayIso } from "@/lib/utils";
 
@@ -68,14 +69,13 @@ function Command() {
   const overdueObs = obligations.filter(
     (o) => list.some((p) => p.id === o.projectId) && (o.status === "overdue" || o.status === "open"),
   );
-  const salesScope = channelDesk ? projects : list;
-  const pipeline = leads.filter((l) => {
-    if (!salesScope.some((p) => p.id === l.projectId) || l.stage === "lost" || l.stage === "won") return false;
-    if (companyId) return l.partnerId === companyId || (l.agentId ? agentIds.includes(l.agentId) : false);
-    return true;
-  });
+  const channelProjectIds = scopedProjectIds(user, agents, projects, entityId, projectId);
+  const salesScope = channelDesk ? projects.filter((p) => channelProjectIds.includes(p.id)) : list;
+  const pipeline = scopedLeads(leads, user, agents, salesScope.map((p) => p.id)).filter(
+    (l) => l.stage !== "lost" && l.stage !== "won",
+  );
   const hot = pipeline.filter((l) => l.band === "hot");
-  const available = units.filter((u) => salesScope.some((p) => p.id === u.projectId) && u.status === "available");
+  const available = scopedUnits(units, salesScope.map((p) => p.id)).filter((u) => u.status === "available");
   const held = holds.filter((h) => h.status === "held" && salesScope.some((p) => p.id === h.projectId) && agentIds.includes(h.agentId));
   const todayRep = dailyReports.filter((d) => d.date === todayIso() && agentIds.includes(d.agentId));
   const unfiled = (companyId ? agents.filter((a) => a.companyId === companyId && a.status === "active") : []).filter(
@@ -186,6 +186,8 @@ function Command() {
       />
 
       <QueueStrip items={queue} />
+
+      {role === "owner" ? <GroupStrip /> : null}
 
       {showMoney ? (
         <div className="mb-6 grid gap-3 sm:grid-cols-2">

@@ -8,7 +8,8 @@
 
 import { openTrial, signIn, signOut, go, closeTrial } from "../session.mjs";
 
-const DESERT = ["Desert Reach", "R. Shekhawat", "D. Rathi"];
+/** Aadhaar Prime must not see Square and Yard or SBG desks, units, or people. */
+const FOREIGN = ["Square and Yard", "R. Shekhawat", "SBG Sales Group", "P. Rathi", "Sunflower", "Acropolis"];
 const ROUTES = [
   "/app/sales/channel",
   "/app/sales/company",
@@ -22,7 +23,7 @@ const { context, page } = await openTrial();
 const findings = [];
 
 try {
-  for (const seat of ["ag", "ca"]) {
+  for (const seat of ["agap1", "caap"]) {
     await signIn(page, seat);
     for (const route of ROUTES) {
       await go(page, route);
@@ -33,7 +34,7 @@ try {
         continue;
       }
       const text = await page.locator("body").innerText().catch(() => "");
-      const hits = DESERT.filter((d) => text.includes(d));
+      const hits = FOREIGN.filter((d) => text.includes(d));
       findings.push({
         seat,
         route,

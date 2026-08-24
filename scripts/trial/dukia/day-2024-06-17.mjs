@@ -27,7 +27,12 @@ try {
     const blockedMid = window.__atlasStore.getState().acquireParcel("lp_av");
     const after = window.__atlasStore.getState();
     const open = after.diligence.filter((d) => d.parcelId === "lp_av" && d.status !== "clear");
-    const err = after.acquireParcel("lp_av");
+    const err = after.acquireParcel("lp_av", {
+      considerationInr: 180_000_000,
+      saleDeedNo: "AV/SD/2024/0412",
+      saleDeedDate: "2024-06-17",
+      advocateName: "M. Iyer",
+    });
     const parcel = window.__atlasStore.getState().parcels.find((p) => p.id === "lp_av");
     return { blockedMid, open: open.length, acquire: err, parcel: parcel?.status, person: after.user?.name };
   });

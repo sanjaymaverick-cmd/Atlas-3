@@ -8,8 +8,8 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     hint: "The first screen after login. It shows what needs a decision today.",
   },
   approvals: {
-    name: "Waiting for a yes",
-    short: "Approvals",
+    name: "Approvals",
+    short: "Waiting for a yes",
     hint: "A boss must say yes or no before money is spent or a paper is released.",
   },
   "owners hub": { name: "Open items", hint: "Things still waiting on this seat: yes/no, papers, failed work." },
@@ -102,6 +102,11 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     hint: "A government return and cess for construction workers. File it on time.",
   },
   rera: { name: "RERA filing", hint: "Housing regulator filing. Buyers and the government can see project progress." },
+  identified: {
+    name: "Not yet owned",
+    short: "Identified",
+    hint: "The khasra is on the list. You do not own it until title checks are clear and acquisition is complete.",
+  },
   tally: {
     name: "Company accounts",
     short: "ERPNext",
@@ -147,8 +152,14 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     hint: "How many leads and bookings, and which agents worked.",
   },
   "land papers": {
-    name: "Land papers",
-    hint: "Land records, government filings and loan reminders. The real accounts stay in ERPNext.",
+    name: "Land & acquisition",
+    short: "Land papers",
+    hint: "Title checks, purchase, and RERA filings for the khasra. The real accounts stay in ERPNext.",
+  },
+  "land & acquisition": {
+    name: "Land & acquisition",
+    short: "Land papers",
+    hint: "Title checks, purchase, and RERA filings for the khasra. The real accounts stay in ERPNext.",
   },
   ncrs: { name: "Failed work still open", short: "NCRs", hint: "Work that failed inspection and is not closed yet." },
   pass: { name: "Passed", hint: "Inspection found the work is OK." },
@@ -160,7 +171,11 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   snagging: { name: "Fixing defects", hint: "Defects in the flat are still open." },
   society: { name: "Handed to society", hint: "The building is with the residents’ society." },
   defect: { name: "Defect period", short: "DLP", hint: "After keys, you still fix defects for a set time." },
-  quarantine: { name: "Waiting for virus scan", hint: "A new file is held until it is checked. It is not issued yet." },
+  quarantine: {
+    name: "Virus scan",
+    short: "Quarantine",
+    hint: "A file-safety hold, not a legal hold. The document is unusable until the scan is cleared.",
+  },
   accrued: { name: "Earned, not paid", hint: "Commission is counted but Atlas does not pay it. A person must approve payment." },
   hot: { name: "Hot lead", hint: "This buyer looks ready. Call them first." },
   warm: { name: "Warm lead", hint: "Some interest. Keep following up." },

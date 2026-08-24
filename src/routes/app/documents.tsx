@@ -64,7 +64,7 @@ function DocumentsPage() {
         actions={<Button onClick={() => setOpen((v) => !v)}>{open ? "Close" : "Register file"}</Button>}
       />
       <GateBanner>
-        Local demo: Atlas stores a hash and metadata, not the binary. Attach a file so the register is honest — the bytes never leave this machine.
+        New files start in virus scan — a file-safety hold, not a legal hold. Local demo: Atlas stores a hash and metadata, not the binary.
       </GateBanner>
 
       {open ? (

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { EntityChip } from "@/components/entity-chip";
 import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
@@ -58,6 +59,9 @@ function Quotations() {
       <GateBanner>
         You can only pick a price from an Active vendor. Raise the purchase order only after you pick. Atlas does not pay from this screen.
       </GateBanner>
+      <div className="mb-3">
+        <EntityChip projectId={pid} />
+      </div>
 
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
@@ -86,15 +90,15 @@ function Quotations() {
           <Button
             onClick={() => {
               if (!title) return toast("Title required.");
-              createRfq({
+              const err = createRfq({
                 projectId: pid,
                 title,
                 package: pkg || "General",
                 due,
                 required: true,
               });
-              toast("Price request sent.");
-              setTitle("");
+              toast(err ?? "Price request sent.");
+              if (!err) setTitle("");
             }}
           >
             Ask for prices

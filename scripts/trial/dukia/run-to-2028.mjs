@@ -223,7 +223,12 @@ try {
             for (const d of s.diligence.filter((x) => x.parcelId === pid && x.status !== "clear")) {
               g().setDiligence(d.id, "clear");
             }
-            result = g().acquireParcel(pid);
+            const deed = {
+              lp_av: { considerationInr: 180_000_000, saleDeedNo: "AV/SD/2024/0412", saleDeedDate: j.day, advocateName: "M. Iyer" },
+              lp_sf: { considerationInr: 60_000_000, saleDeedNo: "SF/SD/2025/0009", saleDeedDate: j.day, advocateName: "M. Iyer" },
+              lp_ac: { considerationInr: 280_000_000, saleDeedNo: "AC/SD/2025/1123", saleDeedDate: j.day, advocateName: "M. Iyer" },
+            }[pid] ?? { considerationInr: 1, saleDeedNo: `SD/${pid}`, saleDeedDate: j.day };
+            result = g().acquireParcel(pid, deed);
           } else if (j.op === "_fileLatestRera") {
             const [projectId, ack] = j.args;
             const ob = g().obligations.find((o) => o.projectId === projectId && o.kind === "rera" && o.status === "open");
@@ -271,22 +276,7 @@ try {
             if (taken >= cap) {
               result = "sales cap";
             } else {
-            const unit = g().units.find((u) => u.projectId === projectId && u.status === "available" && u.code.startsWith(prefix));
-            if (!unit) result = "no available unit";
-            else {
-              const leadErr = g().addLead({
-                projectId,
-                name: `Buyer ${unit.code}`,
-                phone: `97${unit.code.replace(/\D/g, "").slice(0, 8)}`,
-                source: "walk-in",
-                unit: unit.code,
-                note: "programme booking",
-                budget: unit.price,
-                kind: "flat",
-              });
-              const lead = g().leads.find((l) => l.unit === unit.code && l.stage !== "won" && l.stage !== "lost");
-              result = leadErr || (lead ? g().convertLead(lead.id, unit.price) : "lead missing");
-            }
+              result = g().bookNextAvailable(projectId, { prefix, customer: `Buyer ${projectId} ${j.day}` });
             }
           } else if (j.op === "_preparePossession") {
             const projectId = j.args[0];

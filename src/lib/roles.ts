@@ -73,7 +73,7 @@ export const NAV_ROLES = {
   phases: EVERY,
   testing: ["owner"] as Role[],
   org: ["owner", "pm", "accountant"] as Role[],
-  approvals: ["owner", "pm", "accountant", "sales"] as Role[],
+  approvals: ["owner", "pm", "accountant", "sales", "commercial"] as Role[],
   projects: EVERY,
   documents: ["owner", "pm", "engineer", "docs", "legal"] as Role[],
   land: ["owner", "pm", "accountant", "legal"] as Role[],
@@ -119,6 +119,7 @@ export const WAITING_ON_ROLES: Record<WaitingOn, Role[]> = {
   "Finance Lead": ["accountant"],
   "Sales Manager": ["sales"],
   "Sales Manager / MD": ["sales", "owner"],
+  "Commercial Manager": ["commercial"],
   "Four-eyes approver": ["owner", "pm"],
 };
 

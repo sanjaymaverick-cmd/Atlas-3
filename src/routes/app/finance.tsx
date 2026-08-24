@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Field, Input } from "@/components/ui/input";
 import { booksAgent, type BooksResult } from "@/lib/books";
 import { canSeeBooks } from "@/lib/roles";
 import { useAtlas } from "@/lib/store";
@@ -14,7 +15,12 @@ import { inr } from "@/lib/utils";
 export const Route = createFileRoute("/app/finance")({ component: Finance });
 
 function Finance() {
-  const { tally, entities, entityId, audit, settleTally, user } = useAtlas();
+  const { tally, entities, entityId, audit, settleTally, user, projects, fundingSanctions, addFundingSanction } = useAtlas();
+  const [bank, setBank] = useState("SBI");
+  const [sanctionNo, setSanctionNo] = useState("");
+  const [loanPct, setLoanPct] = useState("60");
+  const [amount, setAmount] = useState("");
+  const [fundPid, setFundPid] = useState("");
   const rows = tally.filter((t) => t.entityId === entityId);
   const entity = entities.find((e) => e.id === entityId);
   const [books, setBooks] = useState<BooksResult | null>(null);
@@ -56,6 +62,84 @@ function Finance() {
         <p className="text-sm tabular-nums text-muted">{entity?.gstin}</p>
         <p className="mt-3 text-sm text-muted">{booksLine}</p>
       </Card>
+
+      <h2 className="mb-3 font-display text-2xl">Construction finance (ops master)</h2>
+      <p className="mb-3 text-sm text-muted">Bank, sanction number, and 60/40 split live here — not in a PDF title. This is not an ERPNext voucher.</p>
+      <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
+        <Field label="Project">
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={fundPid || projects.find((p) => p.entityId === entityId)?.id || ""}
+            onChange={(e) => setFundPid(e.target.value)}
+          >
+            {projects
+              .filter((p) => p.entityId === entityId)
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+          </select>
+        </Field>
+        <Field label="Bank">
+          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={bank} onChange={(e) => setBank(e.target.value)}>
+            <option>SBI</option>
+            <option>AU Small Finance Bank</option>
+            <option>HDFC</option>
+            <option>ICICI</option>
+          </select>
+        </Field>
+        <Field label="Sanction number">
+          <Input value={sanctionNo} onChange={(e) => setSanctionNo(e.target.value)} placeholder="SBI/JPR/2024/…" />
+        </Field>
+        <Field label="Loan % (rest is partners + advances)">
+          <Input type="number" value={loanPct} onChange={(e) => setLoanPct(e.target.value)} />
+        </Field>
+        <Field label="Sanction amount (₹)">
+          <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+        </Field>
+        <div className="flex items-end">
+          <Button
+            onClick={() => {
+              const pid = fundPid || projects.find((p) => p.entityId === entityId)?.id || "";
+              const loan = Number(loanPct) || 0;
+              const err = addFundingSanction({
+                projectId: pid,
+                bank,
+                sanctionNo,
+                loanPct: loan,
+                equityPct: 100 - loan,
+                amount: Number(amount) || 0,
+              });
+              toast(err ?? "Sanction recorded on the project.");
+              if (!err) setSanctionNo("");
+            }}
+          >
+            Record sanction
+          </Button>
+        </div>
+      </Card>
+      <div className="mb-8 space-y-2">
+        {fundingSanctions
+          .filter((f) => projects.find((p) => p.id === f.projectId)?.entityId === entityId)
+          .map((f) => {
+            const p = projects.find((x) => x.id === f.projectId);
+            return (
+              <Card key={f.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+                <div>
+                  <p className="font-medium">
+                    {f.bank} · {p?.name}
+                  </p>
+                  <p className="text-sm text-muted">
+                    {f.sanctionNo} · {f.loanPct}/{f.equityPct} · {inr(f.amount, true)}
+                  </p>
+                </div>
+                <Status value={f.status} />
+              </Card>
+            );
+          })}
+      </div>
+
       <div className="space-y-3">
         {rows.map((t) => (
           <Card key={t.id} className="flex items-center justify-between gap-3 p-4">

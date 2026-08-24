@@ -12,7 +12,7 @@ import { todayIso } from "@/lib/utils";
 export const Route = createFileRoute("/app/site")({ component: Site });
 
 function Site() {
-  const { diaries, inspections, projects, entityId, projectId, snags, user, addDiary, completeInspection, scheduleInspection, closeSnag } = useAtlas();
+  const { diaries, inspections, projects, entityId, projectId, snags, user, addDiary, copyForwardDiary, completeInspection, scheduleInspection, closeSnag } = useAtlas();
   const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
   const ids = scoped.map((p) => p.id);
   const [pid, setPid] = useState(ids[0] ?? "");
@@ -38,7 +38,12 @@ function Site() {
       ) : (
       <Card className="mb-6 p-5">
         <h2 className="font-display text-2xl">Today’s diary</h2>
-        <p className="mt-1 text-sm text-muted">One primary action. Large targets for a phone on site.</p>
+        <p className="mt-1 text-sm text-muted">
+          One primary action. Large targets for a phone on site.
+          {projects.find((p) => p.id === pid)?.constructionStart
+            ? ` Build window ${projects.find((p) => p.id === pid)?.constructionStart} → ${projects.find((p) => p.id === pid)?.constructionEnd ?? "—"}.`
+            : ""}
+        </p>
         <div className="mt-4 grid gap-3">
           <Field label="Project">
             <select
@@ -65,8 +70,19 @@ function Site() {
             </Field>
           </div>
         </div>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <Button
-          className="mt-4 h-12 w-full text-base"
+          variant="outline"
+          className="h-12 w-full text-base sm:w-auto"
+          onClick={() => {
+            const err = copyForwardDiary(pid);
+            toast(err ?? "Copied the last diary and sealed it for today.");
+          }}
+        >
+          Copy last diary
+        </Button>
+        <Button
+          className="h-12 w-full text-base"
           onClick={() => {
             const err = addDiary({
               projectId: pid,
@@ -84,6 +100,7 @@ function Site() {
         >
           Seal diary
         </Button>
+        </div>
       </Card>
       )}
 

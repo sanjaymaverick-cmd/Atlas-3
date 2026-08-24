@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { EntityChip } from "@/components/entity-chip";
 import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
@@ -29,6 +30,13 @@ function Commercial() {
   const [vtrade, setVtrade] = useState("Civil");
   const [vcity, setVcity] = useState("Jaipur");
   const [vgstin, setVgstin] = useState("");
+  const [vendorFilter, setVendorFilter] = useState<"all" | "pending" | "active">("all");
+  const pendingActivation = vendors.filter((v) => v.stage === "approval");
+  const shownVendors = vendors.filter((v) => {
+    if (vendorFilter === "pending") return v.stage === "approval" || v.stage === "invited" || v.stage === "kyc" || v.stage === "verified" || v.stage === "bank" || v.stage === "compliance";
+    if (vendorFilter === "active") return v.stage === "active";
+    return true;
+  });
 
   return (
     <div>
@@ -61,9 +69,32 @@ function Commercial() {
           }}>Invite vendor</Button>
         </div>
       </Card>
+      {pendingActivation.length ? (
+        <GateBanner>
+          {pendingActivation.length} vendor{pendingActivation.length === 1 ? "" : "s"} waiting for Managing Director
+          activation.{" "}
+          <Link to="/app/approvals" className="underline-offset-4 hover:underline">
+            Open Approvals
+          </Link>
+        </GateBanner>
+      ) : null}
+
       <h2 className="mb-3 font-display text-2xl">Vendors</h2>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {(
+          [
+            ["all", "All"],
+            ["pending", "Pending activation"],
+            ["active", "Active"],
+          ] as const
+        ).map(([id, label]) => (
+          <Button key={id} size="sm" variant={vendorFilter === id ? "default" : "outline"} onClick={() => setVendorFilter(id)}>
+            {label}
+          </Button>
+        ))}
+      </div>
       <div className="grid gap-3 md:grid-cols-2">
-        {vendors.map((v) => (
+        {shownVendors.map((v) => (
           <Card key={v.id} className="flex items-center justify-between gap-3 p-4">
             <div>
               <p className="font-medium">{v.name}</p>
@@ -84,9 +115,9 @@ function Commercial() {
               {v.stage !== "active" && v.stage !== "suspended" ? (
                 <Button size="sm" variant="outline" onClick={() => {
                   const err = advanceVendor(v.id);
-                  toast(err ?? `Moved ${v.name}.`);
+                  toast(err ?? (v.stage === "compliance" || v.stage === "approval" ? `Sent ${v.name} to Approvals.` : `Moved ${v.name}.`));
                 }}>
-                  Advance
+                  {v.stage === "approval" ? "Send to MD" : v.stage === "compliance" ? "Send for activation" : "Advance"}
                 </Button>
               ) : null}
             </div>
@@ -95,6 +126,9 @@ function Commercial() {
       </div>
 
       <h2 className="mb-3 mt-8 font-display text-2xl">Issue purchase order</h2>
+      <div className="mb-3">
+        <EntityChip projectId={pid} />
+      </div>
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
           <select

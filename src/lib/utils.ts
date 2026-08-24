@@ -58,6 +58,12 @@ export function todayIso() {
   return now().toISOString().slice(0, 10);
 }
 
+export function addDaysIso(iso: string, days: number) {
+  const d = new Date(`${iso.slice(0, 10)}T12:00:00`);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Whole days from today to ISO date (negative = overdue). */
 export function daysUntil(iso: string) {
   const a = new Date(iso.slice(0, 10) + "T00:00:00");

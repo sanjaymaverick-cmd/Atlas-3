@@ -25,8 +25,8 @@ function Approvals() {
   return (
     <div>
       <PageHeader
-        title="Waiting for a yes"
-        description="A person must say yes or no before money is spent or a paper is released. Production would ask for a second step."
+        title="Approvals"
+        description="A person must say yes or no before money is spent or a paper is released. Vendor activation cards land here after GST is complete."
       />
       {pending.length === 0 ? (
         <Empty

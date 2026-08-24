@@ -87,6 +87,9 @@ export const DUKIA_PROJECTS: Project[] = [
     possession: "2026-11-30",
     forecast: 0,
     concept: true,
+    constructionStart: "2024-10-01",
+    constructionEnd: "2026-10-31",
+    exclusivePartnerId: "pt_ap",
   },
   {
     id: "p_sf",
@@ -105,6 +108,9 @@ export const DUKIA_PROJECTS: Project[] = [
     possession: "2026-06-30",
     forecast: 0,
     concept: true,
+    constructionStart: "2025-04-01",
+    constructionEnd: "2026-06-14",
+    exclusivePartnerId: "pt_sy",
   },
   {
     id: "p_ac",
@@ -123,6 +129,9 @@ export const DUKIA_PROJECTS: Project[] = [
     possession: "2027-11-30",
     forecast: 0,
     concept: true,
+    constructionStart: "2025-06-02",
+    constructionEnd: "2027-10-31",
+    exclusivePartnerId: "pt_sbg",
   },
 ];
 

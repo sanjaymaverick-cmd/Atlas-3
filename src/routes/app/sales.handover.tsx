@@ -32,9 +32,9 @@ function Handover() {
   if (isThirdParty(user?.role)) return <Navigate to="/app/sales/channel" />;
 
   const steps = [
-    { key: "docs", label: "Papers" },
     { key: "oc", label: "Permission to live" },
     { key: "snags", label: "Defects" },
+    { key: "docs", label: "Papers" },
     { key: "possession", label: "Keys" },
     { key: "society", label: "Society" },
     { key: "dlp", label: "Defect period" },
@@ -52,7 +52,9 @@ function Handover() {
           const book = liveBooks.find((b) => b.unit === h.unit);
           const docs = book ? bookingDocs.filter((d) => d.bookingId === book.id) : [];
           const docsOpen = docs.some((d) => d.status === "open");
-          const current = docsOpen ? 0 : h.oc !== "received" ? 1 : open.length ? 2 : h.status === "possession" ? 3 : h.status === "society" ? 4 : 5;
+          const ready = h.oc === "received" && !open.length && !docsOpen;
+          const current =
+            h.oc !== "received" ? 0 : open.length ? 1 : docsOpen ? 2 : h.status === "possession" ? 3 : h.status === "society" ? 4 : 5;
           return (
             <Card key={h.id} className="p-5">
               <div className="mb-3 flex flex-wrap gap-1 text-[10px] uppercase tracking-[0.12em]">
@@ -82,12 +84,15 @@ function Handover() {
                   <p className="font-display text-2xl">{h.unit}</p>
                   <p className="text-sm text-muted">
                     {current === 0
-                      ? "Stopped: buyer papers still missing"
+                      ? "Stopped: waiting for government permission to live in the building"
                       : current === 1
-                        ? "Stopped: waiting for government permission to live in the building"
+                        ? `${open.length} defects still open`
                         : current === 2
-                          ? `${open.length} defects still open`
-                          : steps[current]?.label}
+                          ? "Stopped: buyer papers still missing"
+                          : ready
+                            ? "Ready for keys"
+                            : steps[current]?.label}
+                    {book && book.status === "active" && !ready ? " · booked, not possession-ready" : ""}
                   </p>
                 </div>
                 <Status value={h.status} />
