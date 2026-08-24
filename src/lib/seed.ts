@@ -31,6 +31,16 @@ export const USERS: User[] = [
   { id: "u_stores", name: "H. Singh", role: "stores", title: "Stores / QS", email: "st@atlas.local", password: "AtlasLocal-ST" },
   { id: "u_ch", name: "V. Meena", role: "channel", title: "Channel agent (Pink City)", email: "ag@atlas.local", password: "AtlasLocal-AG" },
   { id: "u_ca", name: "K. Pink", role: "channel_admin", title: "Pink City company admin", email: "ca@atlas.local", password: "AtlasLocal-CA" },
+  // Second holders of the same seat. One person, one login — so the audit trail
+  // can tell three supervisors apart and four-eyes works between same-role peers.
+  { id: "u_pm2", name: "V. Nair", role: "pm", title: "Project Director (Aravalli)", email: "pd2@atlas.local", password: "AtlasLocal-PD2" },
+  { id: "u_eng2", name: "S. Bisht", role: "engineer", title: "Site Engineer (Aravalli)", email: "se2@atlas.local", password: "AtlasLocal-SE2" },
+  { id: "u_sup2", name: "B. Lal", role: "supervisor", title: "Site Supervisor (Tower B)", email: "sv2@atlas.local", password: "AtlasLocal-SV2" },
+  { id: "u_sup3", name: "G. Verma", role: "supervisor", title: "Site Supervisor (night shift)", email: "sv3@atlas.local", password: "AtlasLocal-SV3" },
+  { id: "u_sales2", name: "A. Joshi", role: "sales", title: "Sales Manager (channel desk)", email: "sm2@atlas.local", password: "AtlasLocal-SM2" },
+  { id: "u_ch2", name: "S. Qureshi", role: "channel", title: "Channel agent 2 (Pink City)", email: "ag2@atlas.local", password: "AtlasLocal-AG2" },
+  { id: "u_ch3", name: "R. Shekhawat", role: "channel", title: "Channel agent (Desert Reach)", email: "ag4@atlas.local", password: "AtlasLocal-AG4" },
+  { id: "u_ca2", name: "D. Rathi", role: "channel_admin", title: "Desert Reach company admin", email: "ca2@atlas.local", password: "AtlasLocal-CA2" },
   { id: "u_test", name: "UAT Tester", role: "owner", title: "Test owner (local only)", email: "test@atlas.local", password: "AtlasLocal-UAT" },
 ];
 

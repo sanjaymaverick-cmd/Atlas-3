@@ -34,8 +34,8 @@ function Commercial() {
     <div>
       <PageHeader
         kicker="Phase 4"
-        title="Commercial"
-        description="Vendor must be Active before a PO. Prefer Quotations → select → Create PO so Approvals shows the quote trail."
+        title="Vendors and orders"
+        description="A vendor must be Active before you can raise a purchase order. Best path: Price quotes → pick a price → create order, so the yes/no screen shows the quote."
       />
       <GateBanner>
         Purchase orders cannot be issued until the vendor is Active. Award path: Quotations → select quote → Create PO
@@ -51,7 +51,7 @@ function Commercial() {
         <Field label="Vendor name"><Input value={vname} onChange={(e) => setVname(e.target.value)} /></Field>
         <Field label="Trade"><Input value={vtrade} onChange={(e) => setVtrade(e.target.value)} /></Field>
         <Field label="City"><Input value={vcity} onChange={(e) => setVcity(e.target.value)} /></Field>
-        <Field label="GSTIN"><Input value={vgstin} onChange={(e) => setVgstin(e.target.value)} placeholder="Required before verification" /></Field>
+        <Field label="GST number (tax ID)"><Input value={vgstin} onChange={(e) => setVgstin(e.target.value)} placeholder="Needed before the vendor can be fully approved" /></Field>
         <div className="sm:col-span-2">
           <Button onClick={() => {
             if (!vname) return toast("Name required.");

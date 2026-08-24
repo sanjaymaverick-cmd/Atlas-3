@@ -51,10 +51,11 @@ export const CUSTOMERS: Customer[] = [
 export const AGENTS: SalesAgent[] = [
   { id: "ag1", name: "V. Meena", phone: "98xxxx3301", companyId: "pt1", userId: "u_ch", inHouse: false, status: "active" },
   { id: "ag_ca", name: "K. Pink", phone: "91xxxx2201", companyId: "pt1", userId: "u_ca", inHouse: false, status: "active" },
-  { id: "ag2", name: "S. Qureshi", phone: "97xxxx1188", companyId: "pt1", inHouse: false, status: "active" },
+  { id: "ag2", name: "S. Qureshi", phone: "97xxxx1188", companyId: "pt1", userId: "u_ch2", inHouse: false, status: "active" },
   { id: "ag3", name: "N. Bhatia", phone: "90xxxx2200", userId: "u_sales", inHouse: true, status: "active" },
-  { id: "ag5", name: "A. Joshi", phone: "95xxxx1180", inHouse: true, status: "active" },
-  { id: "ag4", name: "R. Shekhawat", phone: "96xxxx4410", companyId: "pt3", inHouse: false, status: "active" },
+  { id: "ag5", name: "A. Joshi", phone: "95xxxx1180", userId: "u_sales2", inHouse: true, status: "active" },
+  { id: "ag4", name: "R. Shekhawat", phone: "96xxxx4410", companyId: "pt3", userId: "u_ch3", inHouse: false, status: "active" },
+  { id: "ag_ca2", name: "D. Rathi", phone: "93xxxx5510", companyId: "pt3", userId: "u_ca2", inHouse: false, status: "active" },
 ];
 
 export const DAILY_REPORTS: DailyReport[] = [

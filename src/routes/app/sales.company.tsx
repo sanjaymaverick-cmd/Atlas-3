@@ -53,7 +53,9 @@ function CompanyAdmin() {
           tone="warn"
         />
       </div>
-      <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
+      <details className="mb-6">
+        <summary className="cursor-pointer text-sm text-muted">Invite agent (does not create a login until go-live)</summary>
+      <Card className="mt-3 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Agent name">
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </Field>
@@ -76,6 +78,7 @@ function CompanyAdmin() {
           </Button>
         </div>
       </Card>
+      </details>
       <div className="space-y-3">
         {rows.map((a) => {
           const sc = agentScorecard(a, { dailyReports, holds, bookings, commissions });

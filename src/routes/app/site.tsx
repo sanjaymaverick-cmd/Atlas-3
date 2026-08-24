@@ -12,7 +12,7 @@ import { todayIso } from "@/lib/utils";
 export const Route = createFileRoute("/app/site")({ component: Site });
 
 function Site() {
-  const { diaries, inspections, projects, entityId, projectId, addDiary, completeInspection, scheduleInspection } = useAtlas();
+  const { diaries, inspections, projects, entityId, projectId, snags, user, addDiary, completeInspection, scheduleInspection, closeSnag } = useAtlas();
   const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
   const ids = scoped.map((p) => p.id);
   const [pid, setPid] = useState(ids[0] ?? "");
@@ -22,15 +22,20 @@ function Site() {
 
   const diaryRows = diaries.filter((d) => ids.includes(d.projectId));
   const insp = inspections.filter((i) => ids.includes(i.projectId));
+  const openSnags = snags.filter((s) => s.status === "open" && ids.includes(s.projectId));
+  const storesSeat = user?.role === "stores";
 
   return (
     <div>
       <PageHeader
         kicker="Phase 5"
         title="Site & quality"
-        description="Diary intake is idempotent per device and date. Built for a phone on a dusty afternoon."
+        description="One diary per phone per day. Seal once. Built for a dusty afternoon. Local only."
       />
 
+      {storesSeat ? (
+        <p className="mb-6 text-sm text-muted">Stores can read diaries. Seal and Pass/Fail stay with site seats.</p>
+      ) : (
       <Card className="mb-6 p-5">
         <h2 className="font-display text-2xl">Today’s diary</h2>
         <p className="mt-1 text-sm text-muted">One primary action. Large targets for a phone on site.</p>
@@ -80,6 +85,7 @@ function Site() {
           Seal diary
         </Button>
       </Card>
+      )}
 
       <h2 className="mb-3 font-display text-2xl">Recent diaries</h2>
       <div className="space-y-3">
@@ -109,6 +115,32 @@ function Site() {
           }}>Schedule</Button>
         </div>
       </Card>
+      <h2 className="mb-3 mt-8 font-display text-2xl">Open defects</h2>
+      <div className="mb-8 space-y-3">
+        {openSnags.length === 0 ? <p className="text-sm text-muted">No open defects on this project.</p> : null}
+        {openSnags.map((s) => (
+          <Card key={s.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div>
+              <p className="font-medium">{s.unit}</p>
+              <p className="text-sm text-muted">{s.title}</p>
+            </div>
+            {storesSeat ? (
+              <Status value={s.status} />
+            ) : (
+              <Button
+                className="h-12"
+                variant="outline"
+                onClick={() => {
+                  closeSnag(s.id);
+                  toast("Snag closed.");
+                }}
+              >
+                Close defect
+              </Button>
+            )}
+          </Card>
+        ))}
+      </div>
       <h2 className="mb-3 font-display text-2xl">Inspections</h2>
       <div className="space-y-3">
         {insp.map((i) => (
@@ -120,12 +152,12 @@ function Site() {
               </div>
               <Status value={i.result} />
             </div>
-            {i.result === "pending" ? (
+            {i.result === "pending" && !storesSeat ? (
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <Button className="h-12" variant="outline" onClick={() => { completeInspection(i.id, "pass"); toast("Passed."); }}>
                   Pass
                 </Button>
-                <Button className="h-12" variant="outline" onClick={() => { completeInspection(i.id, "fail"); toast("Failed — NCR raised."); }}>
+                <Button className="h-12" variant="outline" onClick={() => { completeInspection(i.id, "fail"); toast("Failed — a failed work report was raised."); }}>
                   Fail
                 </Button>
               </div>

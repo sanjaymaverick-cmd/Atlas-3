@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DocumentPreview } from "@/components/document-preview";
+import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ function DocumentsPage() {
   const [klass, setKlass] = useState<DocClass>("internal");
   const [pid, setPid] = useState(projects.find((p) => p.entityId === entityId)?.id ?? "");
   const [revNotes, setRevNotes] = useState<Record<string, string>>({});
+  const [fileName, setFileName] = useState("");
 
   const rows = useMemo(() => {
     return documents.filter((d) => {
@@ -61,6 +63,9 @@ function DocumentsPage() {
         description="Immutable revisions. Preview is session-bound and watermarked. Originals need four-eyes export."
         actions={<Button onClick={() => setOpen((v) => !v)}>{open ? "Close" : "Register file"}</Button>}
       />
+      <GateBanner>
+        Local demo: Atlas stores a hash and metadata, not the binary. Attach a file so the register is honest — the bytes never leave this machine.
+      </GateBanner>
 
       {open ? (
         <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
@@ -96,6 +101,12 @@ function DocumentsPage() {
           <Field label="Sheet">
             <Input value={sheet} onChange={(e) => setSheet(e.target.value)} />
           </Field>
+          <Field label="File (hash only)">
+            <Input
+              type="file"
+              onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
+            />
+          </Field>
           <Field label="Classification">
             <select
               className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
@@ -111,8 +122,15 @@ function DocumentsPage() {
             <Button
               onClick={() => {
                 if (!title) return toast("Title required.");
-                registerDocument({ projectId: pid, title, kind: newKind, classification: klass, sheet });
-                toast("Held in malware quarantine.");
+                registerDocument({
+                  projectId: pid,
+                  title,
+                  kind: newKind,
+                  classification: klass,
+                  sheet,
+                  fileName: fileName || undefined,
+                });
+                toast(fileName ? `Quarantine · hashed ${fileName} (not stored).` : "Held in malware quarantine — no file attached.");
                 setTitle("");
                 setOpen(false);
               }}

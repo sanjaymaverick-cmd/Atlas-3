@@ -6,9 +6,11 @@ import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { MoreMenu } from "@/components/more-menu";
 import { Field, Input } from "@/components/ui/input";
 import { isThirdParty } from "@/lib/sales-scope";
 import { STAGE_LABEL } from "@/lib/sales/stages";
+import type { LeadStage } from "@/lib/types";
 import { useAtlas } from "@/lib/store";
 import { inr, todayIso } from "@/lib/utils";
 import type { Lead, SalesAgent, ScoreModelKind } from "@/lib/types";
@@ -65,33 +67,32 @@ function Pipeline() {
   return (
     <div>
       <PageHeader
-        kicker="In-house pipeline"
-        title="New → visit → book"
-        description="New, contacted, qualified, site visit, negotiation, booked / lost / nurture. Assign an active agent. Convert locks inventory and opens handover. Local only."
+        title="New lead → site visit → book"
+        description="New → called → serious buyer → site visit → price talk → booked. Give the lead to an agent. Booking locks the unit."
       />
-      <GateBanner>
-        CatBoost is a separate service (`services/scoring`) that takes categoricals via cat_features. This host does not
-        re-implement Ordered Target Statistics. Select CatBoost to queue a native apply; unbound → hybrid. Dedup is
-        phone + project.
-      </GateBanner>
-
-      <Card className="mb-6 p-5">
-        <p className="mb-3 text-[11px] uppercase tracking-[0.14em] text-muted">Scoring model</p>
-        <div className="flex flex-wrap gap-2">
-          {scoreModels.map((m) => (
-            <Button
-              key={m.id}
-              size="sm"
-              variant={m.kind === activeScoreModel ? "default" : "outline"}
-              className="h-11"
-              onClick={() => setScoreModel(m.kind as ScoreModelKind)}
-            >
-              {m.name}
-            </Button>
-          ))}
-        </div>
-        <p className="mt-2 text-xs text-muted">{scoreModels.find((m) => m.kind === activeScoreModel)?.note}</p>
-      </Card>
+      <details className="mb-6">
+        <summary className="cursor-pointer text-sm text-muted">Scoring model (CatBoost / hybrid)</summary>
+        <GateBanner>
+          CatBoost is a separate service (`services/scoring`) that takes categoricals via cat_features. This host does not
+          re-implement Ordered Target Statistics. Unbound → hybrid. Dedup is phone + project.
+        </GateBanner>
+        <Card className="p-5">
+          <div className="flex flex-wrap gap-2">
+            {scoreModels.map((m) => (
+              <Button
+                key={m.id}
+                size="sm"
+                variant={m.kind === activeScoreModel ? "default" : "outline"}
+                className="h-11"
+                onClick={() => setScoreModel(m.kind as ScoreModelKind)}
+              >
+                {m.name}
+              </Button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted">{scoreModels.find((m) => m.kind === activeScoreModel)?.note}</p>
+        </Card>
+      </details>
 
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
@@ -157,34 +158,42 @@ function Pipeline() {
         </div>
       </Card>
 
-      <div className="space-y-3">
-        {rows.map((l) => {
-          const inv = units.find((u) => u.projectId === l.projectId && u.code === l.unit);
-          const acts = leadActivities.filter((a) => a.leadId === l.id);
-          const hist = scoreHistory.filter((s) => s.leadId === l.id).slice(0, 3);
-          const visits = siteVisits.filter((v) => v.leadId === l.id);
-          const open = openId === l.id;
-          const owner = agents.find((a) => a.id === l.agentId);
-          const desk = assignableAgents(agents, l);
-          return (
+      {(["inquiry", "contacted", "qualified", "visit", "negotiation"] as LeadStage[]).map((stage) => {
+        const col = rows
+          .filter((l) => l.stage === stage)
+          .slice()
+          .sort((a, b) => (b.currentScore ?? b.score ?? 0) - (a.currentScore ?? a.score ?? 0));
+        return (
+          <div key={stage} className="mb-6">
+            <h2 className="mb-3 font-display text-xl">
+              {STAGE_LABEL[stage]} <span className="text-sm text-muted">({col.length})</span>
+            </h2>
+            <div className="space-y-3">
+              {col.length === 0 ? <p className="text-sm text-muted">None.</p> : null}
+              {col.map((l) => {
+        const inv = units.find((u) => u.projectId === l.projectId && u.code === l.unit);
+        const acts = leadActivities.filter((a) => a.leadId === l.id);
+        const hist = scoreHistory.filter((s) => s.leadId === l.id).slice(0, 3);
+        const visits = siteVisits.filter((v) => v.leadId === l.id);
+        const open = openId === l.id;
+        const owner = agents.find((a) => a.id === l.agentId);
+        const desk = assignableAgents(agents, l);
+        return (
             <Card key={l.id} className="p-4" data-lead-id={l.id}>
               <button type="button" className="flex w-full flex-wrap items-start justify-between gap-3 text-left" onClick={() => setOpenId(open ? null : l.id)}>
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
-                    {l.source} · {l.unit || "no unit"} · {l.scoreModel} · {owner?.name ?? "unassigned"}
+                    {l.source} · {l.unit || "no unit"} · {owner?.name ?? "unassigned"}
                   </p>
                   <p className="font-display text-xl">{l.name}</p>
                   <p className="text-sm text-muted">
-                    Score {l.currentScore ?? l.score ?? "—"} · p {((l.currentProbability ?? (l.score ?? 0) / 100)).toFixed(2)} · {(l.currentScoreReasons ?? l.scoreReasons ?? []).join(" · ")}
+                    Score {l.currentScore ?? l.score ?? "—"} · {(l.currentScoreReasons ?? l.scoreReasons ?? []).join(" · ")}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Status value={l.band ?? "warm"} />
-                  <Status value={STAGE_LABEL[l.stage]} />
-                </div>
+                <Status value={l.band ?? "warm"} />
               </button>
               {l.stage !== "won" && l.stage !== "lost" ? (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   <select
                     aria-label={`Assign ${l.name}`}
                     className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
@@ -204,44 +213,40 @@ function Pipeline() {
                       </option>
                     ))}
                   </select>
-                  <Button size="sm" variant="outline" className="h-11" onClick={() => toast(advanceLead(l.id) ?? "Advanced.")}>
+                  <Button className="h-11" onClick={() => toast(advanceLead(l.id) ?? "Advanced.")}>
                     Advance
                   </Button>
-                  <Button size="sm" variant="outline" className="h-11" onClick={() => toast(rescoreLead(l.id, "whatsapp") ?? "Re-scored.")}>
-                    WhatsApp
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-11" onClick={() => toast(rescoreLead(l.id, "call") ?? "Re-scored.")}>
-                    Call
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-11" onClick={() => toast(rescoreLead(l.id, "brochure") ?? "Re-scored.")}>
-                    Brochure
-                  </Button>
-                  <Input
-                    className="h-11 w-36"
-                    type="number"
-                    value={convertValue[l.id] ?? String(l.budget ?? 7500000)}
-                    onChange={(e) => setConvertValue((v) => ({ ...v, [l.id]: e.target.value }))}
-                  />
-                  <Button
-                    size="sm"
-                    className="h-11"
-                    variant="outline"
-                    onClick={() => {
-                      const err = convertLead(l.id, Number(convertValue[l.id] ?? l.budget) || 0);
-                      toast(err ?? "Unit locked as booked. Handover opened. Commission accrued if partner active.");
-                    }}
-                  >
-                    Book unit
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-11" onClick={() => loseLead(l.id)}>
-                    Lost
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-11" onClick={() => nurtureLead(l.id)}>
-                    Nurture
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-11" onClick={() => toast(toggleWaConsent(l.id) ?? "Consent updated.")}>
-                    WA consent {l.waConsent ? "on" : "off"}
-                  </Button>
+                  <MoreMenu>
+                    <Button size="sm" variant="ghost" className="h-11 w-full justify-start" onClick={() => toast(rescoreLead(l.id, "whatsapp") ?? "Re-scored.")}>
+                      WhatsApp
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-11 w-full justify-start" onClick={() => toast(rescoreLead(l.id, "call") ?? "Re-scored.")}>
+                      Call
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-11 w-full justify-start" onClick={() => toast(rescoreLead(l.id, "brochure") ?? "Re-scored.")}>
+                      Brochure
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-11 w-full justify-start"
+                      onClick={() => {
+                        const err = convertLead(l.id, Number(convertValue[l.id] ?? l.budget) || 0);
+                        toast(err ?? "Unit locked as booked. Handover opened. Commission accrued if partner active.");
+                      }}
+                    >
+                      Book unit
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-11 w-full justify-start" onClick={() => loseLead(l.id)}>
+                      Lost
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-11 w-full justify-start" onClick={() => nurtureLead(l.id)}>
+                      Nurture
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-11 w-full justify-start" onClick={() => toast(toggleWaConsent(l.id) ?? "Consent updated.")}>
+                      WA consent {l.waConsent ? "on" : "off"}
+                    </Button>
+                  </MoreMenu>
                 </div>
               ) : null}
               {open ? (
@@ -308,8 +313,11 @@ function Pipeline() {
               ) : null}
             </Card>
           );
-        })}
-      </div>
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

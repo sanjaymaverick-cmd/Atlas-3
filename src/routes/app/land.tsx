@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Field, Input } from "@/components/ui/input";
 import { useAtlas } from "@/lib/store";
-import { inr } from "@/lib/utils";
+import type { Obligation } from "@/lib/types";
+import { inr, todayIso } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/land")({ component: Land });
 
@@ -20,9 +23,20 @@ function Land() {
     projectId,
     setDiligence,
     fileObligation,
+    addParcel,
+    addObligation,
     payEmi,
     acquireParcel,
   } = useAtlas();
+  const [ack, setAck] = useState<Record<string, string>>({});
+  const [showAdd, setShowAdd] = useState(false);
+  const [pname, setPname] = useState("");
+  const [khasra, setKhasra] = useState("");
+  const [area, setArea] = useState("");
+  const [rera, setRera] = useState("");
+  const [otitle, setOtitle] = useState("");
+  const [okind, setOkind] = useState<Obligation["kind"]>("rera");
+  const [odue, setOdue] = useState(todayIso());
 
   const scopedParcels = parcels.filter((row) => {
     const p = projects.find((x) => x.id === row.projectId);
@@ -36,15 +50,84 @@ function Land() {
     if (projectId !== "all" && o.projectId !== projectId) return false;
     return true;
   });
+  const addPid = scopedParcels[0]?.projectId ?? projects.find((p) => p.entityId === entityId)?.id ?? "";
 
   return (
     <div>
       <PageHeader
         kicker="Phase 3"
-        title="Land & legal"
-        description="Acquisition is blocked until due diligence is clear. EMI here is an operations reference — Tally remains the books."
+        title="Land papers"
+        description="You cannot buy the land until checks are clear. Loan instalments here are only a reminder — the real accounts stay in Tally."
       />
 
+      <div className="mb-6">
+        <Button variant="outline" onClick={() => setShowAdd((v) => !v)}>
+          {showAdd ? "Close" : "Add parcel or obligation"}
+        </Button>
+      </div>
+      {showAdd ? (
+        <div className="mb-8 grid gap-4 lg:grid-cols-2">
+          <Card className="grid gap-3 p-5">
+            <h2 className="font-display text-xl">Add parcel</h2>
+            <Field label="Name">
+              <Input value={pname} onChange={(e) => setPname(e.target.value)} />
+            </Field>
+            <Field label="Khasra">
+              <Input value={khasra} onChange={(e) => setKhasra(e.target.value)} />
+            </Field>
+            <Field label="Area">
+              <Input value={area} onChange={(e) => setArea(e.target.value)} />
+            </Field>
+            <Field label="RERA">
+              <Input value={rera} onChange={(e) => setRera(e.target.value)} />
+            </Field>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const err = addParcel({ projectId: addPid, name: pname, khasra, area, rera });
+                toast(err ?? "Parcel added.");
+                if (!err) {
+                  setPname("");
+                  setKhasra("");
+                }
+              }}
+            >
+              Add parcel
+            </Button>
+          </Card>
+          <Card className="grid gap-3 p-5">
+            <h2 className="font-display text-xl">Add obligation</h2>
+            <Field label="Title">
+              <Input value={otitle} onChange={(e) => setOtitle(e.target.value)} />
+            </Field>
+            <Field label="Kind">
+              <select
+                className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+                value={okind}
+                onChange={(e) => setOkind(e.target.value as Obligation["kind"])}
+              >
+                <option value="rera">RERA</option>
+                <option value="labour">Labour</option>
+                <option value="insurance">Insurance</option>
+                <option value="tax">Tax</option>
+              </select>
+            </Field>
+            <Field label="Due">
+              <Input type="date" value={odue} onChange={(e) => setOdue(e.target.value)} />
+            </Field>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const err = addObligation({ projectId: addPid, kind: okind, title: otitle, due: odue });
+                toast(err ?? "Obligation added.");
+                if (!err) setOtitle("");
+              }}
+            >
+              Add obligation
+            </Button>
+          </Card>
+        </div>
+      ) : null}
       <div className="space-y-4">
         {scopedParcels.map((r) => {
           const p = projects.find((x) => x.id === r.projectId);
@@ -103,7 +186,7 @@ function Land() {
                   {loanEmis.map((e) => (
                     <li key={e.id} className="flex items-center justify-between gap-2">
                       <span>
-                        EMI {e.due} · {inr(e.amount, true)}
+                        Loan instalment {e.due} · {inr(e.amount, true)}
                       </span>
                       {e.status === "due" ? (
                         <Button
@@ -151,9 +234,26 @@ function Land() {
             <div className="flex items-center gap-2">
               <Status value={o.status === "filed" ? "approved" : o.status === "overdue" ? "fail" : "pending"} />
               {o.status !== "filed" ? (
-                <Button size="sm" variant="outline" onClick={() => fileObligation(o.id)}>
-                  Mark filed
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Input
+                    className="h-11 w-40"
+                    placeholder="Challan / ack no."
+                    value={ack[o.id] ?? ""}
+                    onChange={(e) => setAck((s) => ({ ...s, [o.id]: e.target.value }))}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const err = fileObligation(o.id, ack[o.id] ?? "");
+                      toast(err ?? "Marked filed.");
+                    }}
+                  >
+                    Mark filed
+                  </Button>
+                </div>
+              ) : o.filedRef ? (
+                <span className="text-xs text-muted">{o.filedRef}</span>
               ) : null}
             </div>
           </Card>

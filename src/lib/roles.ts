@@ -91,12 +91,12 @@ export const NAV_ROLES = {
   salesInventory: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
   salesChannel: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
   salesCompany: ["owner", "pm", "sales", "channel_admin"] as Role[],
-  salesPipeline: ["owner", "pm", "sales"] as Role[],
+  salesPipeline: ["owner", "sales"] as Role[],
   salesHandover: ["owner", "pm", "sales"] as Role[],
   salesAnalytics: ["owner", "pm", "sales", "accountant"] as Role[],
-  salesIntegrations: ["owner", "pm", "sales"] as Role[],
-  salesWhatsApp: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
-  salesPeople: ["owner", "pm", "sales"] as Role[],
+  salesIntegrations: ["owner", "sales"] as Role[],
+  salesWhatsApp: ["owner", "sales", "channel", "channel_admin"] as Role[],
+  salesPeople: ["owner", "sales"] as Role[],
 };
 
 export function canSeeTally(role: Role | undefined) {
@@ -105,6 +105,24 @@ export function canSeeTally(role: Role | undefined) {
 
 export function canDecideApprovals(role: Role | undefined) {
   return role === "owner" || role === "pm" || role === "accountant" || role === "sales";
+}
+
+const WAITING_ON_ROLES: Record<string, Role[]> = {
+  "Managing Director": ["owner"],
+  "Project Director": ["pm"],
+  "Finance Lead": ["accountant"],
+  "Sales Manager": ["sales"],
+  "Four-eyes approver": ["owner", "pm"],
+};
+
+/** Approve/Reject only if this seat is the named waiter. MD can always act. */
+export function canActOnApproval(role: Role | undefined, waitingOn: string, kind = "") {
+  if (!role || !canDecideApprovals(role)) return false;
+  if (role === "owner") return true;
+  const mapped = WAITING_ON_ROLES[waitingOn];
+  if (mapped?.includes(role)) return true;
+  if (role === "sales" && /book|commission|hold|partner/i.test(`${waitingOn} ${kind}`)) return true;
+  return false;
 }
 
 export function homeForRole(role: Role | string | undefined, pendingApprovals = 0) {

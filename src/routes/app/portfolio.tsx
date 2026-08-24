@@ -36,7 +36,7 @@ function Portfolio() {
         </li>
         <li className="rounded-md border border-line px-4 py-3">
           <Link to="/app/changes" className="hover:underline">
-            {ncr.length} NCRs open
+            {ncr.length} failed work reports still open
           </Link>
         </li>
       </ul>

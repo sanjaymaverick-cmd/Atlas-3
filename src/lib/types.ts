@@ -295,6 +295,7 @@ export interface Obligation {
   title: string;
   due: string;
   status: "open" | "filed" | "overdue";
+  filedRef?: string;
 }
 
 export interface Emi {

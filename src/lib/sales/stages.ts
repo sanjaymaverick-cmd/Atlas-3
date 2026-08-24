@@ -16,15 +16,15 @@ export const PIPELINE: LeadStage[] = [
 
 export const STAGE_LABEL: Record<LeadStage, string> = {
   inquiry: "New",
-  contacted: "Contacted",
-  qualified: "Qualified",
+  contacted: "Called",
+  qualified: "Serious buyer",
   visit: "Site visit",
-  negotiation: "Negotiation",
-  documentation: "Documentation",
-  handover: "Handover",
+  negotiation: "Price talk",
+  documentation: "Papers",
+  handover: "Give keys",
   won: "Booked",
   lost: "Lost",
-  nurture: "Nurture",
+  nurture: "Follow later",
 };
 
 export const STAGE_NEXT: Record<LeadStage, LeadStage | undefined> = {

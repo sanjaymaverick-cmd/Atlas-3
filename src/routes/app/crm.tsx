@@ -21,9 +21,6 @@ function Crm() {
     entityId,
     projectId,
     addLead,
-    advanceLead,
-    loseLead,
-    convertLead,
     addPartner,
     activatePartner,
     requestCommission,
@@ -40,14 +37,12 @@ function Crm() {
   const [partnerId, setPartnerId] = useState("");
   const [pname, setPname] = useState("");
   const [prate, setPrate] = useState("2.5");
-  const [convertValue, setConvertValue] = useState<Record<string, string>>({});
 
   return (
     <div>
       <PageHeader
-        kicker="CRM · inside Atlas"
-        title="Leads & partners"
-        description="Owner decision: build in Atlas, not a third-party CRM. Commission accrues on conversion; payment still needs approval. Tally remains the books."
+        title="Sales partners"
+        description="Outside agencies and their commission. Identity check lives here. Follow buyers on Buyer leads. Accounts stay in Tally."
       />
       <GateBanner>
         Scoring, inventory lock, daily reports and the channel portal live on{" "}
@@ -108,7 +103,7 @@ function Crm() {
         </div>
       </Card>
 
-      <h2 className="mb-3 font-display text-2xl">Pipeline</h2>
+      <h2 className="mb-3 font-display text-2xl">Leads (work them on Pipeline)</h2>
       <div className="space-y-3">
         {leadRows.map((l) => (
           <Card key={l.id} className="p-4">
@@ -122,43 +117,11 @@ function Crm() {
               </div>
               <Status value={l.stage} />
             </div>
-            {l.stage !== "won" && l.stage !== "lost" ? (
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    const err = advanceLead(l.id);
-                    toast(err ?? "Advanced.");
-                  }}
-                >
-                  Advance
-                </Button>
-                <Input
-                  className="h-11 w-36"
-                  type="number"
-                  min={1}
-                  value={convertValue[l.id] ?? "7500000"}
-                  onChange={(e) => setConvertValue((v) => ({ ...v, [l.id]: e.target.value }))}
-                  aria-label={`Agreement value for ${l.name}`}
-                />
-                <Button
-                  size="sm"
-                  className="h-11"
-                  onClick={() => {
-                    const value = Number(convertValue[l.id] ?? "7500000") || 0;
-                    if (value <= 0) return toast("Enter the agreement value.");
-                    const err = convertLead(l.id, value);
-                    toast(err ?? "Booking created. Commission accrued if a partner is attached.");
-                  }}
-                >
-                  Convert
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => loseLead(l.id)}>
-                  Lost
-                </Button>
-              </div>
-            ) : null}
+            <div className="mt-3">
+              <Button asChild variant="outline" size="sm">
+                <Link to="/app/sales/pipeline">Open in pipeline</Link>
+              </Button>
+            </div>
           </Card>
         ))}
       </div>

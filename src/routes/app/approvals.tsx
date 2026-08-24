@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { Empty } from "@/components/empty";
 import { DecisionCard } from "@/components/decision-card";
 import { Button } from "@/components/ui/button";
+import { canActOnApproval } from "@/lib/roles";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 
@@ -19,14 +20,13 @@ function Approvals() {
   });
   const pending = rows.filter((a) => a.status === "pending");
   const done = rows.filter((a) => a.status !== "pending");
-  const canAct = user?.role === "owner" || user?.role === "pm" || user?.role === "accountant";
+  const role = user?.role;
 
   return (
     <div>
       <PageHeader
-        kicker="Workflow"
-        title="Approvals"
-        description="Material actions stay human. Step-up would be required in production."
+        title="Waiting for a yes"
+        description="A person must say yes or no before money is spent or a paper is released. Production would ask for a second step."
       />
       {pending.length === 0 ? (
         <Empty
@@ -75,7 +75,7 @@ function Approvals() {
                 </>
               }
               actions={
-                canAct ? (
+                canActOnApproval(role, a.waitingOn, a.kind) ? (
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -96,7 +96,7 @@ function Approvals() {
                     </Button>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted">View only for this role.</p>
+                  <p className="text-sm text-muted">Waiting on {a.waitingOn}.</p>
                 )
               }
             />
