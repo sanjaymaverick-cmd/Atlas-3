@@ -25,11 +25,8 @@ It does **not** silently turn the bypass off. Product has not decided.
 
 Routing of `waitingOn` is a typed union (`src/lib/waiting-on.ts`). Unmapped values are a compile error. `"Four-eyes approver"` maps to owner + project director; with the bypass off, an MD who is not in that map still cannot act unless they are a mapped waiter.
 
-## Decision still owed
+## Decision (2026-08-25)
 
-Either:
+**Keep the bypass for this local trial.** Owner ticked it in `owner-calls.md`.
 
-1. Keep the bypass and retire the “four-eyes already works” line in the UX review, or
-2. Set `VITE_MD_BYPASS_FOUR_EYES=false` and treat MD like every other seat.
-
-Do not flip the default without updating this file.
+Flip `VITE_MD_BYPASS_FOUR_EYES=false` **before any live / broker-facing deploy**, and update this file the same day. Do not flip the default silently.

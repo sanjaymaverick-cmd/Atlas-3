@@ -1,31 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { EntityChip } from "@/components/entity-chip";
 import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
+import { PO_VENDOR_NOT_ACTIVE } from "@/lib/gates";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/commercial")({ component: Commercial });
 
 function Commercial() {
-  const { vendors, pos, contracts, documents, projects, entityId, projectId, advanceVendor, createPO, executeContract, inviteVendor, setVendorGstin } = useAtlas();
+  const { vendors, pos, contracts, documents, projects, entityId, projectId, advanceVendor, executeContract, inviteVendor, setVendorGstin } = useAtlas();
   const projectIds = useMemo(
     () => projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id),
     [projects, entityId, projectId],
   );
   const scopedPos = pos.filter((p) => projectIds.includes(p.projectId));
   const scopedContracts = contracts.filter((c) => projectIds.includes(c.projectId));
-  const defaultProject = projectIds[0] ?? "";
-  const [vendorId, setVendorId] = useState("v1");
-  const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("2500000");
-  const [pid, setPid] = useState(defaultProject);
   const [vname, setVname] = useState("");
   const [vtrade, setVtrade] = useState("Civil");
   const [vcity, setVcity] = useState("Jaipur");
@@ -43,15 +38,17 @@ function Commercial() {
       <PageHeader
         kicker="Phase 4"
         title="Vendors and orders"
-        description="A vendor must be Active before you can raise a purchase order. Best path: Price quotes → pick a price → create order, so the yes/no screen shows the quote."
+        description="Invite vendors here. Raise a purchase order in four steps: ask for prices, attach the paper quote, pick an Active vendor, raise the order."
       />
       <GateBanner>
-        Purchase orders cannot be issued until the vendor is Active. Award path: Quotations → select quote → Create PO
-        → Approvals.
+        {PO_VENDOR_NOT_ACTIVE}{" "}
+        <Link to="/app/approvals" className="underline-offset-4 hover:underline">
+          Open Approvals
+        </Link>
       </GateBanner>
       <p className="mb-6">
-        <Button asChild>
-          <Link to="/app/quotations">Open Quotations — RFQ, compare, select, then PO</Link>
+        <Button asChild className="h-12">
+          <Link to="/app/quotations">Raise a purchase order (4 steps)</Link>
         </Button>
       </p>
 
@@ -125,64 +122,7 @@ function Commercial() {
         ))}
       </div>
 
-      <h2 className="mb-3 mt-8 font-display text-2xl">Issue purchase order</h2>
-      <div className="mb-3">
-        <EntityChip projectId={pid} />
-      </div>
-      <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
-        <Field label="Project">
-          <select
-            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
-            value={pid}
-            onChange={(e) => setPid(e.target.value)}
-          >
-            {projects
-              .filter((p) => p.entityId === entityId)
-              .map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-          </select>
-        </Field>
-        <Field label="Vendor">
-          <select
-            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
-            value={vendorId}
-            onChange={(e) => setVendorId(e.target.value)}
-          >
-            {vendors.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.name} ({v.stage})
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Title">
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} />
-        </Field>
-        <Field label="Amount (INR)">
-          <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
-        </Field>
-        <div className="sm:col-span-2">
-          <Button
-            onClick={() => {
-              const err = createPO({
-                projectId: pid,
-                vendorId,
-                title: title || "Untitled package",
-                amount: Number(amount) || 0,
-              });
-              if (err) toast(err);
-              else toast("PO submitted — waiting in Approvals.");
-            }}
-          >
-            Submit PO
-          </Button>
-        </div>
-      </Card>
-
-      <h2 className="mb-3 font-display text-2xl">Orders & contracts</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">Orders & contracts</h2>
       <div className="overflow-x-auto rounded-xl border border-line bg-surface">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="text-[11px] uppercase tracking-[0.12em] text-muted">

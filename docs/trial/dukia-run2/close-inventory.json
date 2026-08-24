@@ -1,0 +1,237 @@
+{
+  "clock": "2026-08-25",
+  "mode": "dense catalog (not 90 empty calendar days)",
+  "companies": [
+    "DUKIA GROUP",
+    "SATYAM BUILDCOM",
+    "SATYAM CONSTRUCTION",
+    "MGB PRIME ESTATES LLP",
+    "MOCK ATLAS3 LLP"
+  ],
+  "journalEntriesSubmitted": [
+    {
+      "name": "ACC-JV-2026-00010",
+      "company": "SATYAM BUILDCOM",
+      "sourceId": "dukia-run2-capital-SBC",
+      "title": "ATLAS-OPS dukia-run2-capital-SBC",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00011",
+      "company": "SATYAM BUILDCOM",
+      "sourceId": "dukia-run2-opex-SBC",
+      "title": "ATLAS-OPS dukia-run2-opex-SBC",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00012",
+      "company": "SATYAM CONSTRUCTION",
+      "sourceId": "dukia-run2-capital-SCN",
+      "title": "ATLAS-OPS dukia-run2-capital-SCN",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00013",
+      "company": "SATYAM CONSTRUCTION",
+      "sourceId": "dukia-run2-opex-SCN",
+      "title": "ATLAS-OPS dukia-run2-opex-SCN",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00014",
+      "company": "MGB PRIME ESTATES LLP",
+      "sourceId": "dukia-run2-capital-MGB",
+      "title": "ATLAS-OPS dukia-run2-capital-MGB",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00015",
+      "company": "MGB PRIME ESTATES LLP",
+      "sourceId": "dukia-run2-opex-MGB",
+      "title": "ATLAS-OPS dukia-run2-opex-MGB",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00016",
+      "company": "SATYAM BUILDCOM",
+      "sourceId": "ic-loan-sbc-scn-lender",
+      "title": "ATLAS-OPS ic-loan-sbc-scn-lender",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00017",
+      "company": "SATYAM CONSTRUCTION",
+      "sourceId": "ic-loan-sbc-scn-borrower",
+      "title": "ATLAS-OPS ic-loan-sbc-scn-borrower",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00018",
+      "company": "SATYAM BUILDCOM",
+      "sourceId": "ic-loan-sbc-mgb-lender",
+      "title": "ATLAS-OPS ic-loan-sbc-mgb-lender",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00019",
+      "company": "MGB PRIME ESTATES LLP",
+      "sourceId": "ic-loan-sbc-mgb-borrower",
+      "title": "ATLAS-OPS ic-loan-sbc-mgb-borrower",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00020",
+      "company": "SATYAM CONSTRUCTION",
+      "sourceId": "ic-loan-scn-mgb-lender",
+      "title": "ATLAS-OPS ic-loan-scn-mgb-lender",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00021",
+      "company": "MGB PRIME ESTATES LLP",
+      "sourceId": "ic-loan-scn-mgb-borrower",
+      "title": "ATLAS-OPS ic-loan-scn-mgb-borrower",
+      "docstatus": 1
+    }
+  ],
+  "draftsRetainedFromTimestampRetry": [
+    "ACC-JV-2026-00001",
+    "ACC-JV-2026-00002",
+    "ACC-JV-2026-00003",
+    "ACC-JV-2026-00004",
+    "ACC-JV-2026-00005",
+    "ACC-JV-2026-00006",
+    "ACC-JV-2026-00007",
+    "ACC-JV-2026-00008",
+    "ACC-JV-2026-00009"
+  ],
+  "icLoans": [
+    {
+      "id": "ic-loan-sbc-scn",
+      "from": "SATYAM BUILDCOM",
+      "to": "SATYAM CONSTRUCTION",
+      "amount": 2500000,
+      "lenderJe": "ACC-JV-2026-00016",
+      "borrowerJe": "ACC-JV-2026-00017",
+      "elimPostedOnEntity": false
+    },
+    {
+      "id": "ic-loan-sbc-mgb",
+      "from": "SATYAM BUILDCOM",
+      "to": "MGB PRIME ESTATES LLP",
+      "amount": 4000000,
+      "lenderJe": "ACC-JV-2026-00018",
+      "borrowerJe": "ACC-JV-2026-00019",
+      "elimPostedOnEntity": false
+    },
+    {
+      "id": "ic-loan-scn-mgb",
+      "from": "SATYAM CONSTRUCTION",
+      "to": "MGB PRIME ESTATES LLP",
+      "amount": 1500000,
+      "lenderJe": "ACC-JV-2026-00020",
+      "borrowerJe": "ACC-JV-2026-00021",
+      "elimPostedOnEntity": false
+    }
+  ],
+  "atlasPos": [
+    {
+      "id": "po_cj4qijse",
+      "amount": 420000000,
+      "status": "submitted"
+    },
+    {
+      "id": "po_iijof7w0",
+      "amount": 95000000,
+      "status": "submitted"
+    },
+    {
+      "id": "po_1f5q7xh6",
+      "amount": 720000000,
+      "status": "submitted"
+    }
+  ],
+  "bookings": [
+    {
+      "seat": "smav",
+      "errs": [
+        "ok",
+        "ok"
+      ],
+      "booked": [
+        "AVA-0102",
+        "AVA-0101"
+      ]
+    },
+    {
+      "seat": "smsf",
+      "errs": [
+        "ok",
+        "ok"
+      ],
+      "booked": [
+        "SFA-0102",
+        "SFA-0101"
+      ]
+    },
+    {
+      "seat": "smac",
+      "errs": [
+        "ok",
+        "ok"
+      ],
+      "booked": [
+        "ACA-0102",
+        "ACA-0101"
+      ]
+    }
+  ],
+  "diaries": [
+    {
+      "seat": "svav",
+      "err": null,
+      "diaries": 1
+    },
+    {
+      "seat": "svac",
+      "err": null,
+      "diaries": 1
+    },
+    {
+      "seat": "svsf",
+      "err": null,
+      "diaries": 1
+    }
+  ],
+  "land": [
+    {
+      "pid": "p_av",
+      "acquire": null,
+      "status": "acquired",
+      "consideration": 126000000,
+      "deed": "SD/AV/2024/0412",
+      "rera": null,
+      "filed": null
+    },
+    {
+      "pid": "p_sf",
+      "acquire": null,
+      "status": "acquired",
+      "consideration": 38000000,
+      "deed": "SD/SF/2025/0088",
+      "rera": null,
+      "filed": null
+    },
+    {
+      "pid": "p_ac",
+      "acquire": null,
+      "status": "acquired",
+      "consideration": 184000000,
+      "deed": "SD/AC/2025/0312",
+      "rera": null,
+      "filed": null
+    }
+  ],
+  "isolationHits": [],
+  "elimJesOnEntityBooks": []
+}

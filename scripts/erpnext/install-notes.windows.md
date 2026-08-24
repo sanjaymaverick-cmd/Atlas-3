@@ -36,7 +36,13 @@ docker compose -f pwd.yml up -d
 ```
 
 Site creation is in the frappe_docker docs (`bench new-site`, install erpnext).
-Create company **MOCK ATLAS3 LLP** in the ERPNext desk (Accounting → Company).
+Create company **MOCK ATLAS3 LLP** in the ERPNext desk (Accounting → Company). Then from Atlas:
+
+```bat
+npm run books:companies
+```
+
+That creates **DUKIA GROUP** (optional parent) plus **SATYAM BUILDCOM**, **SATYAM CONSTRUCTION**, **MGB PRIME ESTATES LLP** with exact Atlas names. MOCK stays the smoke company.
 
 ## Path B — Bench (when you already have a Linux/WSL bench)
 

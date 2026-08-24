@@ -9,12 +9,13 @@ export function unitConfig(unit: InventoryUnit, towers: Tower[]): UnitConfig {
   return "";
 }
 
-export function pickNextUnit(
+/** Available units for a project. Primary book-next path is this list — not typing AVA-/SFA-/ACA-. */
+export function availableUnitsFor(
   units: InventoryUnit[],
   towers: Tower[],
   projectId: string,
-  opts?: { prefix?: string; towerId?: string; config?: string },
-): InventoryUnit | undefined {
+  opts?: { towerId?: string; config?: string },
+): InventoryUnit[] {
   let pool = units.filter((u) => u.projectId === projectId && u.status === "available");
   if (opts?.towerId) pool = pool.filter((u) => u.towerId === opts.towerId);
   if (opts?.config) {
@@ -22,6 +23,16 @@ export function pickNextUnit(
     const matched = pool.filter((u) => unitConfig(u, towers).replace(/\s+/g, "").toUpperCase() === want);
     if (matched.length) pool = matched;
   }
+  return pool;
+}
+
+export function pickNextUnit(
+  units: InventoryUnit[],
+  towers: Tower[],
+  projectId: string,
+  opts?: { prefix?: string; towerId?: string; config?: string },
+): InventoryUnit | undefined {
+  const pool = availableUnitsFor(units, towers, projectId, opts);
   if (opts?.prefix) {
     const pref = pool.filter((u) => u.code.startsWith(opts.prefix!));
     if (pref.length) return pref[0];

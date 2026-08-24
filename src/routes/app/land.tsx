@@ -9,6 +9,7 @@ import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
+import { CHALLAN_REQUIRED } from "@/lib/gates";
 import { useAtlas } from "@/lib/store";
 import type { Obligation } from "@/lib/types";
 import { inr, todayIso } from "@/lib/utils";
@@ -37,6 +38,7 @@ function Land() {
   } = useAtlas();
   const [deed, setDeed] = useState<Record<string, { inr: string; no: string; date: string; advocate: string }>>({});
   const [ack, setAck] = useState<Record<string, string>>({});
+  const [landStep, setLandStep] = useState<Record<string, 1 | 2 | 3>>({});
   const [showAdd, setShowAdd] = useState(false);
   const [pname, setPname] = useState("");
   const [khasra, setKhasra] = useState("");
@@ -267,91 +269,141 @@ function Land() {
                 </ul>
               ) : null}
               {readyToBuy ? (
-                <GateBanner>Title pack is clear. Enter consideration and sale deed, then complete acquisition.</GateBanner>
+                <GateBanner>Title pack is clear. Step 1: consideration ₹. Step 2: sale deed number. Step 3: RERA challan before you mark filed.</GateBanner>
               ) : null}
-              {r.status !== "acquired" ? (
-                <div className={`mt-4 grid gap-3 sm:grid-cols-2 ${readyToBuy ? "rounded-xl border border-primary/40 p-4" : ""}`}>
-                  <Field label="Consideration (₹)">
-                    <Input
-                      type="number"
-                      value={deed[r.id]?.inr ?? ""}
-                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: e.target.value, no: s[r.id]?.no ?? "", date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "" } }))}
-                    />
-                  </Field>
-                  <Field label="Sale deed number">
-                    <Input
-                      value={deed[r.id]?.no ?? ""}
-                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: e.target.value, date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "" } }))}
-                    />
-                  </Field>
-                  <Field label="Sale deed date">
-                    <Input
-                      type="date"
-                      value={deed[r.id]?.date ?? todayIso()}
-                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: s[r.id]?.no ?? "", date: e.target.value, advocate: s[r.id]?.advocate ?? "" } }))}
-                    />
-                  </Field>
-                  <Field label="Advocate (optional)">
-                    <Input
-                      value={deed[r.id]?.advocate ?? ""}
-                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: s[r.id]?.no ?? "", date: s[r.id]?.date ?? todayIso(), advocate: e.target.value } }))}
-                    />
-                  </Field>
-                  <div className="sm:col-span-2">
-                    <Button
-                      onClick={() => {
-                        const d = deed[r.id];
-                        const err = acquireParcel(r.id, {
-                          considerationInr: Number(d?.inr) || 0,
-                          saleDeedNo: d?.no ?? "",
-                          saleDeedDate: d?.date,
-                          advocateName: d?.advocate,
-                        });
-                        toast(err ?? "Parcel marked acquired.");
-                      }}
-                    >
-                      Complete acquisition
-                    </Button>
+              {(() => {
+                const reraObs = scopedObs.filter((o) => o.projectId === r.projectId && o.kind === "rera");
+                const defaultStep: 1 | 2 | 3 = r.status !== "acquired" ? 1 : 3;
+                const step = landStep[r.id] ?? defaultStep;
+                const setStep = (n: 1 | 2 | 3) => setLandStep((s) => ({ ...s, [r.id]: n }));
+                const d = deed[r.id] ?? { inr: "", no: "", date: todayIso(), advocate: "" };
+                const patch = (partial: Partial<typeof d>) =>
+                  setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: s[r.id]?.no ?? "", date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "", ...partial } }));
+                return (
+                  <div className={`mt-4 ${readyToBuy || r.status === "acquired" ? "rounded-xl border border-primary/40 p-4" : ""}`}>
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      {(["Consideration ₹", "Sale deed number", "RERA challan"] as const).map((label, i) => {
+                        const n = (i + 1) as 1 | 2 | 3;
+                        return (
+                          <Button key={n} size="sm" variant={step === n ? "default" : "outline"} onClick={() => setStep(n)}>
+                            {n}. {label}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                    {step === 1 ? (
+                      <div className="grid gap-3">
+                        <Field label="Consideration (₹)">
+                          <Input type="number" value={d.inr} onChange={(e) => patch({ inr: e.target.value })} />
+                        </Field>
+                        <Button
+                          className="h-12 w-full sm:w-auto"
+                          onClick={() => {
+                            if (!Number(d.inr)) return toast("Enter the consideration in rupees.");
+                            setStep(2);
+                          }}
+                        >
+                          Next — sale deed
+                        </Button>
+                      </div>
+                    ) : null}
+                    {step === 2 ? (
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <Field label="Sale deed number">
+                          <Input value={d.no} onChange={(e) => patch({ no: e.target.value })} />
+                        </Field>
+                        <Field label="Sale deed date">
+                          <Input type="date" value={d.date} onChange={(e) => patch({ date: e.target.value })} />
+                        </Field>
+                        <Field label="Advocate (optional)">
+                          <Input value={d.advocate} onChange={(e) => patch({ advocate: e.target.value })} />
+                        </Field>
+                        <div className="flex flex-wrap items-end gap-2 sm:col-span-2">
+                          <Button variant="outline" onClick={() => setStep(1)}>
+                            Back
+                          </Button>
+                          {r.status !== "acquired" ? (
+                            <Button
+                              className="h-12"
+                              onClick={() => {
+                                const err = acquireParcel(r.id, {
+                                  considerationInr: Number(d.inr) || 0,
+                                  saleDeedNo: d.no,
+                                  saleDeedDate: d.date,
+                                  advocateName: d.advocate,
+                                });
+                                if (err) return toast(err);
+                                toast("Parcel marked acquired. File RERA with a challan next.");
+                                setStep(3);
+                              }}
+                            >
+                              Complete acquisition
+                            </Button>
+                          ) : (
+                            <Button
+                              className="h-12"
+                              onClick={() => {
+                                const err = recordParcelDeed(r.id, {
+                                  considerationInr: Number(d.inr) || 0,
+                                  saleDeedNo: d.no,
+                                  saleDeedDate: d.date,
+                                  advocateName: d.advocate,
+                                });
+                                if (err) return toast(err);
+                                toast("Consideration and sale deed recorded.");
+                                setStep(3);
+                              }}
+                            >
+                              Save sale deed
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+                    {step === 3 ? (
+                      <div className="grid gap-3">
+                        <p className="text-sm text-muted">{CHALLAN_REQUIRED}</p>
+                        {reraObs.length === 0 ? (
+                          <p className="text-sm text-muted">No RERA obligation on this project yet. Add one below if needed.</p>
+                        ) : (
+                          reraObs.map((o) => (
+                            <div key={o.id} className="flex flex-wrap items-end gap-2">
+                              <div className="min-w-[12rem] flex-1">
+                                <p className="font-medium">{o.title}</p>
+                                <p className="text-xs text-muted">Due {o.due}{o.filedRef ? ` · ${o.filedRef}` : ""}</p>
+                              </div>
+                              {o.status !== "filed" ? (
+                                <>
+                                  <Field label="Challan / acknowledgement (required)">
+                                    <Input
+                                      className="h-11 w-56"
+                                      placeholder="e.g. ACK-RAJ/P/2024/2144"
+                                      value={ack[o.id] ?? ""}
+                                      onChange={(e) => setAck((s) => ({ ...s, [o.id]: e.target.value }))}
+                                      aria-required
+                                    />
+                                  </Field>
+                                  <Button
+                                    className="h-12"
+                                    onClick={() => {
+                                      const err = fileObligation(o.id, ack[o.id] ?? "");
+                                      toast(err ?? "RERA marked filed with challan.");
+                                    }}
+                                  >
+                                    Mark filed
+                                  </Button>
+                                </>
+                              ) : (
+                                <Status value="approved" />
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    ) : null}
                   </div>
-                </div>
-              ) : !r.considerationInr ? (
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <p className="sm:col-span-2 text-sm text-muted">Land is acquired. Record consideration and sale deed so Finance can brief capital.</p>
-                  <Field label="Consideration (₹)">
-                    <Input
-                      type="number"
-                      value={deed[r.id]?.inr ?? ""}
-                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: e.target.value, no: s[r.id]?.no ?? "", date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "" } }))}
-                    />
-                  </Field>
-                  <Field label="Sale deed number">
-                    <Input
-                      value={deed[r.id]?.no ?? ""}
-                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: e.target.value, date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "" } }))}
-                    />
-                  </Field>
-                  <div className="sm:col-span-2">
-                    <Button
-                      onClick={() => {
-                        const d = deed[r.id];
-                        const err = recordParcelDeed(r.id, {
-                          considerationInr: Number(d?.inr) || 0,
-                          saleDeedNo: d?.no ?? "",
-                          saleDeedDate: d?.date,
-                          advocateName: d?.advocate,
-                        });
-                        toast(err ?? "Consideration and sale deed recorded.");
-                      }}
-                    >
-                      Record consideration
-                    </Button>
-                  </div>
-                </div>
-              ) : r.advocateName ? (
-                <p className="mt-3 text-xs text-muted">Advocate {r.advocateName} · deed {r.saleDeedDate}</p>
-              ) : (
-                <p className="mt-3 text-xs text-muted">Deed {r.saleDeedDate || r.saleDeedNo}</p>
-              )}
+                );
+              })()}
             </Card>
           );
         })}

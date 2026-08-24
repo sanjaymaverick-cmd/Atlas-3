@@ -13,5 +13,7 @@ Testers write one markdown file each. Do not edit application source.
 | `role-finance.md` | Finance Lead + Commercial Manager |
 | `role-legal.md` | Land & Legal + Document Controller |
 | `role-stores.md` | Stores / QS |
-| `design-engineer.md` | Design Engineer (after testers) |
+| `design-engineer.md` | Design Engineer (after testers) — Atlas seats |
+| `erpnext-desk.md` | Design Engineer — ERPNext Desk books only (Finance + MD) |
+| `erpnext-phase1-done.md` | Operator checklist after Desk Phase 1 |
 | `SYNTHESIS.md` | Orchestrator master report |

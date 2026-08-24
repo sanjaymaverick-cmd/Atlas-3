@@ -27,6 +27,10 @@ export async function booksAgent(action = "health", extra: Record<string, unknow
       baselineCount: data.baselineCount,
       journal: data.journal,
       posted: data.posted ?? [],
+      companies: data.companies,
+      dukiaReady: data.dukiaReady,
+      accounts: data.accounts,
+      costCenters: data.costCenters,
     };
   } catch (err) {
     return {

@@ -260,9 +260,12 @@ export function buildCeoReport(
     : 12;
   const weeklyVelocity = kpis.booked > 0 ? Math.round((kpis.booked / weeksElapsed) * 10) / 10 : 0;
   const weeksToSellout = weeklyVelocity > 0 ? Math.round((kpis.available / weeklyVelocity) * 10) / 10 : null;
-  const leads = (input.leads ?? []).filter((l) => ids.has(l.projectId));
-  const stages = ["inquiry", "contacted", "qualified", "visit", "negotiation", "won"] as const;
-  const funnel = stages.map((stage) => ({ stage, count: leads.filter((l) => l.stage === stage).length }));
+  const funnel = [
+    { stage: "available", count: kpis.available },
+    { stage: "held", count: kpis.held },
+    { stage: "booked", count: kpis.booked },
+    { stage: "possessed", count: kpis.possessed },
+  ];
   const channelMix = {
     inHouse: bookings.filter((b) => !b.partnerId).length,
     channel: bookings.filter((b) => Boolean(b.partnerId)).length,
@@ -282,10 +285,10 @@ export function buildCeoReport(
       : brief[0];
   brief.push(
     books?.reachable
-      ? `Books: ERPNext answered. Atlas posted ${books.posted} voucher(s). Posting stays off unless you turn it on.`
+      ? `Books: ERPNext answered. Atlas posted ${books.posted} voucher(s). Group tiles are ops — not P&L after IC elimination.`
       : books?.configured
         ? "Books: ERPNext is configured but not reachable. Atlas still runs. Do not treat Home numbers as the P&L."
-        : "Books: ERPNext not configured. Atlas still runs. P&L and balance sheet will be empty until posting is on.",
+        : "Books: ERPNext not configured. Atlas still runs. Entity P&L is in ERPNext; group elim is a Finance close step.",
   );
   const five = brief.slice(0, 5);
   while (five.length < 5) five.push("No further signal in this slice.");

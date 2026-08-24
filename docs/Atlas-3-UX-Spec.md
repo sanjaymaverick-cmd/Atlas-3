@@ -156,7 +156,7 @@ PO cards must show: `Selected quote · Vendor · ₹X · vs N other quotes` with
 
 1. **Invite vendor** — name, trade, city, GSTIN  
 2. **Vendors** — stage chip + Advance + GSTIN if missing  
-3. **Issue purchase order** — project, vendor (Active only succeed), title, amount  
+3. **Raise a purchase order** — four-step path on Quotations (RFQ → attach paper/WhatsApp quote → pick Active quote → PO)  
 4. **Orders & contracts** — table  
 
 ### Invariants (must stay visible in UI copy)
@@ -168,7 +168,7 @@ PO cards must show: `Selected quote · Vendor · ₹X · vs N other quotes` with
 
 ### Empty / error
 
-Refuse with exact reason: *“Purchase orders cannot be issued until the vendor is Active.”*
+Refuse with exact reason: *“Cannot raise PO — vendor not Active. Open Approvals.”*
 
 ---
 

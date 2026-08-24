@@ -9,6 +9,16 @@ export interface ErpnextConfig {
   configured: boolean;
 }
 
+export interface BooksCompanyStatus {
+  name: string;
+  present: boolean;
+  abbr?: string;
+  isGroup?: boolean;
+  parent?: string;
+  role: "group" | "trading" | "mock";
+  project?: string;
+}
+
 export interface BooksResult {
   name: "erpnext";
   ok: boolean;
@@ -22,6 +32,10 @@ export interface BooksResult {
   baselineCount?: number;
   journal?: Array<{ name: string; posting_date?: string; remarks?: string }>;
   posted?: unknown[];
+  companies?: BooksCompanyStatus[];
+  dukiaReady?: boolean;
+  accounts?: Array<{ name: string; isGroup?: boolean }>;
+  costCenters?: Array<{ name: string; company?: string }>;
 }
 
 export interface BooksBackend {

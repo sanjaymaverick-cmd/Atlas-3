@@ -52,4 +52,22 @@ export const OWNER_TODOS = [
     detail: "99acres, MagicBricks, Housing.com webhooks are bound on this host. Meta / Google Lead Ads and live WhatsApp Business remain owner TODOs.",
     status: "open" as const,
   },
+  {
+    id: "todo_ic_elim",
+    title: "Automatic intercompany elimination",
+    detail: "ERPNext records IC pairs; group elim is a period-end worksheet. Auto-elim is optional later — not Atlas CEO pulse.",
+    status: "open" as const,
+  },
+  {
+    id: "todo_stock_bridge",
+    title: "ERPNext stock / GRN",
+    detail: "Atlas Materials is quantity. Valued stock in ERPNext needs Stock Entry when posting is on. Labels only until then.",
+    status: "open" as const,
+  },
+  {
+    id: "todo_dwg",
+    title: "DWG / BIM viewer",
+    detail: "Drawings desk can register a small DWG/IFC. No viewer. Not Aconex.",
+    status: "open" as const,
+  },
 ];
