@@ -31,6 +31,7 @@ import {
   PARCELS,
   QUANTITIES,
   OWNER_TODOS,
+  FUNDING,
 } from "./extra-seed";
 import { COMMISSIONS, HOSTS, LEADS, PARTNERS, PAYMENTS, SNAGS } from "./crm-seed";
 import {
@@ -121,6 +122,8 @@ import type {
   SalesNotice,
   FundingSanction,
   ParcelAcquireDetails,
+  Drawing,
+  QuoteSource,
 } from "./types";
 import { STANDARD_DILIGENCE } from "./diligence-pack";
 import { pickNextUnit } from "./unit-pick";
@@ -136,6 +139,7 @@ interface AtlasState {
   projectId: string | "all";
   entityByUser: Record<string, string>;
   fundingSanctions: FundingSanction[];
+  drawings: Drawing[];
   users: User[];
   entities: LegalEntity[];
   projects: Project[];
@@ -203,7 +207,33 @@ interface AtlasState {
   cancelBooking: (id: string) => string | null;
   createPO: (input: { projectId: string; vendorId: string; title: string; amount: number; quoteId?: string; rfqId?: string }) => string | null;
   createRfq: (input: { projectId: string; title: string; package: string; due: string; required?: boolean }) => string | null;
-  submitQuote: (input: { rfqId: string; vendorId: string; amount: number; validity: string; exclusions: string }) => string | null;
+  submitQuote: (input: {
+    rfqId: string;
+    vendorId: string;
+    amount: number;
+    validity: string;
+    exclusions: string;
+    source?: QuoteSource;
+    taxAmount?: number;
+    fileName?: string;
+    fileKind?: string;
+    fileSize?: number;
+    fileDataUrl?: string;
+    sha256?: string;
+  }) => string | null;
+  addDrawing: (input: {
+    projectId: string;
+    title: string;
+    kind: Drawing["kind"];
+    revision: string;
+    status?: Drawing["status"];
+    towerId?: string;
+    fileName?: string;
+    fileKind?: string;
+    fileSize?: number;
+    fileDataUrl?: string;
+    sha256?: string;
+  }) => string | null;
   selectQuote: (quoteId: string) => string | null;
   createPOFromQuote: (quoteId: string) => string | null;
   raiseChange: (item: Omit<ChangeItem, "id">) => void;
@@ -365,7 +395,12 @@ function migratePersisted(state: unknown) {
     users,
     user,
     approvals: ensureVendorActivationCards(s.vendors ?? [], s.approvals ?? [], projects),
-    fundingSanctions: s.fundingSanctions ?? [],
+    fundingSanctions: (() => {
+      const have = new Set((s.fundingSanctions ?? []).map((f) => f.projectId));
+      const extra = FUNDING.filter((f) => !have.has(f.projectId));
+      return [...(s.fundingSanctions ?? []), ...extra];
+    })(),
+    drawings: s.drawings ?? [],
     entityByUser: s.entityByUser ?? {},
   };
 }
@@ -526,7 +561,8 @@ export const useAtlas = create<AtlasState>()(
       entityId: "le_sbc",
       projectId: "all",
       entityByUser: {},
-      fundingSanctions: [],
+      fundingSanctions: FUNDING,
+      drawings: [],
       users: USERS,
       entities: ENTITIES,
       projects: PROJECTS,
@@ -853,9 +889,40 @@ export const useAtlas = create<AtlasState>()(
           exclusions: input.exclusions || "—",
           status: "submitted",
           submittedAt: todayIso(),
+          source: input.source ?? "portal",
+          taxAmount: input.taxAmount,
+          fileName: input.fileName,
+          fileKind: input.fileKind,
+          fileSize: input.fileSize,
+          fileDataUrl: input.fileDataUrl,
+          sha256: input.sha256,
         };
         set({ quotes: [row, ...get().quotes] });
-        get().log("Quote submitted", `${vendor.name} · ${rfq.title}`);
+        get().log("Quote submitted", `${vendor.name} · ${rfq.title}${input.source === "paper" ? " · paper" : ""}`);
+        return null;
+      },
+      addDrawing: (input) => {
+        const entityErr = projectEntityError(get(), input.projectId);
+        if (entityErr) return entityErr;
+        if (!input.title.trim()) return "Title required.";
+        const row: Drawing = {
+          id: uid("dr"),
+          projectId: input.projectId,
+          title: input.title.trim(),
+          kind: input.kind,
+          towerId: input.towerId,
+          revision: input.revision.trim() || "R0",
+          status: input.status ?? "draft",
+          fileName: input.fileName,
+          fileKind: input.fileKind,
+          fileSize: input.fileSize,
+          fileDataUrl: input.fileDataUrl,
+          sha256: input.sha256,
+          uploadedAt: todayIso(),
+          uploadedBy: get().user?.name ?? "Docs",
+        };
+        set({ drawings: [row, ...get().drawings] });
+        get().log("Registered drawing", `${row.title} · ${row.revision}`);
         return null;
       },
       selectQuote: (quoteId) => {
@@ -1297,6 +1364,8 @@ export const useAtlas = create<AtlasState>()(
           equityPct: input.equityPct,
           amount: input.amount,
           status: input.status ?? "sanctioned",
+          sanctionedAt: input.sanctionedAt ?? todayIso(),
+          validUntil: input.validUntil,
         };
         set({ fundingSanctions: [row, ...get().fundingSanctions] });
         get().log("Recorded funding sanction", `${row.bank} · ${row.sanctionNo}`);
@@ -2147,14 +2216,19 @@ export const useAtlas = create<AtlasState>()(
     }),
     {
       name: "atlas3-dukia-v1",
-      version: 3,
+      version: 5,
       migrate: (persisted) => migratePersisted(persisted),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<AtlasState>;
         return {
           ...current,
           ...p,
-          fundingSanctions: p.fundingSanctions ?? current.fundingSanctions ?? [],
+          fundingSanctions: (() => {
+            const cur = p.fundingSanctions?.length ? p.fundingSanctions : current.fundingSanctions ?? [];
+            const have = new Set(cur.map((f) => f.projectId));
+            return [...cur, ...FUNDING.filter((f) => !have.has(f.projectId))];
+          })(),
+          drawings: p.drawings ?? current.drawings ?? [],
           entityByUser: p.entityByUser ?? current.entityByUser ?? {},
         };
       },

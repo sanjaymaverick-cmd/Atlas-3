@@ -1,4 +1,4 @@
-import type { InventoryUnit, Lead, Partner, Project, Role, SalesAgent, UnitHold, User } from "@/lib/types";
+import type { DailyReport, InventoryUnit, Lead, Partner, Project, Role, SalesAgent, UnitHold, User } from "@/lib/types";
 
 export function isThirdParty(role: Role | string | undefined) {
   return role === "channel" || role === "channel_admin";
@@ -75,4 +75,47 @@ export function scopedUnits(
 
 export function scopedHolds(holds: UnitHold[], projectIds: string[], agentIds: string[]): UnitHold[] {
   return holds.filter((h) => h.status === "held" && projectIds.includes(h.projectId) && agentIds.includes(h.agentId));
+}
+
+export function scopedDailyReports(reports: DailyReport[], agentIds: string[]): DailyReport[] {
+  return reports.filter((d) => agentIds.includes(d.agentId));
+}
+
+/** Strings a channel seat must never receive from scoped lists. */
+export function channelIsolationLeaks(opts: {
+  user: User | null;
+  agents: SalesAgent[];
+  partners: Partner[];
+  projects: Project[];
+  leads: Lead[];
+  units: InventoryUnit[];
+  holds: UnitHold[];
+  reports: DailyReport[];
+}): string[] {
+  const companyId = myCompanyId(opts.user, opts.agents);
+  if (!companyId) return [];
+  const ids = scopedProjectIds(opts.user, opts.agents, opts.projects, "", "all");
+  const agentIds = companyAgentIds(opts.agents, companyId);
+  const firm = opts.partners.find((p) => p.id === companyId)?.name ?? "";
+  const forbidden = opts.partners.filter((p) => p.id !== companyId).map((p) => p.name);
+  const otherProjects = opts.projects.filter((p) => !ids.includes(p.id)).map((p) => p.name);
+  const hits: string[] = [];
+  const leadRows = scopedLeads(opts.leads, opts.user, opts.agents, ids);
+  const unitRows = scopedUnits(opts.units, ids, { thirdParty: true });
+  const holdRows = scopedHolds(opts.holds, ids, agentIds);
+  const reportRows = scopedDailyReports(opts.reports, agentIds);
+  const blob = [
+    ...leadRows.map((l) => `${l.name} ${l.note ?? ""} ${l.partnerId ?? ""}`),
+    ...unitRows.map((u) => u.projectId),
+    ...holdRows.map((h) => h.customer),
+    ...reportRows.map((r) => r.notes),
+    ...ids.map((id) => opts.projects.find((p) => p.id === id)?.name ?? ""),
+  ].join(" | ");
+  for (const name of [...forbidden, ...otherProjects]) {
+    if (name && blob.includes(name) && name !== firm) hits.push(name);
+  }
+  for (const u of unitRows) {
+    if (!ids.includes(u.projectId)) hits.push(u.code);
+  }
+  return [...new Set(hits)];
 }

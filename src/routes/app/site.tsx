@@ -14,7 +14,7 @@ import { todayIso } from "@/lib/utils";
 export const Route = createFileRoute("/app/site")({ component: Site });
 
 function Site() {
-  const { diaries, inspections, projects, entityId, projectId, snags, pos, user, addDiary, copyForwardDiary, completeInspection, scheduleInspection, closeSnag } = useAtlas();
+  const { diaries, inspections, projects, entityId, projectId, snags, pos, rfqs, vendors, quotes, user, addDiary, copyForwardDiary, completeInspection, scheduleInspection, closeSnag, submitQuote } = useAtlas();
   const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
   const ids = scoped.map((p) => p.id);
   const [pid, setPid] = useState(ids[0] ?? "");
@@ -24,6 +24,9 @@ function Site() {
   const [mep, setMep] = useState("");
   const [finish, setFinish] = useState("");
   const [weather, setWeather] = useState("Clear");
+  const [paperVendor, setPaperVendor] = useState(vendors[0]?.id ?? "");
+  const [paperAmt, setPaperAmt] = useState("");
+  const openRfqs = rfqs.filter((r) => ids.includes(r.projectId) && r.status === "open");
   const noPo = Boolean(pid) && !pos.some((p) => p.projectId === pid && (p.status === "approved" || p.status === "execution" || p.status === "executed"));
 
   const diaryRows = diaries.filter((d) => ids.includes(d.projectId));
@@ -129,6 +132,53 @@ function Site() {
         </div>
       </Card>
       )}
+
+      {openRfqs.length > 0 && (user?.role === "engineer" || user?.role === "supervisor") ? (
+        <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
+          <h2 className="font-display text-xl sm:col-span-2">Register a paper quote</h2>
+          <p className="sm:col-span-2 text-sm text-muted">Vendor has no login. Amount goes on the open price request. Select/PO still needs Active.</p>
+          <Field label="Open price request">
+            <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" id="paper-rfq" defaultValue={openRfqs[0]?.id}>
+              {openRfqs.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.title}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Vendor">
+            <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={paperVendor} onChange={(e) => setPaperVendor(e.target.value)}>
+              {vendors.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name} ({v.stage})
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Amount (₹)">
+            <Input type="number" value={paperAmt} onChange={(e) => setPaperAmt(e.target.value)} />
+          </Field>
+          <div className="flex items-end">
+            <Button
+              variant="outline"
+              onClick={() => {
+                const rfqId = (document.getElementById("paper-rfq") as HTMLSelectElement)?.value;
+                const err = submitQuote({
+                  rfqId,
+                  vendorId: paperVendor,
+                  amount: Number(paperAmt) || 0,
+                  validity: todayIso(),
+                  exclusions: "paper quote from site",
+                  source: "paper",
+                });
+                toast(err ?? `Paper quote recorded (${quotes.length + (err ? 0 : 1)} on file).`);
+              }}
+            >
+              Register paper quote
+            </Button>
+          </div>
+        </Card>
+      ) : null}
 
       <h2 className="mb-3 font-display text-2xl">Recent diaries</h2>
       <div className="space-y-3">

@@ -8,7 +8,9 @@ import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
+import { readAttachment } from "@/lib/attach";
 import { useAtlas } from "@/lib/store";
+import type { QuoteSource } from "@/lib/types";
 import { inr, todayIso } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/quotations")({ component: Quotations });
@@ -42,10 +44,13 @@ function Quotations() {
   const [title, setTitle] = useState("");
   const [pkg, setPkg] = useState("");
   const [due, setDue] = useState(todayIso());
-  const [vendorId, setVendorId] = useState("v1");
+  const [vendorId, setVendorId] = useState(vendors[0]?.id ?? "v_civ");
   const [amount, setAmount] = useState("3000000");
   const [validity, setValidity] = useState("2026-10-15");
   const [exclusions, setExclusions] = useState("");
+  const [source, setSource] = useState<QuoteSource>("paper");
+  const [tax, setTax] = useState("");
+  const [paperFile, setPaperFile] = useState<File | null>(null);
 
   const active = scopedRfqs.find((r) => r.id === compareId) ?? scopedRfqs[0];
   const activeQuotes = active ? quotes.filter((q) => q.rfqId === active.id) : [];
@@ -54,7 +59,7 @@ function Quotations() {
     <div>
       <PageHeader
         title="Price quotes"
-        description="Ask vendors for prices, compare them, pick one, then raise a purchase order. Picking a price does not pay anyone. The order still waits for a yes."
+        description="Ask vendors for prices, compare them, pick one, then raise a purchase order. Paper, email, or WhatsApp quotes from vendors with no login register here. Picking a price does not pay anyone. Select still needs the vendor Active."
       />
       <GateBanner>
         You can only pick a price from an Active vendor. Raise the purchase order only after you pick. Atlas does not pay from this screen.
@@ -145,6 +150,7 @@ function Quotations() {
               <thead className="text-[11px] uppercase tracking-[0.12em] text-muted">
                 <tr className="border-b border-line">
                   <th className="px-4 py-3 font-medium">Vendor</th>
+                  <th className="px-4 py-3 font-medium">Source</th>
                   <th className="px-4 py-3 font-medium">Amount</th>
                   <th className="px-4 py-3 font-medium">Validity</th>
                   <th className="px-4 py-3 font-medium">Exclusions</th>
@@ -155,7 +161,7 @@ function Quotations() {
               <tbody>
                 {activeQuotes.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-6 text-muted">
+                    <td colSpan={7} className="px-4 py-6 text-muted">
                       No quotes yet. Submit one below.
                     </td>
                   </tr>
@@ -168,7 +174,25 @@ function Quotations() {
                           <p className="font-medium">{v?.name}</p>
                           <p className="text-xs text-muted">{v?.stage}</p>
                         </td>
-                        <td className="px-4 py-3 tabular-nums">{inr(q.amount, true)}</td>
+                        <td className="px-4 py-3 text-xs">
+                          {q.source ?? "portal"}
+                          {q.fileName ? (
+                            <>
+                              <br />
+                              {q.fileDataUrl ? (
+                                <a href={q.fileDataUrl} download={q.fileName} className="underline-offset-4 hover:underline">
+                                  {q.fileName}
+                                </a>
+                              ) : (
+                                q.fileName
+                              )}
+                            </>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-3 tabular-nums">
+                          {inr(q.amount, true)}
+                          {q.taxAmount ? <span className="block text-xs text-muted">tax {inr(q.taxAmount, true)}</span> : null}
+                        </td>
                         <td className="px-4 py-3">{q.validity}</td>
                         <td className="max-w-[220px] px-4 py-3 text-xs text-muted">{q.exclusions}</td>
                         <td className="px-4 py-3">
@@ -235,20 +259,50 @@ function Quotations() {
               <Field label="Exclusions">
                 <Input value={exclusions} onChange={(e) => setExclusions(e.target.value)} />
               </Field>
+              <Field label="How it arrived">
+                <select
+                  className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value as QuoteSource)}
+                >
+                  <option value="paper">Paper (printed)</option>
+                  <option value="email">Email</option>
+                  <option value="whatsapp">WhatsApp photo</option>
+                  <option value="portal">Typed here</option>
+                </select>
+              </Field>
+              <Field label="Tax (₹, optional)">
+                <Input type="number" value={tax} onChange={(e) => setTax(e.target.value)} />
+              </Field>
+              <Field label="Scan / photo (PDF or JPG)">
+                <Input type="file" accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png" onChange={(e) => setPaperFile(e.target.files?.[0] ?? null)} />
+              </Field>
+              <p className="sm:col-span-2 text-xs text-muted">
+                Vendors often have no login. A supervisor can register a printed quote here. Selecting it for a PO still needs the vendor Active. Local demo stores a small copy in this browser (~1.2 MB).
+              </p>
               <div className="sm:col-span-2">
                 <Button
-                  onClick={() => {
+                  onClick={async () => {
+                    let meta: { fileName?: string; fileKind?: string; fileSize?: number; fileDataUrl?: string; sha256?: string } = {};
+                    if (paperFile) {
+                      const read = await readAttachment(paperFile);
+                      if ("error" in read) return toast(read.error);
+                      meta = read;
+                    }
                     const err = submitQuote({
                       rfqId: active.id,
                       vendorId,
                       amount: Number(amount) || 0,
                       validity,
                       exclusions,
+                      source,
+                      taxAmount: tax ? Number(tax) : undefined,
+                      ...meta,
                     });
                     toast(err ?? "Quote recorded.");
                   }}
                 >
-                  Submit quote
+                  Register quote
                 </Button>
               </div>
             </Card>

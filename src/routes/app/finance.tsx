@@ -21,6 +21,8 @@ function Finance() {
   const [loanPct, setLoanPct] = useState("60");
   const [amount, setAmount] = useState("");
   const [fundPid, setFundPid] = useState("");
+  const [sanctionedAt, setSanctionedAt] = useState("");
+  const [validUntil, setValidUntil] = useState("");
   const rows = tally.filter((t) => t.entityId === entityId);
   const entity = entities.find((e) => e.id === entityId);
   const [books, setBooks] = useState<BooksResult | null>(null);
@@ -98,6 +100,12 @@ function Finance() {
         <Field label="Sanction amount (₹)">
           <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </Field>
+        <Field label="Sanction date">
+          <Input type="date" value={sanctionedAt} onChange={(e) => setSanctionedAt(e.target.value)} />
+        </Field>
+        <Field label="Valid until (optional)">
+          <Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
+        </Field>
         <div className="flex items-end">
           <Button
             onClick={() => {
@@ -110,6 +118,8 @@ function Finance() {
                 loanPct: loan,
                 equityPct: 100 - loan,
                 amount: Number(amount) || 0,
+                sanctionedAt: sanctionedAt || undefined,
+                validUntil: validUntil || undefined,
               });
               toast(err ?? "Sanction recorded on the project.");
               if (!err) setSanctionNo("");
@@ -132,6 +142,7 @@ function Finance() {
                   </p>
                   <p className="text-sm text-muted">
                     {f.sanctionNo} · {f.loanPct}/{f.equityPct} · {inr(f.amount, true)}
+                    {f.sanctionedAt ? ` · from ${f.sanctionedAt}` : ""}
                   </p>
                 </div>
                 <Status value={f.status} />

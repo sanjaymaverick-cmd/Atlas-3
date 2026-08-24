@@ -47,6 +47,25 @@ export type DecisionId =
   | "crm";
 
 export type DocKind = "Drawing" | "Statutory" | "Report" | "Spec" | "Contract";
+
+export type QuoteSource = "portal" | "paper" | "email" | "whatsapp";
+
+export interface Drawing {
+  id: string;
+  projectId: string;
+  title: string;
+  kind: "master" | "floor" | "structural" | "mep" | "other";
+  towerId?: string;
+  revision: string;
+  status: "draft" | "ifc" | "as-built";
+  fileName?: string;
+  fileKind?: string;
+  fileSize?: number;
+  fileDataUrl?: string;
+  sha256?: string;
+  uploadedAt: string;
+  uploadedBy: string;
+}
 export type DocClass = "internal" | "confidential" | "restricted";
 export type DocStatus = "quarantine" | "review" | "approved" | "issued" | "superseded";
 
@@ -104,6 +123,8 @@ export interface FundingSanction {
   equityPct: number;
   amount: number;
   status: "draft" | "sanctioned" | "disbursing" | "closed";
+  sanctionedAt?: string;
+  validUntil?: string;
 }
 
 export interface ParcelAcquireDetails {
@@ -197,6 +218,13 @@ export interface Quote {
   exclusions: string;
   status: QuoteStatus;
   submittedAt: string;
+  source?: QuoteSource;
+  taxAmount?: number;
+  fileName?: string;
+  fileKind?: string;
+  fileSize?: number;
+  fileDataUrl?: string;
+  sha256?: string;
 }
 
 export interface Contract {

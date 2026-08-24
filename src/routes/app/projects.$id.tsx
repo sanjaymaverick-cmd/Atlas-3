@@ -60,7 +60,7 @@ export const Route = createFileRoute("/app/projects/$id")({ component: ProjectDe
 
 function ProjectDetail() {
   const { id } = Route.useParams();
-  const { projects, documents, bookings, diaries, changes } = useAtlas();
+  const { projects, documents, bookings, diaries, changes, drawings } = useAtlas();
   const p = projects.find((x) => x.id === id);
 
   if (!p) {
@@ -118,6 +118,9 @@ function ProjectDetail() {
           </ul>
           <Link to="/app/documents" className="mt-4 inline-block text-xs text-muted underline-offset-4 hover:underline">
             Open document control
+          </Link>
+          <Link to="/app/drawings" className="mt-2 ml-4 inline-block text-xs text-muted underline-offset-4 hover:underline">
+            Drawings ({drawings.filter((d) => d.projectId === p.id).length})
           </Link>
         </Card>
         <Card className="p-5">

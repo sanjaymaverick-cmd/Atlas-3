@@ -276,3 +276,25 @@ dies. Any long-lived browser profile under the repo will do this.
 
 **Fix applied:** `scripts/trial/session.mjs` defaults `PROFILE` to
 `os.tmpdir()/atlas3-trial-profile`, outside the watched tree.
+
+---
+
+## This pass (dukia/company-run) — closed
+
+| Item | Status |
+|------|--------|
+| Vendor activation card → Active → quote → PO | FIXED — probe `scripts/trial/probes/sprint-a.mjs` |
+| Land consideration ₹ + sale deed | FIXED |
+| Book-next by BHK / prefix fallback | FIXED |
+| Directors ≠ MD | FIXED |
+| Funding / loan sanction master (SBI/AU 60/40, dates) | FIXED — seed `DUKIA_FUNDING`; Finance CRUD |
+| Entity persist + wrong-company block on acquire/RFQ/booking/PO | FIXED |
+| Channel selectors scoped (leads, units, holds, diaries/reports) | FIXED — `scripts/trial/probes/isolation-selectors.mjs` |
+| CEO pulse `/app/ceo` (KPIs, risk, five-bullet brief) | FIXED |
+| Paper quotation on RFQ (source + file metadata) | FIXED |
+| Drawing register `/app/drawings` (PDF v1, hidden from channel) | FIXED |
+| P2 UX batch (project card, RERA target vs filed, handover OC, launch lock, pack-complete, virus-scan wording, Approvals / Land & acquisition nav) | FIXED |
+
+**Still recorded, not flipped:** ERPNext posting default off. Commission accrues only. Full dataset still sits in the client store (L14 architecture); selectors and exclusive-channel lock are the operational filter. L14 is mitigated, not deleted.
+
+**Out of scope this pass:** 2024–2028 re-run, DWG/IFC viewer, enabling posting by default.

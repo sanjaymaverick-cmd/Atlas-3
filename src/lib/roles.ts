@@ -18,9 +18,10 @@ export const ROLE_HOME: Record<
   | "/app/sales"
   | "/app/sales/channel"
   | "/app/sales/company"
+  | "/app/ceo"
 > =
   {
-    owner: "/app/approvals",
+    owner: "/app/ceo",
     pm: "/app",
     engineer: "/app/site",
     supervisor: "/app/site",
@@ -78,7 +79,7 @@ export const NAV_ROLES = {
   documents: ["owner", "pm", "engineer", "docs", "legal"] as Role[],
   land: ["owner", "pm", "accountant", "legal"] as Role[],
   commercial: ["owner", "pm", "accountant", "commercial"] as Role[],
-  quotations: ["owner", "pm", "accountant", "commercial"] as Role[],
+  quotations: ["owner", "pm", "accountant", "commercial", "engineer", "supervisor"] as Role[],
   site: SITE,
   controls: SITE,
   changes: ["owner", "pm", "engineer", "supervisor"] as Role[],
@@ -90,6 +91,8 @@ export const NAV_ROLES = {
   assistant: [...OFFICE, "engineer", "supervisor", "stores"] as Role[],
   portfolio: ["owner", "pm", "accountant"] as Role[],
   capital: ["owner", "pm", "accountant"] as Role[],
+  ceo: ["owner"] as Role[],
+  drawings: ["owner", "pm", "engineer", "docs", "legal"] as Role[],
   sales: ["owner", "pm", "sales", "accountant", "channel", "channel_admin"] as Role[],
   salesInventory: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
   salesChannel: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
@@ -172,7 +175,7 @@ export function canActOnApproval(
 }
 
 export function homeForRole(role: Role | string | undefined, pendingApprovals = 0) {
-  if (role === "owner") return pendingApprovals > 0 ? "/app/approvals" : "/app";
+  if (role === "owner") return pendingApprovals > 0 ? "/app/approvals" : "/app/ceo";
   if (role && role in ROLE_HOME) return ROLE_HOME[role as Role];
   return "/app" as const;
 }

@@ -7,7 +7,7 @@ import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
-import { companyAgentIds, myAgent, myCompanyId, scopedHolds, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
+import { companyAgentIds, myAgent, myCompanyId, scopedDailyReports, scopedHolds, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { holdExpiryLabel, todayIso } from "@/lib/utils";
 import { inr } from "@/lib/utils";
@@ -39,7 +39,7 @@ function ChannelDesk() {
   const fieldAgent = user?.role === "channel";
   const free = scopedUnits(units, ids, { thirdParty: Boolean(companyId) }).filter((u) => u.status === "available");
   const liveHolds = scopedHolds(holds, ids, agentIds);
-  const reports = dailyReports.filter((d) => agentIds.includes(d.agentId));
+  const reports = scopedDailyReports(dailyReports, agentIds);
   const reportedToday = reports.some((d) => d.agentId === agentId && d.date === todayIso());
   const [unitId, setUnitId] = useState(free[0]?.id ?? "");
   const [customer, setCustomer] = useState("");

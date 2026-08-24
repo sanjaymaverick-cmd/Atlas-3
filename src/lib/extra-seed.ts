@@ -5,6 +5,7 @@ export {
   DUKIA_DILIGENCE as DILIGENCE,
   DUKIA_OBLIGATIONS as OBLIGATIONS,
   DUKIA_MATERIALS as MATERIALS,
+  DUKIA_FUNDING as FUNDING,
 } from "./dukia-seed";
 
 export const EMIS: Emi[] = [];

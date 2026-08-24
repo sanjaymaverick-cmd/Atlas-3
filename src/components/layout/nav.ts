@@ -26,6 +26,8 @@ import {
   Plug,
   Contact,
   MessageCircle,
+  Gauge,
+  PenLine,
 } from "lucide-react";
 import { NAV_ROLES } from "@/lib/roles";
 import type { Role } from "@/lib/types";
@@ -49,11 +51,13 @@ export const NAV: Array<{
   group: NavGroup;
 }> = [
   { to: "/app", label: "Home", icon: LayoutDashboard, end: true, roles: NAV_ROLES.command, group: "today" },
+  { to: "/app/ceo", label: "CEO pulse", icon: Gauge, roles: NAV_ROLES.ceo, group: "today" },
   { to: "/app/approvals", label: "Approvals", icon: ListChecks, roles: NAV_ROLES.approvals, group: "today" },
   { to: "/app/portfolio", label: "Open items", icon: Layers, roles: NAV_ROLES.portfolio, group: "today" },
   { to: "/app/capital", label: "Company money", icon: Table2, roles: NAV_ROLES.capital, group: "books" },
   { to: "/app/projects", label: "Projects", icon: Building2, roles: NAV_ROLES.projects, group: "build" },
   { to: "/app/documents", label: "Documents", icon: FileStack, roles: NAV_ROLES.documents, group: "build" },
+  { to: "/app/drawings", label: "Drawings and plans", icon: PenLine, roles: NAV_ROLES.drawings, group: "build" },
   { to: "/app/land", label: "Land & acquisition", icon: Landmark, roles: NAV_ROLES.land, group: "build" },
   { to: "/app/commercial", label: "Vendors and orders", icon: Truck, roles: NAV_ROLES.commercial, group: "build" },
   { to: "/app/quotations", label: "Price quotes", icon: FileSpreadsheet, roles: NAV_ROLES.quotations, group: "build" },

@@ -200,6 +200,14 @@ function Command() {
 
       <QueueStrip items={queue} />
 
+      {role === "owner" ? (
+        <p className="mb-4 text-sm">
+          <Link to="/app/ceo" className="underline-offset-4 hover:underline">
+            Open CEO pulse
+          </Link>{" "}
+          for group KPIs, risk queue, and a five-bullet brief.
+        </p>
+      ) : null}
       {role === "owner" ? <GroupStrip /> : null}
 
       {landClosedToday.length > 0 ? (

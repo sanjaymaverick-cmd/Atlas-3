@@ -27,6 +27,7 @@ import type {
   Tower,
   User,
   Vendor,
+  FundingSanction,
 } from "./types";
 
 /** Shared group + per-project + three broker firms. One person, one login. */
@@ -248,6 +249,42 @@ export const DUKIA_DILIGENCE: DiligenceItem[] = [
 ];
 
 export const DUKIA_OBLIGATIONS: Obligation[] = [];
+
+export const DUKIA_FUNDING: FundingSanction[] = [
+  {
+    id: "fs_av",
+    projectId: "p_av",
+    bank: "SBI",
+    sanctionNo: "SBI/JPR/AV/2024/014",
+    loanPct: 60,
+    equityPct: 40,
+    amount: 588_000_000,
+    status: "sanctioned",
+    sanctionedAt: "2024-07-15",
+  },
+  {
+    id: "fs_sf",
+    projectId: "p_sf",
+    bank: "AU Small Finance Bank",
+    sanctionNo: "AU/JPR/SF/2025/008",
+    loanPct: 60,
+    equityPct: 40,
+    amount: 144_000_000,
+    status: "sanctioned",
+    sanctionedAt: "2025-02-03",
+  },
+  {
+    id: "fs_ac",
+    projectId: "p_ac",
+    bank: "SBI",
+    sanctionNo: "SBI/JPR/AC/2025/031",
+    loanPct: 60,
+    equityPct: 40,
+    amount: 972_000_000,
+    status: "sanctioned",
+    sanctionedAt: "2025-04-07",
+  },
+];
 
 export const DUKIA_VENDORS: Vendor[] = [
   { id: "v_civ", name: "Shakti Earthworks", trade: "Structure / civil", stage: "invited", gstin: "—", city: "Jaipur" },
