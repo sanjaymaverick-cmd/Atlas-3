@@ -33,10 +33,10 @@ function DrawingsDesk() {
     <div>
       <PageHeader
         title="Drawings and plans"
-        description="A light register: title, type, revision, PDF. Not a BIM viewer and not Aconex. Channel seats cannot open this desk."
+        description="A light register: title, type, revision, PDF or a small DWG/IFC file. Not a BIM viewer, not AutoCAD, not Aconex. Channel seats cannot open this desk."
       />
       <GateBanner>
-        Local demo: the PDF copy stays in this browser (about 1.2 MB max). Originals for issue still go through Documents if you need four-eyes export.
+        Local demo: the file copy stays in this browser (about 1.2 MB max). DWG/IFC is stored, not opened in 3D. Originals for issue still go through Documents if you need four-eyes export.
       </GateBanner>
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
@@ -82,10 +82,10 @@ function DrawingsDesk() {
               ))}
           </select>
         </Field>
-        <Field label="PDF">
+        <Field label="PDF / DWG / IFC (register only)">
           <Input
             type="file"
-            accept="application/pdf,.pdf"
+            accept="application/pdf,.pdf,.dwg,.dxf,.ifc,application/acad,model/ifc"
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           />
         </Field>

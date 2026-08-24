@@ -7,6 +7,7 @@ import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { erpnextItemCode, erpnextWarehouse } from "@/lib/erpnext/stock-map";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 
@@ -45,9 +46,9 @@ function Controls() {
       <PageHeader
         kicker="Phase 6"
         title="Project controls"
-        description="Cost codes, how much material came in, and how much went to site. You cannot issue more than was received."
+        description="Cost codes, how much material came in, and how much went to site. You cannot issue more than was received. ERPNext warehouse names are labels only — Atlas never posts Stock Entry."
       />
-      <GateBanner>Receipts here are quantities, not GRNs. No challan or vendor on this desk. Local only.</GateBanner>
+      <GateBanner>Receipts here are quantities, not GRNs. No challan or vendor on this desk. Not ERPNext stock. Local only.</GateBanner>
 
       <h2 className="mb-3 font-display text-2xl">Budget vs committed</h2>
       <div className="space-y-3">
@@ -82,6 +83,9 @@ function Controls() {
               <p className="font-medium">{m.name}</p>
               <p className="text-xs tabular-nums text-muted">
                 Issued {m.issued} / received {m.received} {m.unit}
+              </p>
+              <p className="text-xs text-muted">
+                ERPNext {erpnextItemCode(m.name)} @ {erpnextWarehouse(projects.find((p) => p.id === m.projectId)?.entityId ?? entityId)} · not posted
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">

@@ -60,3 +60,120 @@ export const ELIM_EXAMPLE = {
   amountInr: 500_000,
   note: "Standalone both correct. Sum without elim overstates assets and liabilities by ₹5 L. Group elim nets to zero.",
 };
+
+export interface IcPairBalances {
+  dueFromA: number;
+  dueToB: number;
+  dueFromB: number;
+  dueToA: number;
+  feeIncomeA?: number;
+  feeExpenseB?: number;
+}
+
+export interface ElimLine {
+  account: string;
+  debit: number;
+  credit: number;
+  note: string;
+}
+
+export interface ElimPairResult {
+  pair: IcPair;
+  matchedAr: boolean;
+  matchedFee: boolean;
+  issues: string[];
+  lines: ElimLine[];
+  overstatedAssets: number;
+}
+
+function roundInr(n: number): number {
+  if (!Number.isFinite(n)) return 0;
+  return Math.round(n * 100) / 100;
+}
+
+/** Group-pack lines only. Never post these onto entity companies. */
+export function eliminatePair(pair: IcPair, balances: IcPairBalances): ElimPairResult {
+  const dueFromA = roundInr(balances.dueFromA);
+  const dueToB = roundInr(balances.dueToB);
+  const dueFromB = roundInr(balances.dueFromB);
+  const dueToA = roundInr(balances.dueToA);
+  const feeIn = roundInr(balances.feeIncomeA ?? 0);
+  const feeEx = roundInr(balances.feeExpenseB ?? 0);
+  const issues: string[] = [];
+  const lines: ElimLine[] = [];
+  const matchedAr = dueFromA === dueToB && dueFromB === dueToA;
+  if (dueFromA !== dueToB) {
+    issues.push(`${pair.dueFromA} ₹${dueFromA} ≠ ${pair.dueToB} ₹${dueToB} — fix entity books first`);
+  } else if (dueFromA > 0) {
+    lines.push({
+      account: pair.dueToB,
+      debit: dueFromA,
+      credit: 0,
+      note: "Group elim · IC payable",
+    });
+    lines.push({
+      account: pair.dueFromA,
+      debit: 0,
+      credit: dueFromA,
+      note: "Group elim · IC receivable",
+    });
+  }
+  if (dueFromB !== dueToA) {
+    issues.push(`${pair.dueFromB} ₹${dueFromB} ≠ ${pair.dueToA} ₹${dueToA} — fix entity books first`);
+  } else if (dueFromB > 0) {
+    lines.push({
+      account: pair.dueToA,
+      debit: dueFromB,
+      credit: 0,
+      note: "Group elim · IC payable",
+    });
+    lines.push({
+      account: pair.dueFromB,
+      debit: 0,
+      credit: dueFromB,
+      note: "Group elim · IC receivable",
+    });
+  }
+  const matchedFee = feeIn === feeEx;
+  if (feeIn !== feeEx) {
+    issues.push(`IC fee income ₹${feeIn} ≠ expense ₹${feeEx}`);
+  } else if (feeIn > 0) {
+    lines.push({
+      account: pair.feeIncomeA,
+      debit: feeIn,
+      credit: 0,
+      note: "Group elim · IC income",
+    });
+    lines.push({
+      account: pair.feeExpenseB,
+      debit: 0,
+      credit: feeEx,
+      note: "Group elim · IC expense",
+    });
+  }
+  return {
+    pair,
+    matchedAr,
+    matchedFee,
+    issues,
+    lines,
+    overstatedAssets: dueFromA + dueFromB,
+  };
+}
+
+export function buildElimWorksheet(pairs: IcPair[], balances: IcPairBalances[]): {
+  results: ElimPairResult[];
+  lines: ElimLine[];
+  unmatched: number;
+  overstatedAssets: number;
+} {
+  const results = pairs.map((pair, i) =>
+    eliminatePair(pair, balances[i] ?? { dueFromA: 0, dueToB: 0, dueFromB: 0, dueToA: 0 }),
+  );
+  return {
+    results,
+    lines: results.flatMap((r) => r.lines),
+    unmatched: results.filter((r) => r.issues.length).length,
+    overstatedAssets: results.reduce((s, r) => s + (r.matchedAr ? r.overstatedAssets : 0), 0),
+  };
+}

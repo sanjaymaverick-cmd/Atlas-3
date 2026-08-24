@@ -18,7 +18,13 @@ import {
   looksLikeStockAccount,
   mainCostCenter,
 } from "@/lib/erpnext/companies";
-import { DUKIA_IC_PAIRS, ELIM_EXAMPLE, IC_CLOSE_STEPS } from "@/lib/erpnext/consolidation";
+import {
+  buildElimWorksheet,
+  DUKIA_IC_PAIRS,
+  ELIM_EXAMPLE,
+  IC_CLOSE_STEPS,
+  type IcPairBalances,
+} from "@/lib/erpnext/consolidation";
 import { COMPANY_ALLOWLIST } from "@/lib/erpnext/journal-post";
 import { inr, todayIso } from "@/lib/utils";
 
@@ -47,6 +53,14 @@ function Finance() {
   const [coa, setCoa] = useState<BooksResult | null>(null);
   const [centres, setCentres] = useState<BooksResult | null>(null);
   const [closeTicks, setCloseTicks] = useState<Record<string, boolean>>({});
+  const [icBals, setIcBals] = useState<IcPairBalances[]>(
+    DUKIA_IC_PAIRS.map((_, i) =>
+      i === 0
+        ? { dueFromA: ELIM_EXAMPLE.amountInr, dueToB: ELIM_EXAMPLE.amountInr, dueFromB: 0, dueToA: 0 }
+        : { dueFromA: 0, dueToB: 0, dueFromB: 0, dueToA: 0 },
+    ),
+  );
+  const worksheet = buildElimWorksheet(DUKIA_IC_PAIRS, icBals);
 
   useEffect(() => {
     void booksAgent("health").then(setBooks);
@@ -163,19 +177,79 @@ function Finance() {
           other Cr the same. Standalone both correct. Group elim nets to zero. {ELIM_EXAMPLE.note}
         </p>
         <ul className="mt-4 space-y-3 text-sm">
-          {DUKIA_IC_PAIRS.map((p) => (
+          {DUKIA_IC_PAIRS.map((p, i) => (
             <li key={`${p.a}-${p.b}`} className="rounded-md border border-line px-3 py-2">
               <p className="font-medium">
                 {p.a} ↔ {p.b}
               </p>
-              <p className="text-xs text-muted">
-                {p.dueFromA} vs {p.dueToB}
-                <br />
-                {p.dueFromB} vs {p.dueToA}
-              </p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <Field label={`${p.dueFromA} (Dr)`}>
+                  <Input
+                    type="number"
+                    value={String(icBals[i]?.dueFromA ?? 0)}
+                    onChange={(e) =>
+                      setIcBals((rows) => rows.map((r, j) => (j === i ? { ...r, dueFromA: Number(e.target.value) || 0 } : r)))
+                    }
+                  />
+                </Field>
+                <Field label={`${p.dueToB} (Cr)`}>
+                  <Input
+                    type="number"
+                    value={String(icBals[i]?.dueToB ?? 0)}
+                    onChange={(e) =>
+                      setIcBals((rows) => rows.map((r, j) => (j === i ? { ...r, dueToB: Number(e.target.value) || 0 } : r)))
+                    }
+                  />
+                </Field>
+              </div>
+              {worksheet.results[i]?.issues.length ? (
+                <p className="mt-2 text-xs text-danger">{worksheet.results[i].issues.join(" · ")}</p>
+              ) : worksheet.results[i]?.lines.length ? (
+                <p className="mt-2 text-xs text-muted">Matched — group elim nets this pair to zero.</p>
+              ) : null}
             </li>
           ))}
         </ul>
+        {worksheet.lines.length ? (
+          <div className="mt-4 overflow-x-auto">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
+              Group worksheet · {inr(worksheet.overstatedAssets, true)} assets/liabilities removed · not posted
+            </p>
+            <table className="mt-2 w-full min-w-[520px] text-left text-sm">
+              <thead className="text-[11px] uppercase tracking-[0.12em] text-muted">
+                <tr>
+                  <th className="py-2 font-medium">Account</th>
+                  <th className="py-2 font-medium">Debit</th>
+                  <th className="py-2 font-medium">Credit</th>
+                  <th className="py-2 font-medium">Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {worksheet.lines.map((ln, i) => (
+                  <tr key={`${ln.account}-${i}`} className="border-t border-line">
+                    <td className="py-2">{ln.account}</td>
+                    <td className="py-2 tabular-nums">{ln.debit ? inr(ln.debit, true) : ""}</td>
+                    <td className="py-2 tabular-nums">{ln.credit ? inr(ln.credit, true) : ""}</td>
+                    <td className="py-2 text-xs text-muted">{ln.note}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Button
+              className="mt-3"
+              variant="outline"
+              onClick={async () => {
+                const text = worksheet.lines
+                  .map((ln) => `${ln.account}\t${ln.debit}\t${ln.credit}\t${ln.note}`)
+                  .join("\n");
+                await navigator.clipboard.writeText(text);
+                toast("Worksheet copied. Do not post this onto SATYAM BUILDCOM / CONSTRUCTION / MGB.");
+              }}
+            >
+              Copy worksheet
+            </Button>
+          </div>
+        ) : null}
         <p className="mt-4 text-[11px] uppercase tracking-[0.14em] text-muted">Close checklist (this browser only)</p>
         <ul className="mt-2 space-y-2 text-sm">
           {IC_CLOSE_STEPS.map((step) => (

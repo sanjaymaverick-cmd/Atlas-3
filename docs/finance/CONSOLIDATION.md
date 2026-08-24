@@ -97,6 +97,8 @@ Elim schedule: pair, amount, period, who approved — audit trail for partners/M
 
 CEO can show **three entity KPIs side by side**. A raw sum of Atlas tiles is **ops**, not group P&L after elim.
 
+Finance has a **group worksheet**: enter due-from / due-to per pair. Matched amounts produce offsetting Dr/Cr lines you can copy. **Atlas does not post those lines** onto SATYAM BUILDCOM, SATYAM CONSTRUCTION, or MGB.
+
 ## Close checklist
 
 ```

@@ -131,7 +131,7 @@ API user for Atlas (`ERPNEXT_API_KEY` / secret) needs permission to **read Compa
 
 ERPNext records IC JE pairs on **each** Company. Automatic elimination is **not** complete in core ERPNext. Match due-from/due-to (and IC P&L) at period-end, then eliminate on the **group** worksheet only — never reverse operating IC entries on the legal entities unless correcting an error.
 
-Process, pairs, and close checklist: [`CONSOLIDATION.md`](./CONSOLIDATION.md). Atlas CEO shows three LLPs side by side (ops). That sum is **not** group P&L after elim.
+Process, pairs, and close checklist: [`CONSOLIDATION.md`](./CONSOLIDATION.md). Atlas CEO shows three LLPs side by side (ops). That sum is **not** group P&L after elim. Go-live leftovers (WhatsApp, ads, pay, e-sign, stock GRN, Postgres, BIM): [`../GO-LIVE.md`](../GO-LIVE.md).
 
 ### What multi-company does **not** mean
 
