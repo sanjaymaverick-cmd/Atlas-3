@@ -120,11 +120,13 @@ import type {
   WaSend,
   SalesNotice,
 } from "./types";
-import { todayIso, uid } from "./utils";
+import { nowIso, registerClock, todayIso, uid } from "./utils";
 import type { CompanyDayReport } from "./company-day";
 
 interface AtlasState {
   user: User | null;
+  /** Company-trial clock. `null` = real time. ISO `YYYY-MM-DD` pins every "today". */
+  simDate: string | null;
   entityId: string;
   projectId: string | "all";
   users: User[];
@@ -182,6 +184,7 @@ interface AtlasState {
   signIn: (role: Role) => void;
   signInLocal: (email: string, password: string) => string | null;
   signOut: () => void;
+  setSimDate: (iso: string | null) => void;
   setEntity: (id: string) => void;
   setProject: (id: string | "all") => void;
   createProject: (p: Omit<Project, "id" | "spent" | "progress" | "sold">) => void;
@@ -300,7 +303,7 @@ function moveUnit(units: InventoryUnit[], events: UnitEvent[], unitId: string, t
   const ev: UnitEvent = {
     id: uid("ue"),
     unitId,
-    at: new Date().toISOString(),
+    at: nowIso(),
     from: u.status,
     to,
     note,
@@ -336,7 +339,7 @@ function upsertCustomer(customers: Customer[], name: string, phone?: string, sou
     name,
     phone: phone ?? "",
     source,
-    createdAt: new Date().toISOString(),
+    createdAt: nowIso(),
   };
   return { customers: [row, ...customers], id: row.id };
 }
@@ -377,7 +380,7 @@ function rememberScore(
   triggerType: string,
   triggerDetail: string,
 ) {
-  const at = new Date().toISOString();
+  const at = nowIso();
   const row: LeadScoreHistory = {
     id: uid("sh"),
     leadId,
@@ -395,7 +398,7 @@ function rememberScore(
     triggerDetail,
   };
   return {
-    history: [row, ...history].slice(0, 200),
+    history: [row, ...history].slice(0, 1000),
     features: [{ id: uid("lf"), leadId, at, features: scored.features }, ...features.filter((f) => f.leadId !== leadId)],
     stamp: {
       score: scored.score,
@@ -446,6 +449,7 @@ export const useAtlas = create<AtlasState>()(
   persist(
     (set, get) => ({
       user: null,
+      simDate: null,
       entityId: "le_llp",
       projectId: "all",
       users: USERS,
@@ -514,18 +518,22 @@ export const useAtlas = create<AtlasState>()(
         return null;
       },
       signOut: () => set({ user: null }),
+      setSimDate: (iso) => {
+        set({ simDate: iso });
+        get().log("Trial clock set", iso ?? "real time");
+      },
       setEntity: (id) => set({ entityId: id, projectId: "all" }),
       setProject: (id) => set({ projectId: id }),
       log: (action, entity) => {
         const actor = get().user?.name ?? "System";
         const event: AuditEvent = {
           id: uid("au"),
-          at: new Date().toISOString(),
+          at: nowIso(),
           actor,
           action,
           entity,
         };
-        set({ audit: [event, ...get().audit].slice(0, 80) });
+        set({ audit: [event, ...get().audit].slice(0, 5000) });
       },
       createProject: (p) => {
         const project: Project = {
@@ -1014,7 +1022,7 @@ export const useAtlas = create<AtlasState>()(
         if (g.status !== "granted") return "This download is not authorised.";
         set({
           exports: get().exports.map((e) =>
-            e.id === grantId ? { ...e, status: "used", usedAt: new Date().toISOString() } : e,
+            e.id === grantId ? { ...e, status: "used", usedAt: nowIso() } : e,
           ),
         });
         const doc = get().documents.find((d) => d.id === g.documentId);
@@ -1201,7 +1209,7 @@ export const useAtlas = create<AtlasState>()(
           `ADVISORY ONLY — not an approval.\n\nQuestion: ${prompt.trim()}\n\nRecommended next human step:\n1. Confirm evidence in Documents.\n2. If money or possession is involved, raise an Approval.\n3. Do not treat this note as a decision.\n\nAuthority: Level 2 drafting. Atlas will not pay, sign, send, or delete.`;
         const note: AssistantNote = {
           id: uid("ai"),
-          at: new Date().toISOString(),
+          at: nowIso(),
           prompt: prompt.trim(),
           draft,
           level: 2,
@@ -1585,7 +1593,7 @@ export const useAtlas = create<AtlasState>()(
           ? {
               id: uid("la"),
               leadId,
-              at: new Date().toISOString(),
+              at: nowIso(),
               kind: activity,
               note: `${activity} engagement`,
             }
@@ -1781,7 +1789,7 @@ export const useAtlas = create<AtlasState>()(
           id: uid("wa"),
           templateId: tpl.id,
           to: lead.phone,
-          at: new Date().toISOString(),
+          at: nowIso(),
           body,
           leadId: lead.id,
           direction: "out",
@@ -1809,7 +1817,7 @@ export const useAtlas = create<AtlasState>()(
           id: uid("wa"),
           templateId: "in",
           to: lead.phone,
-          at: new Date().toISOString(),
+          at: nowIso(),
           body: text.trim(),
           leadId: lead.id,
           direction: "in",
@@ -1850,3 +1858,22 @@ export const useAtlas = create<AtlasState>()(
     { name: "atlas3-sales-v11" },
   ),
 );
+
+/**
+ * Point the app's clock at the trial date. Keeps real time-of-day so events
+ * within a simulated day still order correctly.
+ */
+registerClock(() => {
+  const sim = useAtlas.getState().simDate;
+  if (!sim) return new Date();
+  return new Date(`${sim}T${new Date().toISOString().slice(11)}`);
+});
+
+/**
+ * Dev-only bridge for the company-trial harness (`scripts/trial/session.mjs`),
+ * which drives the clock and asserts continuity between seats. Stripped from
+ * production builds by the `import.meta.env.DEV` guard.
+ */
+if (typeof window !== "undefined" && import.meta.env.DEV) {
+  (window as unknown as { __atlasStore?: typeof useAtlas }).__atlasStore = useAtlas;
+}
