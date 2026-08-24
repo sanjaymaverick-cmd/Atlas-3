@@ -17,6 +17,7 @@
     "test": "node --test scripts/**/*.test.mjs",
     "company-day": "node scripts/company-day.mjs",
     "scoring": "node scripts/scoring-serve.mjs",
+    "books:ping": "node scripts/erpnext/smoke.mjs",
     "tally:ping": "node scripts/tally-agent.mjs",
     "tally:fy": "node scripts/tally-fy-run.mjs",
     "lint": "eslint .",

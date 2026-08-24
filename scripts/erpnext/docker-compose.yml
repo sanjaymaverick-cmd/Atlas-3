@@ -1,0 +1,27 @@
+# TEMPLATE ONLY.
+#
+# Copy to D:\ERPNext (or clone https://github.com/frappe/frappe_docker there)
+# and run compose FROM D:\ERPNext. Do not `docker compose up` from the Atlas
+# repo — that would put company data in the wrong tree.
+#
+# Upstream app: https://github.com/frappe/erpnext
+# Company:      MOCK ATLAS3 LLP
+# Ports:        ERPNext web 8000. Atlas uses 8080. CatBoost uses 8091.
+
+name: atlas-erpnext-sibling
+
+x-atlas:
+  install: D:\\ERPNext
+  upstream: https://github.com/frappe/erpnext
+  company: MOCK ATLAS3 LLP
+  atlas_port: 8080
+  scoring_port: 8091
+  erpnext_port: 8000
+
+# Prefer the official frappe_docker pwd.yml at D:\ERPNext.
+# The hello-world service exists so this file is valid YAML and cannot
+# accidentally start a fake ERPNext inside Atlas.
+services:
+  do-not-run-from-atlas:
+    image: hello-world
+    profiles: ["never"]

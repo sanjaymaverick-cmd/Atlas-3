@@ -38,7 +38,7 @@ Do not use these on a public host.
 
 ## Sales Command (local)
 
-Third-party portal first, in-house pipeline next. Inventory locks a unit on hold or booking. Commission accrues and never pays itself. Atlas never posts Tally.
+Third-party portal first, in-house pipeline next. Inventory locks a unit on hold or booking. Commission accrues and never pays itself. Atlas never posts ERPNext. Books of record live at `D:\ERPNext` (https://github.com/frappe/erpnext), linked by REST only. See `docs/finance/ERPNEXT.md`.
 
 | Phase | What |
 |---|---|
@@ -59,4 +59,4 @@ Architecture, ingest/score interfaces, and SQL contracts: `docs/sales/ARCHITECTU
 
 ## After UAT
 
-Go-live (passkeys, Vault/HSM, Aerovista/Acropolis restore drill, Tally live sync) is a separate decision. This copy is the local console only.
+Go-live (passkeys, Vault/HSM, Aerovista/Acropolis restore drill, ERPNext controlled posting) is a separate decision. This copy is the local console only.

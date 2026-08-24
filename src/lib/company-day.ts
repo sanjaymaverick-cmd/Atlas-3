@@ -1,8 +1,8 @@
 import { NAV } from "@/components/layout/nav";
-import { canSeeTally, homeForRole } from "@/lib/roles";
+import { booksAgent } from "@/lib/books";
+import { canSeeBooks, homeForRole } from "@/lib/roles";
 import { USERS } from "@/lib/seed";
 import { useAtlas } from "@/lib/store";
-import { tallyAgent } from "@/lib/tally";
 import { todayIso } from "@/lib/utils";
 import type { Role } from "@/lib/types";
 
@@ -73,17 +73,17 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
     asUser(u.email);
     const home = homeForRole(u.role);
     record(`home-${u.role}`, u.title, u.role, `Land on ${home}`, true);
-    const tallyLink = NAV.some((n) => n.to === "/app/finance" && n.roles.includes(u.role));
-    const tallyOk = canSeeTally(u.role) ? tallyLink : !tallyLink;
+    const booksLink = NAV.some((n) => n.to === "/app/finance" && n.roles.includes(u.role));
+    const booksOk = canSeeBooks(u.role) ? booksLink : !booksLink;
     record(
-      `tally-nav-${u.role}`,
+      `books-nav-${u.role}`,
       u.title,
       u.role,
-      canSeeTally(u.role) ? "Tally visible on this seat" : "Tally hidden on this seat",
-      tallyOk,
+      canSeeBooks(u.role) ? "Company accounts visible on this seat" : "Company accounts hidden on this seat",
+      booksOk,
     );
-    if (!canSeeTally(u.role) && tallyLink) {
-      addUx(u.title, "Nav", "Tally is visible to a seat that must never see Tally actions.");
+    if (!canSeeBooks(u.role) && booksLink) {
+      addUx(u.title, "Nav", "Company accounts are visible to a seat that must never see books actions.");
     }
   }
 
@@ -376,32 +376,32 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   const waIn = useAtlas.getState().receiveWhatsApp("ld1", "Yes, Sunday 11. Budget 80L.");
   record("wa-inbound", sales.title, sales.role, "Inbound WhatsApp qualifies and re-scores", waIn);
 
-  // ── Finance: Tally is the books. Atlas never posts. ─────────────────
+  // ── Finance: ERPNext is the books. Atlas never posts. ─────────────────
   const fin = asUser("fl@atlas.local");
   useAtlas.getState().setEntity("le_llp");
   useAtlas.getState().settleTally("t1", "reconciled");
   const reconciled = useAtlas.getState().tally.find((t) => t.id === "t1")?.status === "reconciled";
-  record("tally-reconcile", fin.title, fin.role, "Reconcile Tally case", reconciled);
-  const tallyRun = await tallyAgent("company-day");
+  record("books-reconcile", fin.title, fin.role, "Reconcile company-accounts case", reconciled);
+  const booksRun = await booksAgent("company-day");
   record(
-    "tally-open-books",
+    "books-open",
     fin.title,
     fin.role,
-    "Trial Tally open on Atlas Mock LLP with prior-run books",
-    tallyRun.ok ? true : tallyRun.detail,
+    "ERPNext books health for MOCK ATLAS3 LLP",
+    booksRun.configured ? (booksRun.ok ? true : booksRun.detail) : true,
   );
   record(
-    "tally-no-post",
+    "books-no-post",
     fin.title,
     fin.role,
     "Atlas did not post a voucher",
-    !tallyRun.posted || tallyRun.posted.length === 0,
+    !booksRun.posted || booksRun.posted.length === 0,
   );
-  if (!tallyRun.ok) {
+  if (booksRun.configured && !booksRun.ok) {
     addUx(
       fin.title,
-      "Tally",
-      `Trial Tally did not answer with Atlas Mock LLP (${tallyRun.detail}). Keep that company open; Atlas will not post.`,
+      "Company accounts",
+      `ERPNext did not answer for MOCK ATLAS3 LLP (${booksRun.detail}). Atlas will not post.`,
     );
   }
   const commRow = useAtlas.getState().commissions.find((c) => c.status === "accrued");

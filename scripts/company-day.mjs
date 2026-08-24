@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * Company day 2: every Atlas seat, in-app invariants, ping trial Tally.
+ * Company day 2: every Atlas seat, in-app invariants, ping ERPNext books.
  * Atlas never posts vouchers. Not live.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright";
-import { handleTallyAction } from "./tally-xml.mjs";
+import { clearAtlasPersist } from "./atlas-persist.mjs";
+import { health } from "./erpnext/lib.mjs";
 
 const ROLE_HOME = {
   owner: "/app/approvals",
@@ -76,25 +77,7 @@ async function collectUx(page, seat, screen) {
 
 async function login(page, user) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 30000 });
-  await page.evaluate(() => {
-    for (const k of [
-      "atlas3-company-day-v1",
-      "atlas3-clt-v1",
-      "atlas3-sales-v1",
-      "atlas3-sales-v2",
-      "atlas3-sales-v3",
-      "atlas3-sales-v4",
-      "atlas3-sales-v5",
-      "atlas3-sales-v6",
-      "atlas3-sales-v7",
-      "atlas3-sales-v8",
-      "atlas3-sales-v9",
-      "atlas3-sales-v10",
-      "atlas3-sales-v11",
-    ]) {
-      localStorage.removeItem(k);
-    }
-  });
+  await page.evaluate(clearAtlasPersist);
   await page.reload({ waitUntil: "networkidle" });
   await page.getByText("Local test accounts").waitFor({ timeout: 20000 });
   await page.waitForTimeout(800);
@@ -197,21 +180,23 @@ async function main() {
 
   await browser.close();
 
-  report.tally = await handleTallyAction({ action: "company-day" });
+  report.books = await health();
+  report.tally = report.books;
 
   const outJson = join(OUT, "report.json");
   writeFileSync(outJson, JSON.stringify(report, null, 2));
   const seatFails = report.seats.filter((s) => s.homeOk === false || s.tallyLeak || s.isolationOk === false || s.error);
-  const tallyPosted = Array.isArray(report.tally?.posted) && report.tally.posted.length > 0;
+  const booksPosted = Array.isArray(report.books?.posted) && report.books.posted.length > 0;
+  const booksOk = !report.books?.configured || report.books?.ok;
   console.log(
     JSON.stringify(
       {
-        ok: seatFails.length === 0 && report.tally?.ok && !tallyPosted,
+        ok: seatFails.length === 0 && booksOk && !booksPosted,
         live: false,
         day: 2,
         seats: report.seats.length,
         uxNotes: report.ux.length,
-        tally: { ok: report.tally?.ok, detail: report.tally?.detail, posted: report.tally?.posted?.length ?? 0 },
+        books: { ok: report.books?.ok, configured: report.books?.configured, detail: report.books?.detail, posted: report.books?.posted?.length ?? 0 },
         report: outJson,
       },
       null,

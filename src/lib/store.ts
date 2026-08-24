@@ -1083,7 +1083,7 @@ export const useAtlas = create<AtlasState>()(
         if (!e) return "Instalment not found.";
         if (e.status === "paid") return "Already paid.";
         set({ emis: get().emis.map((x) => (x.id === id ? { ...x, status: "paid" } : x)) });
-        get().log("Recorded EMI (ops. ref — Tally remains books)", String(e.amount));
+        get().log("Recorded EMI (ops. ref — ERPNext remains books)", String(e.amount));
         return null;
       },
       acquireParcel: (id) => {
@@ -1198,7 +1198,7 @@ export const useAtlas = create<AtlasState>()(
         const row = get().tally.find((x) => x.id === id);
         if (!row) return;
         set({ tally: get().tally.map((x) => (x.id === id ? { ...x, status } : x)) });
-        get().log(`Tally case ${status}`, row.title);
+        get().log(`Company-accounts case ${status}`, row.title);
       },
       draftAdvice: (prompt) => {
         const hosting = get().decisions.find((d) => d.id === "ai_hosting");

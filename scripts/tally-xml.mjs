@@ -1,8 +1,7 @@
 /**
- * Local trial TallyPrime XML client.
- *
- * Tally remains the books. Atlas never posts vouchers from Company day.
- * Ping / FY mock scripts may still talk to loopback :9000. Not live.
+ * RETIRED — Tally XML is not the books backend.
+ * Books of record: ERPNext at D:\ERPNext via src/lib/erpnext and /api/books.
+ * This file is kept so old FY scripts do not 404; runtime no longer imports it.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { spawn } from "node:child_process";

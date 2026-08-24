@@ -1,4 +1,7 @@
 import type { Role } from "@/lib/types";
+import type { WaitingOn } from "@/lib/waiting-on";
+
+export { WAITING_ON, type WaitingOn } from "@/lib/waiting-on";
 
 /** Every operating seat a local real-estate developer needs to run Atlas. */
 export const ROLE_HOME: Record<
@@ -99,29 +102,49 @@ export const NAV_ROLES = {
   salesPeople: ["owner", "sales"] as Role[],
 };
 
-export function canSeeTally(role: Role | undefined) {
+export function canSeeBooks(role: Role | undefined) {
   return role === "owner" || role === "accountant";
 }
+
+/** @deprecated use canSeeBooks */
+export const canSeeTally = canSeeBooks;
 
 export function canDecideApprovals(role: Role | undefined) {
   return role === "owner" || role === "pm" || role === "accountant" || role === "sales";
 }
 
-const WAITING_ON_ROLES: Record<string, Role[]> = {
+export const WAITING_ON_ROLES: Record<WaitingOn, Role[]> = {
   "Managing Director": ["owner"],
   "Project Director": ["pm"],
   "Finance Lead": ["accountant"],
   "Sales Manager": ["sales"],
+  "Sales Manager / MD": ["sales", "owner"],
   "Four-eyes approver": ["owner", "pm"],
 };
 
-/** Approve/Reject only if this seat is the named waiter. MD can always act. */
-export function canActOnApproval(role: Role | undefined, waitingOn: string, kind = "") {
+/**
+ * Current behaviour: the MD can act on any approval. Documented in
+ * `docs/decisions/four-eyes.md`. Set VITE_MD_BYPASS_FOUR_EYES=false to scope
+ * the MD like every other seat. Do not flip the default silently.
+ */
+function readMdBypass(): boolean {
+  try {
+    const v = (import.meta as { env?: { VITE_MD_BYPASS_FOUR_EYES?: string } }).env?.VITE_MD_BYPASS_FOUR_EYES;
+    if (v === "false" || v === "0") return false;
+  } catch {
+    /* node tests */
+  }
+  return true;
+}
+
+export const MD_BYPASS_FOUR_EYES = readMdBypass();
+
+/** Approve/Reject only if this seat is the named waiter. */
+export function canActOnApproval(role: Role | undefined, waitingOn: WaitingOn | string, _kind = "") {
   if (!role || !canDecideApprovals(role)) return false;
-  if (role === "owner") return true;
-  const mapped = WAITING_ON_ROLES[waitingOn];
+  if (role === "owner" && MD_BYPASS_FOUR_EYES) return true;
+  const mapped = WAITING_ON_ROLES[waitingOn as WaitingOn];
   if (mapped?.includes(role)) return true;
-  if (role === "sales" && /book|commission|hold|partner/i.test(`${waitingOn} ${kind}`)) return true;
   return false;
 }
 

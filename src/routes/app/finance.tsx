@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { GateBanner } from "@/components/gate-banner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { canSeeTally } from "@/lib/roles";
+import { booksAgent, type BooksResult } from "@/lib/books";
+import { canSeeBooks } from "@/lib/roles";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 
@@ -15,8 +17,13 @@ function Finance() {
   const { tally, entities, entityId, audit, settleTally, user } = useAtlas();
   const rows = tally.filter((t) => t.entityId === entityId);
   const entity = entities.find((e) => e.id === entityId);
+  const [books, setBooks] = useState<BooksResult | null>(null);
 
-  if (!canSeeTally(user?.role)) {
+  useEffect(() => {
+    void booksAgent("health").then(setBooks);
+  }, []);
+
+  if (!canSeeBooks(user?.role)) {
     return (
       <div>
         <PageHeader title="Company accounts" description="This login cannot touch the books. Local only." />
@@ -25,20 +32,29 @@ function Finance() {
     );
   }
 
+  const booksLine = !books
+    ? "Checking ERPNext…"
+    : !books.configured
+      ? "Books backend not configured. Atlas still runs. See docs/finance/ERPNEXT.md."
+      : !books.reachable
+        ? `ERPNext unreachable (${books.detail}). Atlas still runs. Posting is off.`
+        : `${books.company ?? "MOCK ATLAS3 LLP"} · ERPNext answered · posting ${books.postingEnabled ? "ON" : "off"}`;
+
   return (
     <div>
       <PageHeader
         kicker="Phase 9"
-        title="Match with company accounts"
-        description="Tally is the official book. Atlas never writes or changes a voucher. We only match or flag a mismatch."
+        title="Company accounts (ERPNext)"
+        description="ERPNext at D:\ERPNext is the official book. Atlas never writes a voucher unless posting is explicitly turned on. We only match or flag a mismatch."
       />
       <GateBanner>
-        Reconcile or accept an exception here. Books stay in Tally. Local only — not live.
+        Reconcile or accept an exception here. Books stay in ERPNext. Posting is off by default. Local only — not live.
       </GateBanner>
       <Card className="mb-6 p-5">
         <p className="text-sm text-muted">Legal entity</p>
         <p className="font-display text-2xl">{entity?.name}</p>
         <p className="text-sm tabular-nums text-muted">{entity?.gstin}</p>
+        <p className="mt-3 text-sm text-muted">{booksLine}</p>
       </Card>
       <div className="space-y-3">
         {rows.map((t) => (
@@ -56,7 +72,7 @@ function Finance() {
                     variant="outline"
                     onClick={() => {
                       settleTally(t.id, "reconciled");
-                      toast("Reconciled in Atlas. Tally remains the books — no voucher posted.");
+                      toast("Reconciled in Atlas. ERPNext remains the books — no voucher posted.");
                     }}
                   >
                     Reconcile

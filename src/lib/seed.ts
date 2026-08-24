@@ -241,7 +241,7 @@ export const APPROVALS: Approval[] = [
   { id: "a2", kind: "Change", title: "VO-19 Plumbing reroute — Block B", projectId: "p_kanak", amount: 1_260_000, waitingOn: "Project Director", agingDays: 3, status: "pending", context: "Kanakpura · Block B wet areas · design response pending site measure" },
   { id: "a3", kind: "Document export", title: "JDA layout — original download", projectId: "p_kanak", waitingOn: "Four-eyes approver", agingDays: 1, status: "pending", refId: "exp_seed", context: "Restricted statutory · requested by R. Sharma · single-use grant" },
   { id: "a4", kind: "Vendor", title: "Activate Marwar Steel Traders", projectId: "p_baggad", waitingOn: "Managing Director", agingDays: 9, status: "pending", refId: "v2", context: "Onboarding complete · GSTIN on file · waiting on Managing Director" },
-  { id: "a5", kind: "Payment", title: "RA-07 Shakti Earthworks", projectId: "p_kanak", amount: 6_400_000, waitingOn: "Finance Lead", agingDays: 2, status: "pending", context: "Against PO-1018 · excavation Tower B · Tally case linked" },
+  { id: "a5", kind: "Payment", title: "RA-07 Shakti Earthworks", projectId: "p_kanak", amount: 6_400_000, waitingOn: "Finance Lead", agingDays: 2, status: "pending", context: "Against PO-1018 · excavation Tower B · company-accounts case linked" },
 ];
 
 export const RFQS: Rfq[] = [
@@ -286,7 +286,7 @@ export const BOOKINGS: Booking[] = [
 ];
 
 export const TALLY: TallyCase[] = [
-  { id: "t1", entityId: "le_llp", title: "ERP invoice missing in Tally — PO-1018 RA-06", amount: 1_840_000, status: "open" },
+  { id: "t1", entityId: "le_llp", title: "ERP invoice missing in company accounts — PO-1018 RA-06", amount: 1_840_000, status: "open" },
   { id: "t2", entityId: "le_homes", title: "Amount mismatch — customer receipt C-304", amount: 50_000, status: "review" },
   { id: "t3", entityId: "le_llp", title: "Wrong project allocation — cement bill Aug", amount: 312_000, status: "reconciled" },
 ];

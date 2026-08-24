@@ -42,7 +42,7 @@ function Crm() {
     <div>
       <PageHeader
         title="Sales partners"
-        description="Outside agencies and their commission. Identity check lives here. Follow buyers on Buyer leads. Accounts stay in Tally."
+        description="Outside agencies and their commission. Identity check lives here. Follow buyers on Buyer leads. Accounts stay in ERPNext."
       />
       <GateBanner>
         Scoring, inventory lock, daily reports and the channel portal live on{" "}

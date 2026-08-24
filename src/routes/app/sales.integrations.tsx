@@ -103,7 +103,7 @@ function Integrations() {
       <PageHeader
         kicker="Inbound"
         title="Live portal webhooks"
-        description="99acres, MagicBricks and Housing.com POST into ingest → dedup → score → pipeline. Email is the fallback. Meta, Google, WhatsApp Business and payments stay designed-only. Atlas never posts Tally. Local only."
+        description="99acres, MagicBricks and Housing.com POST into ingest → dedup → score → pipeline. Email is the fallback. Meta, Google, WhatsApp Business and payments stay designed-only. Atlas never posts ERPNext. Local only."
       />
       <GateBanner>
         Give Account Managers the URL + secret below. Same payload retried is idempotent. Docs: docs/sales/connectors/.

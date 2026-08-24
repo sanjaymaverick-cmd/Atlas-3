@@ -11,8 +11,9 @@ const errors = [];
 async function login(page, email, password) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 30000 });
   await page.evaluate(() => {
-    localStorage.removeItem("atlas3-sales-v4");
-    localStorage.removeItem("atlas3-sales-v5");
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith("atlas3-sales-")) localStorage.removeItem(k);
+    }
   });
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: /enter local atlas/i }).waitFor({ timeout: 20000 });
