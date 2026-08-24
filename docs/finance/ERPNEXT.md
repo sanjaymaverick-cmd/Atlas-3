@@ -6,7 +6,7 @@
 |---|---|
 | Upstream | https://github.com/frappe/erpnext |
 | Install | **`D:\ERPNext` only** |
-| Company | **MOCK ATLAS3 LLP** |
+| Company | **MOCK ATLAS3 LLP** (smoke) · DUKIA sisters: SATYAM BUILDCOM, SATYAM CONSTRUCTION, MGB PRIME ESTATES LLP |
 | Link | REST (`ERPNEXT_URL` + API key/secret) |
 | Posting | **Off** (`ERPNEXT_POSTING_ENABLED=false`) |
 
@@ -32,7 +32,7 @@ Short version:
 
 1. Clone **frappe_docker** (or bench) into `D:\ERPNext`, not into Atlas.
 2. Install the **erpnext** app from https://github.com/frappe/erpnext.
-3. Create company **MOCK ATLAS3 LLP**.
+3. Create company **MOCK ATLAS3 LLP** (smoke). Then run `npm run books:companies` for the three DUKIA sisters.
 4. Generate API key/secret for an integration user.
 5. Set Atlas env (never `VITE_` — secrets stay server-side):
 
@@ -45,6 +45,119 @@ ERPNEXT_POSTING_ENABLED=false
 ```
 
 Template: `scripts/erpnext/.env.example`. Copy to `scripts/erpnext/.env` (gitignored) or export in the shell before `npm run dev`.
+
+## Multi-company (DUKIA)
+
+Each legal entity that needs **its own books** is a separate **Company** in ERPNext. Names must match Atlas character-for-character.
+
+| ERPNext Company | Role | Atlas project | Abbr |
+|-----------------|------|---------------|------|
+| **DUKIA GROUP** (optional) | Group only · Is Group · no day-to-day posts | Portfolio label | DG |
+| **SATYAM BUILDCOM** | Transaction company | Aerovista | SBC |
+| **SATYAM CONSTRUCTION** | Transaction company | Sunflower | SCN |
+| **MGB PRIME ESTATES LLP** | Transaction company | Acropolis | MGB |
+| **MOCK ATLAS3 LLP** | Demo / smoke only | Tests | MA3 |
+
+**Rule:** Create a Company when the entity has separate books / GST / partners. Use cost centres (Aerovista under SATYAM BUILDCOM) only when it is the **same** legal entity.
+
+```
+DUKIA GROUP          ← Is Group = Yes (optional holding)
+├── SATYAM BUILDCOM
+├── SATYAM CONSTRUCTION
+└── MGB PRIME ESTATES LLP
+```
+
+Sisters can also sit as **parallel** companies with no parent; parent mainly helps consolidation and shared COA copy.
+
+### Create (operator — Atlas does not invent companies)
+
+Atlas **does not** create ERPNext companies at runtime. You create them **once** in the desk at `D:\ERPNext` (Accounting → Company → New). An optional operator helper (`npm run books:companies`) can do the same REST insert if the desk is slow; it is not an Atlas product path and it never posts a journal.
+
+| Field | Value |
+|-------|--------|
+| Company Name | exact Atlas string |
+| Abbr | SBC / SCN / MGB / MA3 / DG |
+| Country | India |
+| Default Currency | INR |
+| Parent Company | DUKIA GROUP if using a group |
+| Is Group | only on DUKIA GROUP |
+| Chart of Accounts | first: Standard; next: Based on Existing Company |
+
+Health already checks `Company/{name}`. `/api/books` `{ "action": "companies" }` lists present/missing. Finance shows the same roster.
+
+### Per-company defaults (after create)
+
+For **each** trading company:
+
+| Setting | Why |
+|---------|-----|
+| Default Cash / Bank | Collections, JE lines (`Cash - SBC`) |
+| Receivable / Payable | Party control accounts |
+| Stock accounts | Only if you stock-account materials |
+| Stock Received But Not Billed | Perpetual inventory |
+| Round-off / write-off | JE remainder |
+| Default Cost Center | **Main - ABBR** (leaf). `{Company} - ABBR` is the group — do not post to it. Project CC (Aerovista - SBC) is same legal entity. |
+| JE submit | Draft is not the ledger. Atlas calls `frappe.client.submit`. |
+| Fiscal Year | India Apr–Mar; 2024-04-01 … 2029-03-31 |
+| GSTIN / tax templates | India compliance when live — Atlas GSTINs are on the spec rows |
+
+Finance posts JE with **leaf account names that exist on that company’s CoA** (`Cash - SBC`, `Administrative Expenses - SBC`, `Capital Stock - SBC`). There is no `Construction Expenses - SBC` on the Standard chart.
+
+Do **not** post from Atlas until `ERPNEXT_POSTING_ENABLED=true`. Group company is not used on a Journal Entry (not on the allowlist).
+
+### Users and permissions (ERPNext desk)
+
+| Who | ERPNext User Permission |
+|-----|-------------------------|
+| MD / Directors | All three companies (or unrestricted) |
+| Finance (shared) | All three — or per-entity finance users |
+| Project-only staff | Usually **no** ERPNext login; Atlas only |
+
+**User Permissions → Allow = Company → For Value = SATYAM BUILDCOM** (repeat for each company the user may see). Without this, users can see every company’s documents.
+
+API user for Atlas (`ERPNEXT_API_KEY` / secret) needs permission to **read Company**, **read Account / Cost Center**, and **create/submit Journal Entry** for all three companies (when posting is on).
+
+### Atlas wiring
+
+| Piece | Behaviour |
+|-------|-----------|
+| `ERPNEXT_COMPANY` | Default smoke company (`MOCK ATLAS3 LLP`) |
+| Post payload `company` | Must be an allowlisted **trading** company, not DUKIA GROUP |
+| Project → company | Aerovista → SATYAM BUILDCOM, Sunflower → SATYAM CONSTRUCTION, Acropolis → MGB PRIME ESTATES LLP |
+| Finance | Pick company; leaf CoA + Main - ABBR from that company |
+| Health | Loops DUKIA sisters; reports present/missing |
+
+### Intercompany elimination (group pack)
+
+ERPNext records IC JE pairs on **each** Company. Automatic elimination is **not** complete in core ERPNext. Match due-from/due-to (and IC P&L) at period-end, then eliminate on the **group** worksheet only — never reverse operating IC entries on the legal entities unless correcting an error.
+
+Process, pairs, and close checklist: [`CONSOLIDATION.md`](./CONSOLIDATION.md). Atlas CEO shows three LLPs side by side (ops). That sum is **not** group P&L after elim.
+
+### What multi-company does **not** mean
+
+| Myth | Reality |
+|------|---------|
+| One shared GL for all sisters | **Separate** CoA and GL per Company |
+| Group company posts sales | Group is structure only; posts on child companies |
+| Atlas entity switch creates ERPNext company | Manual desk setup (or operator helper once) |
+| Consolidation = live single books | Report over children; each books stays separate |
+
+### Operator checklist
+
+```
+[ ] ERPNext up on :8000 (D:\ERPNext)
+[ ] Create DUKIA GROUP (Is Group) — optional
+[ ] Create SATYAM BUILDCOM (INR, India, CoA from template or parent)
+[ ] Create SATYAM CONSTRUCTION (CoA based on BUILDCOM)
+[ ] Create MGB PRIME ESTATES LLP (same)
+[ ] Confirm names match Atlas allowlist exactly
+[ ] Set Main cost centre + bank/cash + capital accounts per company
+[ ] Fiscal year open for posting dates you will use
+[ ] API user can access all three companies
+[ ] Atlas: ERPNEXT_* env set; posting still false
+[ ] Smoke: /api/books health — DUKIA sisters present
+[ ] Optional: one test JE per company with flag on
+```
 
 ## Phases
 
@@ -72,7 +185,8 @@ ERPNext: leaf accounts, cost centre on P&L, party on AR/AP, open fiscal period. 
 ```
 POST /api/books
 { "action": "post", "sourceId": "ops-1", "company": "SATYAM BUILDCOM", "postingDate": "2026-08-24",
-  "lines": [ { "account": "Construction Expenses - SBC", "debit": 1000 }, { "account": "Cash - SBC", "credit": 1000 } ] }
+  "lines": [ { "account": "Administrative Expenses - SBC", "debit": 1000, "costCenter": "Main - SBC" },
+             { "account": "Cash - SBC", "credit": 1000 } ] }
 ```
 
 ## Verify from Atlas
@@ -89,7 +203,8 @@ Or POST `http://127.0.0.1:8080/api/books` with `{ "action": "health" }`.
 |----------------|---------|
 | `books backend not configured` | Env unset — Atlas is fine |
 | ERPNext HTTP / timeout | Unreachable — Atlas is fine, posting still off |
-| `MOCK ATLAS3 LLP reachable` | Ready to reconcile |
+| `MOCK ATLAS3 LLP reachable · DUKIA sisters present` | Three trading companies exist |
+| `missing SATYAM BUILDCOM, …` | Run `npm run books:companies` |
 
 Finance desk title: **Company accounts (ERPNext)**. Site seats never see it.
 

@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { Card } from "@/components/ui/card";
 import { booksAgent, type BooksResult } from "@/lib/books";
 import { buildCeoReport } from "@/lib/ceo";
+import { COMPANY_SPECS } from "@/lib/erpnext/companies";
 import { isThirdParty } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr, todayIso } from "@/lib/utils";
@@ -39,6 +40,21 @@ function CeoDesk() {
   );
   const k = report.kpis;
   const asOf = simDate || todayIso();
+  const sisters = useMemo(
+    () =>
+      COMPANY_SPECS.filter((c) => c.role === "trading" && c.entityId).map((c) => ({
+        spec: c,
+        report: buildCeoReport(
+          store,
+          { entityId: c.entityId },
+          books
+            ? { configured: books.configured, reachable: books.reachable, posted: books.posted?.length ?? 0 }
+            : undefined,
+          entityId,
+        ),
+      })),
+    [store, books, entityId],
+  );
 
   if (isThirdParty(user?.role)) return <Navigate to="/app/sales/channel" />;
 
@@ -47,12 +63,12 @@ function CeoDesk() {
       <PageHeader
         kicker="CEO"
         title="Group pulse"
-        description={`As of ${asOf} (trial clock). Commission accrues only. Atlas does not pay and does not post ERPNext from this screen.`}
+        description={`As of ${asOf} (trial clock). Commission accrues only. Atlas does not pay and does not post ERPNext from this screen. The Group toggle is ops across three LLPs — not a consolidated P&L after intercompany elimination.`}
       />
       <div className="mb-4 flex flex-wrap gap-2">
         {(
           [
-            ["group", "Group"],
+            ["group", "Group (ops, not post-elim)"],
             ["entity", entities.find((e) => e.id === entityId)?.name ?? "This company"],
             ["project", projects.find((p) => p.id === projectId)?.name ?? "This project"],
           ] as const
@@ -68,6 +84,33 @@ function CeoDesk() {
           </button>
         ))}
       </div>
+
+      {scope === "group" ? (
+        <div className="mb-6 grid gap-3 lg:grid-cols-3">
+          {sisters.map(({ spec, report: sr }) => (
+            <Card key={spec.name} className="p-4">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-muted">{spec.project}</p>
+              <p className="font-display text-xl">{spec.name}</p>
+              <p className="mt-2 text-sm tabular-nums">
+                {sr.kpis.booked} booked · {inr(sr.kpis.bookedInr, true)}
+              </p>
+              <p className="text-sm tabular-nums text-muted">
+                Collections {inr(sr.kpis.collectionsMtd, true)} · land {sr.kpis.capitalDeployed ? inr(sr.kpis.capitalDeployed, true) : "₹ —"}
+              </p>
+            </Card>
+          ))}
+        </div>
+      ) : null}
+      {scope === "group" ? (
+        <p className="mb-6 text-sm text-muted">
+          Each card is that LLP’s ops. Adding them does not eliminate due-from/due-to. Group books after elim live in
+          Finance’s period-end pack —{" "}
+          <Link to="/app/finance" className="underline-offset-4 hover:underline">
+            Company accounts
+          </Link>
+          .
+        </p>
+      ) : null}
 
       {report.mdWaiting > 0 ? (
         <Link to="/app/approvals" className="mb-6 block rounded-xl border border-primary/40 bg-surface p-4">

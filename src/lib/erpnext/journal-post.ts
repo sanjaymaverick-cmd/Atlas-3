@@ -3,14 +3,16 @@
  * with an explicit button. ERPNEXT_POSTING_ENABLED default false.
  */
 
+import {
+  COMPANY_ALLOWLIST,
+  looksLikePnlAccount,
+  looksLikeStockAccount,
+  mainCostCenter,
+} from "./companies";
+
 export const ATLAS_OPS_PREFIX = "ATLAS-OPS";
 
-export const COMPANY_ALLOWLIST = [
-  "MOCK ATLAS3 LLP",
-  "SATYAM BUILDCOM",
-  "SATYAM CONSTRUCTION",
-  "MGB PRIME ESTATES LLP",
-] as const;
+export { COMPANY_ALLOWLIST };
 
 export interface AtlasJournalLine {
   account: string;
@@ -51,6 +53,10 @@ export function validateAtlasJournalPost(input: AtlasJournalPost): string | null
   for (let i = 0; i < input.lines.length; i++) {
     const line = input.lines[i];
     if (!line.account?.trim()) return `Line ${i + 1}: account is required.`;
+    const account = line.account.trim();
+    if (looksLikeStockAccount(account)) {
+      return `Line ${i + 1}: stock accounts are not posted via Journal Entry under perpetual inventory.`;
+    }
     const d = roundInr(Number(line.debit) || 0);
     const c = roundInr(Number(line.credit) || 0);
     if (d > 0 && c > 0) return `Line ${i + 1}: debit XOR credit — not both.`;
@@ -85,7 +91,10 @@ export function toErpnextJournal(input: AtlasJournalPost) {
         debit,
         credit,
       };
-      if (line.costCenter) row.cost_center = line.costCenter;
+      const cost =
+        line.costCenter?.trim() ||
+        (looksLikePnlAccount(line.account.trim()) ? mainCostCenter(input.company) : "");
+      if (cost) row.cost_center = cost;
       if (line.partyType && line.party) {
         row.party_type = line.partyType;
         row.party = line.party;

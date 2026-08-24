@@ -1,4 +1,5 @@
-import { erpnextFetch, ErpnextHttpError } from "./client";
+import { capitalAccount, cashAccount, COMPANY_SPECS, expenseAccount, mainCostCenter, TRADING_COMPANIES } from "./companies";
+import { ERP_SLOW_TIMEOUT_MS, erpnextFetch, ErpnextHttpError } from "./client";
 import { readErpnextConfig } from "./config";
 import {
   atlasOpsTitle,
@@ -8,7 +9,7 @@ import {
   validateAtlasJournalPost,
   type AtlasJournalPost,
 } from "./journal-post";
-import type { BooksActionPayload, BooksBackend, BooksResult } from "./types";
+import type { BooksActionPayload, BooksBackend, BooksCompanyStatus, BooksResult } from "./types";
 
 const NAME = "erpnext" as const;
 
@@ -50,20 +51,24 @@ export const erpnextBooks: BooksBackend = {
     const cfg = readErpnextConfig();
     if (!cfg.configured) return notConfigured();
     try {
-      await erpnextFetch("/api/method/frappe.ping", {}, cfg);
-      let companyOk = true;
-      let companyDetail = `${cfg.company} reachable`;
-      try {
-        await erpnextFetch(`/api/resource/Company/${encodeURIComponent(cfg.company)}`, {}, cfg);
-      } catch {
-        companyOk = false;
-        companyDetail = `ERPNext answered but company "${cfg.company}" was not found`;
-      }
+      await erpnextFetch("/api/method/frappe.ping", {}, cfg, ERP_SLOW_TIMEOUT_MS);
+      const companies = await listCompanyStatus(cfg);
+      const defaultRow = companies.find((c) => c.name === cfg.company);
+      const missingSisters = TRADING_COMPANIES.filter((n) => !companies.find((c) => c.name === n && c.present));
+      const dukiaReady = missingSisters.length === 0;
+      const companyOk = Boolean(defaultRow?.present);
+      const companyDetail = !companyOk
+        ? `ERPNext answered but company "${cfg.company}" was not found`
+        : dukiaReady
+          ? `${cfg.company} reachable · DUKIA sisters present`
+          : `${cfg.company} reachable · missing ${missingSisters.join(", ")} — create them in D:\\ERPNext (Accounting → Company). Names must match Atlas.`;
       return base(companyDetail, {
         ok: companyOk,
         configured: true,
         reachable: true,
         action: "health",
+        companies,
+        dukiaReady,
       });
     } catch (err) {
       return softFail(err);
@@ -242,6 +247,83 @@ function parseJournalPayload(input: Record<string, unknown>): AtlasJournalPost |
   };
 }
 
+async function listCompanyStatus(cfg: ReturnType<typeof readErpnextConfig>): Promise<BooksCompanyStatus[]> {
+  const params = new URLSearchParams({
+    fields: JSON.stringify(["name", "abbr", "is_group", "parent_company"]),
+    limit_page_length: "50",
+  });
+  let rows: Array<Record<string, unknown>> = [];
+  try {
+    const r = await erpnextFetch(`/api/resource/Company?${params}`, {}, cfg, ERP_SLOW_TIMEOUT_MS);
+    rows = (r.json as { data?: Array<Record<string, unknown>> } | null)?.data ?? [];
+  } catch {
+    rows = [];
+  }
+  return COMPANY_SPECS.map((spec) => {
+    const hit = rows.find((row) => String(row.name) === spec.name);
+    return {
+      name: spec.name,
+      present: Boolean(hit),
+      abbr: hit ? String(hit.abbr ?? spec.abbr) : spec.abbr,
+      isGroup: hit ? Boolean(hit.is_group) : spec.isGroup,
+      parent: hit?.parent_company ? String(hit.parent_company) : spec.parent,
+      role: spec.role,
+      project: spec.project,
+    };
+  });
+}
+
+function seededLeaves(company: string) {
+  return [expenseAccount(company), cashAccount(company), capitalAccount(company)]
+    .filter(Boolean)
+    .map((name) => ({ name, isGroup: false }));
+}
+
+async function listLeafAccounts(company: string, cfg: ReturnType<typeof readErpnextConfig>) {
+  const params = new URLSearchParams({
+    fields: JSON.stringify(["name", "is_group"]),
+    filters: JSON.stringify([
+      ["company", "=", company],
+      ["is_group", "=", 0],
+    ]),
+    limit_page_length: "200",
+    order_by: "name asc",
+  });
+  try {
+    const r = await erpnextFetch(`/api/resource/Account?${params}`, {}, cfg, ERP_SLOW_TIMEOUT_MS);
+    const rows = ((r.json as { data?: Array<{ name: string; is_group?: number }> } | null)?.data ?? []).map((row) => ({
+      name: row.name,
+      isGroup: Boolean(row.is_group),
+    }));
+    return rows.length ? rows : seededLeaves(company);
+  } catch {
+    return seededLeaves(company);
+  }
+}
+
+async function listLeafCostCenters(company: string, cfg: ReturnType<typeof readErpnextConfig>) {
+  const fallback = [{ name: mainCostCenter(company), company }];
+  const params = new URLSearchParams({
+    fields: JSON.stringify(["name", "company"]),
+    filters: JSON.stringify([
+      ["company", "=", company],
+      ["is_group", "=", 0],
+    ]),
+    limit_page_length: "50",
+    order_by: "name asc",
+  });
+  try {
+    const r = await erpnextFetch(`/api/resource/Cost Center?${params}`, {}, cfg, ERP_SLOW_TIMEOUT_MS);
+    const rows = ((r.json as { data?: Array<{ name: string; company?: string }> } | null)?.data ?? []).map((row) => ({
+      name: row.name,
+      company: row.company ?? company,
+    }));
+    return rows.length ? rows : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 async function findJeByTitle(title: string, cfg: ReturnType<typeof readErpnextConfig>) {
   const params = new URLSearchParams({
     fields: JSON.stringify(["name", "docstatus", "title", "user_remark"]),
@@ -281,6 +363,81 @@ export async function handleBooksAction(payload: BooksActionPayload = {}): Promi
   }
   if (action === "baseline") return { ...(await erpnextBooks.baselineCount()), action };
   if (action === "journal") return { ...(await erpnextBooks.journal(Number(payload.limit) || 20)), action };
+  if (action === "companies") {
+    const cfg = readErpnextConfig();
+    if (!cfg.configured) return { ...notConfigured(), action: "companies" };
+    try {
+      await erpnextFetch("/api/method/frappe.ping", {}, cfg, ERP_SLOW_TIMEOUT_MS);
+      const companies = await listCompanyStatus(cfg);
+      const missingSisters = TRADING_COMPANIES.filter((n) => !companies.find((c) => c.name === n && c.present));
+      return base(
+        missingSisters.length
+          ? `Missing ${missingSisters.join(", ")}. Create in D:\\ERPNext desk — Atlas does not invent companies.`
+          : "DUKIA sisters present. MOCK kept for smoke. Posting still off.",
+        {
+          action: "companies",
+          ok: missingSisters.length === 0,
+          configured: true,
+          reachable: true,
+          companies,
+          dukiaReady: missingSisters.length === 0,
+        },
+      );
+    } catch (err) {
+      return { ...softFail(err), action: "companies" };
+    }
+  }
+  if (action === "accounts") {
+    const cfg = readErpnextConfig();
+    const company = typeof payload.company === "string" && payload.company ? payload.company : cfg.company;
+    if (!cfg.configured) {
+      return base(`Seeded leaf names for ${company}. ERPNext not configured.`, {
+        action: "accounts",
+        ok: true,
+        company,
+        accounts: seededLeaves(company),
+        costCenters: [{ name: mainCostCenter(company), company }],
+      });
+    }
+    try {
+      const accounts = await listLeafAccounts(company, cfg);
+      return base(`${accounts.length} leaf accounts for ${company}`, {
+        action: "accounts",
+        ok: true,
+        configured: true,
+        reachable: true,
+        company,
+        accounts,
+      });
+    } catch (err) {
+      return { ...softFail(err), action: "accounts", accounts: seededLeaves(company) };
+    }
+  }
+  if (action === "cost-centers" || action === "costCenters") {
+    const cfg = readErpnextConfig();
+    const company = typeof payload.company === "string" && payload.company ? payload.company : cfg.company;
+    if (!cfg.configured) {
+      return base(`Seeded Main cost centre for ${company}.`, {
+        action: "cost-centers",
+        ok: true,
+        company,
+        costCenters: [{ name: mainCostCenter(company), company }],
+      });
+    }
+    try {
+      const costCenters = await listLeafCostCenters(company, cfg);
+      return base(`${costCenters.length} leaf cost centres for ${company}`, {
+        action: "cost-centers",
+        ok: true,
+        configured: true,
+        reachable: true,
+        company,
+        costCenters,
+      });
+    } catch (err) {
+      return { ...softFail(err), action: "cost-centers", costCenters: [{ name: mainCostCenter(company), company }] };
+    }
+  }
   if (action === "validate") {
     const cfg = readErpnextConfig();
     const journal = parseJournalPayload(payload as Record<string, unknown>);

@@ -3,6 +3,20 @@
  * Atlas talks to ERPNext at D:\ERPNext by REST only. Never vendors the app.
  */
 
+import { readFileSync, existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+export function loadDotEnv(file = join(dirname(fileURLToPath(import.meta.url)), ".env")) {
+  if (!existsSync(file)) return;
+  for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
+    const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec(line);
+    if (!m || m[1].startsWith("#")) continue;
+    if (process.env[m[1]]) continue;
+    process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+  }
+}
+
 export function readErpnextConfig(env = process.env) {
   const url = (env.ERPNEXT_URL ?? "").trim().replace(/\/$/, "");
   const apiKey = (env.ERPNEXT_API_KEY ?? "").trim();
@@ -20,8 +34,10 @@ export function readErpnextConfig(env = process.env) {
 }
 
 const TIMEOUT_MS = 8_000;
+export const ERP_SLOW_TIMEOUT_MS = 20_000;
+export const ERP_CREATE_TIMEOUT_MS = 180_000;
 
-export async function erpnextFetch(cfg, path, init = {}) {
+export async function erpnextFetch(cfg, path, init = {}, timeoutMs = TIMEOUT_MS) {
   if (!cfg.url) throw new Error("books backend not configured");
   const headers = { Accept: "application/json", ...(init.headers ?? {}) };
   if (cfg.apiKey && cfg.apiSecret) headers.Authorization = `token ${cfg.apiKey}:${cfg.apiSecret}`;
@@ -29,7 +45,7 @@ export async function erpnextFetch(cfg, path, init = {}) {
   const res = await fetch(`${cfg.url}${path.startsWith("/") ? path : `/${path}`}`, {
     ...init,
     headers,
-    signal: init.signal ?? AbortSignal.timeout(TIMEOUT_MS),
+    signal: init.signal ?? AbortSignal.timeout(timeoutMs),
   });
   const text = await res.text();
   let json = null;
@@ -62,11 +78,11 @@ export async function health(cfg = readErpnextConfig()) {
     };
   }
   try {
-    await erpnextFetch(cfg, "/api/method/frappe.ping");
+    await erpnextFetch(cfg, "/api/method/frappe.ping", {}, ERP_SLOW_TIMEOUT_MS);
     let companyOk = true;
     let detail = `${cfg.company} reachable`;
     try {
-      await erpnextFetch(cfg, `/api/resource/Company/${encodeURIComponent(cfg.company)}`);
+      await erpnextFetch(cfg, `/api/resource/Company/${encodeURIComponent(cfg.company)}`, {}, ERP_SLOW_TIMEOUT_MS);
     } catch {
       companyOk = false;
       detail = `ERPNext answered but company "${cfg.company}" was not found`;

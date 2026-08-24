@@ -10,6 +10,15 @@ import { Field, Input } from "@/components/ui/input";
 import { booksAgent, type BooksResult } from "@/lib/books";
 import { canSeeBooks } from "@/lib/roles";
 import { useAtlas } from "@/lib/store";
+import {
+  cashAccount,
+  ENTITY_TO_COMPANY,
+  expenseAccount,
+  looksLikePnlAccount,
+  looksLikeStockAccount,
+  mainCostCenter,
+} from "@/lib/erpnext/companies";
+import { DUKIA_IC_PAIRS, ELIM_EXAMPLE, IC_CLOSE_STEPS } from "@/lib/erpnext/consolidation";
 import { COMPANY_ALLOWLIST } from "@/lib/erpnext/journal-post";
 import { inr, todayIso } from "@/lib/utils";
 
@@ -25,19 +34,48 @@ function Finance() {
   const [sanctionedAt, setSanctionedAt] = useState("");
   const [validUntil, setValidUntil] = useState("");
   const [jeSource, setJeSource] = useState("ops-manual-1");
-  const [jeCompany, setJeCompany] = useState("SATYAM BUILDCOM");
+  const [jeCompany, setJeCompany] = useState<string>(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM");
   const [jeDate, setJeDate] = useState(todayIso());
-  const [jeDebitAcc, setJeDebitAcc] = useState("Construction Expenses - SBC");
-  const [jeCreditAcc, setJeCreditAcc] = useState("Cash - SBC");
+  const [jeDebitAcc, setJeDebitAcc] = useState(expenseAccount(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"));
+  const [jeCreditAcc, setJeCreditAcc] = useState(cashAccount(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"));
   const [jeAmt, setJeAmt] = useState("1000");
   const [jeRemark, setJeRemark] = useState("Manual Finance post");
+  const [jeCost, setJeCost] = useState(mainCostCenter(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"));
   const rows = tally.filter((t) => t.entityId === entityId);
   const entity = entities.find((e) => e.id === entityId);
   const [books, setBooks] = useState<BooksResult | null>(null);
+  const [coa, setCoa] = useState<BooksResult | null>(null);
+  const [centres, setCentres] = useState<BooksResult | null>(null);
+  const [closeTicks, setCloseTicks] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     void booksAgent("health").then(setBooks);
   }, []);
+
+  useEffect(() => {
+    const mapped = ENTITY_TO_COMPANY[entityId];
+    if (!mapped) return;
+    setJeCompany(mapped);
+  }, [entityId]);
+
+  useEffect(() => {
+    setJeDebitAcc(expenseAccount(jeCompany));
+    setJeCreditAcc(cashAccount(jeCompany));
+    setJeCost(mainCostCenter(jeCompany));
+    void booksAgent("accounts", { company: jeCompany }).then((r) => {
+      setCoa(r);
+      const names = (r.accounts ?? []).map((a) => a.name).filter((n) => !looksLikeStockAccount(n));
+      const expense = names.find((n) => /administrative expenses/i.test(n)) ?? names.find((n) => looksLikePnlAccount(n));
+      const cash = names.find((n) => /^cash -/i.test(n));
+      if (expense) setJeDebitAcc(expense);
+      if (cash) setJeCreditAcc(cash);
+    });
+    void booksAgent("cost-centers", { company: jeCompany }).then((r) => {
+      setCentres(r);
+      const main = (r.costCenters ?? []).find((c) => /^main -/i.test(c.name)) ?? r.costCenters?.[0];
+      if (main?.name) setJeCost(main.name);
+    });
+  }, [jeCompany]);
 
   if (!canSeeBooks(user?.role)) {
     return (
@@ -54,7 +92,32 @@ function Finance() {
       ? "Books backend not configured. Atlas still runs. See docs/finance/ERPNEXT.md."
       : !books.reachable
         ? `ERPNext unreachable (${books.detail}). Atlas still runs. Posting is off.`
-        : `${books.company ?? "MOCK ATLAS3 LLP"} · ERPNext answered · posting ${books.postingEnabled ? "ON" : "off"}`;
+        : `${books.company ?? "MOCK ATLAS3 LLP"} · ERPNext answered · posting ${books.postingEnabled ? "ON" : "off"}${
+            books.dukiaReady === false ? " · DUKIA sisters missing" : books.dukiaReady ? " · DUKIA sisters present" : ""
+          }`;
+
+  const accountOptions = (coa?.accounts?.length
+    ? coa.accounts.map((a) => a.name)
+    : [expenseAccount(jeCompany), cashAccount(jeCompany)]
+  ).filter((n) => n && !looksLikeStockAccount(n));
+  const centreOptions = centres?.costCenters?.length
+    ? centres.costCenters.map((c) => c.name)
+    : [mainCostCenter(jeCompany)].filter(Boolean);
+
+  function jePayload() {
+    const amt = Number(jeAmt) || 0;
+    const costFor = (account: string) => (looksLikePnlAccount(account) ? jeCost : undefined);
+    return {
+      sourceId: jeSource,
+      company: jeCompany,
+      postingDate: jeDate,
+      userRemark: jeRemark,
+      lines: [
+        { account: jeDebitAcc, debit: amt, costCenter: costFor(jeDebitAcc) },
+        { account: jeCreditAcc, credit: amt, costCenter: costFor(jeCreditAcc) },
+      ],
+    };
+  }
 
   return (
     <div>
@@ -71,6 +134,62 @@ function Finance() {
         <p className="font-display text-2xl">{entity?.name}</p>
         <p className="text-sm tabular-nums text-muted">{entity?.gstin}</p>
         <p className="mt-3 text-sm text-muted">{booksLine}</p>
+        {books?.companies?.length ? (
+          <ul className="mt-4 space-y-1 text-sm">
+            {books.companies.map((c) => (
+              <li key={c.name} className="flex flex-wrap justify-between gap-2">
+                <span>
+                  {c.name}
+                  {c.project ? ` · ${c.project}` : c.role === "group" ? " · group" : c.role === "mock" ? " · smoke" : ""}
+                </span>
+                <span className="tabular-nums text-muted">
+                  {c.present ? `in ERPNext · ${c.abbr}` : "missing in ERPNext"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </Card>
+
+      <h2 className="mb-3 font-display text-2xl">Intercompany (group pack, not entity books)</h2>
+      <p className="mb-3 text-sm text-muted">
+        Each LLP keeps due-from / due-to. Adding the three trial balances overstates assets and liabilities. Elimination
+        is a period-end worksheet for MD / silent partners — Atlas does not reverse IC JEs on the sisters. See
+        docs/finance/CONSOLIDATION.md.
+      </p>
+      <Card className="mb-6 p-5">
+        <p className="text-sm">
+          Example: {ELIM_EXAMPLE.a} Dr {ELIM_EXAMPLE.amountInr.toLocaleString("en-IN")} due from {ELIM_EXAMPLE.b}; the
+          other Cr the same. Standalone both correct. Group elim nets to zero. {ELIM_EXAMPLE.note}
+        </p>
+        <ul className="mt-4 space-y-3 text-sm">
+          {DUKIA_IC_PAIRS.map((p) => (
+            <li key={`${p.a}-${p.b}`} className="rounded-md border border-line px-3 py-2">
+              <p className="font-medium">
+                {p.a} ↔ {p.b}
+              </p>
+              <p className="text-xs text-muted">
+                {p.dueFromA} vs {p.dueToB}
+                <br />
+                {p.dueFromB} vs {p.dueToA}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 text-[11px] uppercase tracking-[0.14em] text-muted">Close checklist (this browser only)</p>
+        <ul className="mt-2 space-y-2 text-sm">
+          {IC_CLOSE_STEPS.map((step) => (
+            <li key={step} className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1 size-4"
+                checked={Boolean(closeTicks[step])}
+                onChange={() => setCloseTicks((cur) => ({ ...cur, [step]: !cur[step] }))}
+              />
+              <span>{step}</span>
+            </li>
+          ))}
+        </ul>
       </Card>
 
       <h2 className="mb-3 font-display text-2xl">Construction finance (ops master)</h2>
@@ -189,13 +308,15 @@ function Finance() {
       </div>
       <h2 className="mb-3 mt-8 font-display text-2xl">Post a journal to ERPNext</h2>
       <p className="mb-3 text-sm text-muted">
-        Explicit Finance action only. Posting stays off unless ERPNEXT_POSTING_ENABLED is true. Land, bookings, POs and CEO never post.
+        Leaf accounts from <em>this</em> company’s CoA. P&amp;L lines use cost centre Main - ABBR. Submit posts GL; a
+        draft is not the ledger. Posting stays off unless ERPNEXT_POSTING_ENABLED is true. Land, bookings, POs and CEO
+        never post. Atlas does not create ERPNext companies.
       </p>
       <Card className="mb-8 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="sourceId (idempotency)">
           <Input value={jeSource} onChange={(e) => setJeSource(e.target.value)} />
         </Field>
-        <Field label="Company">
+        <Field label="Company (must exist in ERPNext)">
           <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeCompany} onChange={(e) => setJeCompany(e.target.value)}>
             {COMPANY_ALLOWLIST.map((c) => (
               <option key={c} value={c}>
@@ -207,33 +328,48 @@ function Finance() {
         <Field label="Posting date">
           <Input type="date" value={jeDate} onChange={(e) => setJeDate(e.target.value)} />
         </Field>
-        <Field label="Amount (₹)">
-          <Input type="number" value={jeAmt} onChange={(e) => setJeAmt(e.target.value)} />
+        <Field label="Amount (₹, 2 decimals)">
+          <Input type="number" step="0.01" value={jeAmt} onChange={(e) => setJeAmt(e.target.value)} />
         </Field>
-        <Field label="Debit account">
-          <Input value={jeDebitAcc} onChange={(e) => setJeDebitAcc(e.target.value)} />
+        <Field label="Debit (leaf)">
+          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeDebitAcc} onChange={(e) => setJeDebitAcc(e.target.value)}>
+            {accountOptions.map((a) => (
+              <option key={`d-${a}`} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
         </Field>
-        <Field label="Credit account">
-          <Input value={jeCreditAcc} onChange={(e) => setJeCreditAcc(e.target.value)} />
+        <Field label="Credit (leaf)">
+          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeCreditAcc} onChange={(e) => setJeCreditAcc(e.target.value)}>
+            {accountOptions.map((a) => (
+              <option key={`c-${a}`} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Cost centre (P&L → Main - ABBR)">
+          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeCost} onChange={(e) => setJeCost(e.target.value)}>
+            {centreOptions.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label="Remark">
           <Input value={jeRemark} onChange={(e) => setJeRemark(e.target.value)} />
         </Field>
+        <p className="sm:col-span-2 text-xs text-muted">
+          {coa?.detail ?? "CoA"} · {centres?.detail ?? "cost centres"}. Group company DUKIA GROUP is not on the post
+          allowlist.
+        </p>
         <div className="flex flex-wrap items-end gap-2">
           <Button
             variant="outline"
             onClick={async () => {
-              const amt = Number(jeAmt) || 0;
-              const r = await booksAgent("validate", {
-                sourceId: jeSource,
-                company: jeCompany,
-                postingDate: jeDate,
-                userRemark: jeRemark,
-                lines: [
-                  { account: jeDebitAcc, debit: amt },
-                  { account: jeCreditAcc, credit: amt },
-                ],
-              });
+              const r = await booksAgent("validate", jePayload());
               toast(r.detail);
             }}
           >
@@ -241,21 +377,11 @@ function Finance() {
           </Button>
           <Button
             onClick={async () => {
-              const amt = Number(jeAmt) || 0;
-              const r = await booksAgent("post", {
-                sourceId: jeSource,
-                company: jeCompany,
-                postingDate: jeDate,
-                userRemark: jeRemark,
-                lines: [
-                  { account: jeDebitAcc, debit: amt },
-                  { account: jeCreditAcc, credit: amt },
-                ],
-              });
+              const r = await booksAgent("post", jePayload());
               toast(r.detail);
             }}
           >
-            Post to ERPNext
+            Submit to ERPNext (posts GL)
           </Button>
         </div>
       </Card>

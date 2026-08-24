@@ -5,21 +5,9 @@
  *
  *   node scripts/erpnext/smoke.mjs
  */
-import { readFileSync, existsSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { health, readErpnextConfig, refusePost } from "./lib.mjs";
+import { health, loadDotEnv, readErpnextConfig, refusePost } from "./lib.mjs";
 
-const HERE = dirname(fileURLToPath(import.meta.url));
-const envFile = join(HERE, ".env");
-if (existsSync(envFile) && !process.env.ERPNEXT_URL) {
-  for (const line of readFileSync(envFile, "utf8").split(/\r?\n/)) {
-    const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec(line);
-    if (!m || m[1].startsWith("#")) continue;
-    if (process.env[m[1]]) continue;
-    process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
-  }
-}
+loadDotEnv();
 
 const ATLAS = process.env.ATLAS_URL || "http://127.0.0.1:8080";
 const cfg = readErpnextConfig();
@@ -44,7 +32,7 @@ try {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action: "health" }),
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(20000),
   });
   atlas = await res.json();
   console.log("atlas   :", `/api/books ${res.status}`, "—", atlas.detail);

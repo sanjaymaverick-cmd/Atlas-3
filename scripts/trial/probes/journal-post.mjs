@@ -20,7 +20,7 @@ const unbalanced = await books({
   company: "SATYAM BUILDCOM",
   postingDate: "2026-08-24",
   lines: [
-    { account: "Construction Expenses - SBC", debit: 1000 },
+    { account: "Administrative Expenses - SBC", debit: 1000, costCenter: "Main - SBC" },
     { account: "Cash - SBC", credit: 1 },
   ],
 });
@@ -30,7 +30,7 @@ const balanced = await books({
   company: "SATYAM BUILDCOM",
   postingDate: "2026-08-24",
   lines: [
-    { account: "Construction Expenses - SBC", debit: 1000 },
+    { account: "Administrative Expenses - SBC", debit: 1000, costCenter: "Main - SBC" },
     { account: "Cash - SBC", credit: 1000 },
   ],
 });
@@ -40,7 +40,7 @@ const posted = await books({
   company: "SATYAM BUILDCOM",
   postingDate: "2026-08-24",
   lines: [
-    { account: "Construction Expenses - SBC", debit: 1000 },
+    { account: "Administrative Expenses - SBC", debit: 1000, costCenter: "Main - SBC" },
     { account: "Cash - SBC", credit: 1000 },
   ],
 });
