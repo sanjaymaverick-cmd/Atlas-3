@@ -1,7 +1,7 @@
 # Atlas 3 — company trial, FY 2026-27 H2
 
 **Run window:** 24 Aug 2026 → 31 Mar 2027 (Indian FY close)
-**Tally company:** `MOCK ATLAS3 LLP`
+**Books:** ERPNext at `D:\ERPNext` · company `MOCK ATLAS3 LLP`
 **Mode:** local only, not live. Mock data, real process.
 
 The rule for every agent: **behave like the person, not like a tester.** A Site
@@ -62,13 +62,13 @@ where the app will break.
 |--------|---------------------------|-------------------|
 | **24–31 Aug** | Opening position, carry-forward balances, live snag list | Cold start, seed realism |
 | **Sept** | Monsoon tail — slab cycles slip, RERA QPR for Q2, GST 20th | Timeline risk, statutory gates |
-| **30 Sept** | **Q2 close** | Quarter boundary, Tally reconciliation |
+| **30 Sept** | **Q2 close** | Quarter boundary, ERPNext reconciliation |
 | **Oct–early Nov** | **Festive season** — Navratri to Diwali, peak booking window, channel push, discount approvals | Inventory holds, commission accrual, four-eyes on discounts |
 | **Nov–Dec** | Bookings convert, collections begin, handover of first tower | Handover stepper, aging buckets, OC/snags |
 | **31 Dec** | **Q3 close** | Quarter boundary |
 | **Jan–Feb** | Collections push, overdue chasing, vendor settlement, TDS Q4 | **Aging buckets — B6 lives here**, four-eyes on payments |
 | **March** | FY close prep, final possession batch, statutory filings | Year-end |
-| **31 Mar** | **FY 2026-27 close in `MOCK ATLAS3 LLP`** | Tally year-end, never-post rule |
+| **31 Mar** | **FY 2026-27 close in `MOCK ATLAS3 LLP`** | ERPNext year-end, never-post rule |
 
 **Working cadence:** ~155 working days. Simulate at three densities —
 - **Full day** (one entry per seat, in sequence) for ~20 marked days: month ends, quarter ends, Diwali week, first handover, FY close.
@@ -83,7 +83,7 @@ Mock data, but it must survive an auditor's read.
 
 - **Money in ₹, lakhs/crores** as the desks actually speak. A 3BHK at Kanakpura is ₹1.1–1.4 Cr, not `$450,000`.
 - **Names, places, and vendors stay in the Jaipur/Rajasthan frame** already seeded — Kanakpura Residences, Aravalli Homes, Marwar Steel Traders.
-- **Every number must reconcile.** If SM books a unit at ₹1.24 Cr, FL's collection schedule, CM's commission accrual and the Tally voucher all carry ₹1.24 Cr. A trial that doesn't reconcile teaches nothing.
+- **Every number must reconcile.** If SM books a unit at ₹1.24 Cr, FL's collection schedule, CM's commission accrual and the ERPNext journal all carry ₹1.24 Cr. A trial that doesn't reconcile teaches nothing.
 - **Nobody skips a gate to make the day work.** If diligence blocks acquisition, the LL agent records being blocked — that is the finding. Working around the app is the one banned move.
 - **Two entities stay separate.** Kanakpura Developers LLP and Aravalli Homes Pvt Ltd do not share rows. Agent 14 and 17 exist to try to break that.
 
@@ -144,15 +144,14 @@ Output: `docs/trial/design-agent.md`, appended weekly, plus a final ranked table
 
 ---
 
-## 6. Tally
+## 6. ERPNext books
 
-`MOCK ATLAS3 LLP` is the company for this run.
+`MOCK ATLAS3 LLP` is the company for this run. Install lives at `D:\ERPNext`.
 
-- `MOCK_COMPANY` currently defaults to `"Atlas Mock LLP"` and is read from
-  `TALLY_COMPANY`. **The run needs `TALLY_COMPANY="MOCK ATLAS3 LLP"` set**, or every
-  voucher goes to the wrong company.
-- The never-post rule holds: Atlas reconciles, Tally is the book of record. Any
+- Env: `ERPNEXT_COMPANY=MOCK ATLAS3 LLP` (default). Posting stays off.
+- The never-post rule holds: Atlas reconciles, ERPNext is the book of record. Any
   agent who finds Atlas posting a voucher on its own has found a P0.
+- Baseline: `node scripts/trial/probes/erpnext-baseline.mjs`
 - FY close on 31 Mar is the last act of the run.
 
 ---

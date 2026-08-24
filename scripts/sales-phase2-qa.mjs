@@ -17,9 +17,11 @@ const SEAT = {
 async function login(page, email, password) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 30000 });
   await page.evaluate(() => {
-    for (const k of ["atlas3-sales-v2", "atlas3-sales-v3", "atlas3-sales-v4", "atlas3-sales-v5", "atlas3-sales-v6", "atlas3-sales-v7", "atlas3-sales-v8", "atlas3-sales-v9", "atlas3-clt-v1", "atlas3-company-day-v1"]) {
-      localStorage.removeItem(k);
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith("atlas3-sales-")) localStorage.removeItem(k);
     }
+    localStorage.removeItem("atlas3-clt-v1");
+    localStorage.removeItem("atlas3-company-day-v1");
   });
   await page.reload({ waitUntil: "networkidle" });
   await page.getByText("Local test accounts").waitFor({ timeout: 20000 });

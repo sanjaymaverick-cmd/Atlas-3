@@ -214,7 +214,7 @@ export const INBOUND: InboundEvent[] = [
     kind: "razorpay",
     status: "queued",
     projectId: "p_kanak",
-    note: "Gateway token ₹84,500 for A-1204. Atlas records collection only — Tally stays books.",
+    note: "Gateway token ₹84,500 for A-1204. Atlas records collection only — ERPNext stays books.",
     bookingId: "b1",
   },
   {

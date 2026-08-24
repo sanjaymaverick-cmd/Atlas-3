@@ -1,6 +1,6 @@
 # Atlas Sales — phases, stack, acceptance
 
-**Local only · not live.** Runtime on this machine is Atlas 3 (TanStack Start + Zustand). PostgreSQL SQL under `docs/sales/` is the go-live contract. CatBoost is a **separate process** (`services/scoring`). Tally remains the books.
+**Local only · not live.** Runtime on this machine is Atlas 3 (TanStack Start + Zustand). PostgreSQL SQL under `docs/sales/` is the go-live contract. CatBoost is a **separate process** (`services/scoring`). ERPNext at `D:\ERPNext` remains the books.
 
 ## Recommended tech stack
 
@@ -73,7 +73,7 @@ Handover (OC/snags/possession/society), booking docs, WhatsApp templates (Utilit
 - [x] Convert / book opens a handover case for the unit.
 - [x] Collection with remaining balance fires the `payment_due` template.
 - [x] Convert with WhatsApp consent fires `document_request`.
-- [x] Commission payouts from analytics send to Approvals only — Atlas never pays / never posts Tally.
+- [x] Commission payouts from analytics send to Approvals only — Atlas never pays / never posts ERPNext.
 - [x] Model monitor shows recent mean vs baseline, mix, and native CatBoost count.
 
 ## Main UI “endpoints” (this host)

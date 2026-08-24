@@ -3,10 +3,10 @@
 Running list. Blockers are things that stop a build, a run, or a go-live decision.
 Add to it as the company run turns up more.
 
-**Nine fixed on 24 Aug 2026** (B1, B2, B6, B7, B8, B9, B10, B12, B13) — the
-build gates, the aging number, the abort-kill, and the seams the company trial
-depends on. **Four still open** (B3, B4, B5, B11): two need a product decision,
-one is silent approval routing, and B11 is superseded for the trial.
+**Thirteen fixed** (B1–B13 except the two product *decisions* that stay
+recorded rather than flipped). **B3, B5, B11 fixed in the ERPNext books
+cutover.** **B4 recorded** in `docs/decisions/four-eyes.md` — default
+behaviour unchanged.
 
 Status key: **OPEN** · **IN PROGRESS** · **FIXED** (add the commit) · **WONTFIX** (add why)
 
@@ -51,7 +51,7 @@ the plain-English glossary is staying — see B3.
 
 ## B3 — Status vocabulary changed without updating the docs
 
-**Status:** OPEN — needs a product decision, not a code fix
+**Status:** FIXED — 24 Aug 2026. `DESIGN.md` and `docs/Atlas-3-UX-Spec.md` now lock the plain-English chip table. Glossary is the runtime source.
 **Found:** 24 Aug 2026, code review
 **Where:** `src/components/status.tsx`, `src/lib/glossary.ts`, `src/routes/app/index.tsx`, `src/components/layout/nav.ts`
 
@@ -74,7 +74,7 @@ The problem is that three documents now contradict the app.
 
 ## B4 — Four-eyes approval is bypassable by the MD
 
-**Status:** OPEN — needs a product decision
+**Status:** RECORDED — 24 Aug 2026. `docs/decisions/four-eyes.md`. Default still lets the MD act. `VITE_MD_BYPASS_FOUR_EYES=false` scopes the MD like every other seat. Do not flip the default silently.
 **Found:** 24 Aug 2026, code review
 **Where:** `src/lib/roles.ts:119`
 
@@ -96,7 +96,7 @@ stops looking unimplemented.
 
 ## B5 — Approval routing keys on free text and fails silently
 
-**Status:** OPEN
+**Status:** FIXED — 24 Aug 2026. `WaitingOn` union in `src/lib/waiting-on.ts`; `WAITING_ON_ROLES satisfies Record<WaitingOn, …>`. `"Sales Manager / MD"` is a real key. Unmapped = compile error. Regex fallback removed.
 **Found:** 24 Aug 2026, code review
 **Where:** `src/lib/roles.ts:110`, `src/lib/store.ts:1431`
 
@@ -208,8 +208,7 @@ stop clearing storage between seats. Keep the wipe only for the run's cold start
 
 ## B11 — Persist-key cleanup list is hand-maintained
 
-**Status:** OPEN — superseded for the trial by `scripts/trial/session.mjs`, which
-clears by `atlas3-sales-` prefix. `company-day.mjs` still enumerates.
+**Status:** FIXED — 24 Aug 2026. `scripts/atlas-persist.mjs` and QA logins clear by `atlas3-sales-` prefix.
 **Found:** 24 Aug 2026, code review
 **Where:** `scripts/company-day.mjs:89`
 
@@ -231,7 +230,7 @@ harness bug, and will waste a day of the trial.
 | L3 | Multiple jade primaries on Inventory and Pipeline; none at all on Land | `sales.inventory.tsx`, `sales.pipeline.tsx`, `land.tsx` |
 | L4 | Mobile header does not wrap at 390px — both selects collapse to slivers | `app-shell.tsx` |
 | L5 | Command lost the Open gates / Quality / Timeline risk KPIs the UX spec requires | `index.tsx` |
-| L6 | Tally deny page unreachable — `NAV_ROLES.finance` equals `canSeeTally` | `finance.tsx:19` |
+| L6 | Books deny page — `NAV_ROLES.finance` equals `canSeeBooks` | `finance.tsx` |
 | L7 | Cross-screen handoff via bare `sessionStorage["atlas-hold-unit"]` | `sales.inventory.tsx` ↔ `sales.channel.tsx` |
 | L8 | `to={x as "/app"}` casts defeat the typed router's dead-link check | `index.tsx`, `phases.tsx` |
 | L9 | Role branching repeated at five sites; `BOTTOM_NAV` already shows the fix | `index.tsx`, `app-shell.tsx` |

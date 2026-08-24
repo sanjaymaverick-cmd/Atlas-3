@@ -1,6 +1,6 @@
 # MOCK ATLAS3 LLP — Week 1 (24–28 Aug 2026)
 
-**Operating company:** MOCK ATLAS3 LLP · **Books:** Tally — *not yet reconciled, see Blocked*
+**Operating company:** MOCK ATLAS3 LLP · **Books:** ERPNext at D:\ERPNext — *configure when ready*
 **Days run:** 5 · **Seat turns:** 29 · **Errors:** 0 · **Audit events:** 76 across 13 named people
 
 Portfolio: KPR-01 Kanakpura (construction 42%) · MSE-03 Mansarovar (handover 78%) · BGH-02 Baggad (planning 18%).

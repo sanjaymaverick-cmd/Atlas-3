@@ -66,7 +66,6 @@ function pgliteBootstrapPlugin(): Plugin {
  * and returns the 302 / completion HTML. Deployed apps do not use the popup
  * (full-page OAuth redirect), so `apply: "serve"` is enough.
  */
-/** Local trial Tally XML bridge — Atlas posts vouchers to loopback :9000 only. */
 /** Live portal ingest — 99acres / MagicBricks / Housing + email fallback. */
 function ingestApiPlugin(): Plugin {
   return {
@@ -121,14 +120,29 @@ function ingestApiPlugin(): Plugin {
   };
 }
 
-function tallyApiPlugin(): Plugin {
+function jsonBody(req: import("node:http").IncomingMessage) {
+  return (async () => {
+    const chunks: Buffer[] = [];
+    for await (const chunk of req) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    try {
+      return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}") as Record<string, unknown>;
+    } catch {
+      return {};
+    }
+  })();
+}
+
+/** ERPNext books of record — REST only. Secrets stay in process.env, never VITE_. */
+function booksApiPlugin(): Plugin {
   return {
-    name: "atlas:tally-xml",
+    name: "atlas:erpnext-books",
     apply: "serve",
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const pathOnly = (req.url ?? "").split("?", 1)[0] ?? "";
-        if (pathOnly !== "/api/tally") {
+        if (pathOnly !== "/api/books") {
           next();
           return;
         }
@@ -139,18 +153,11 @@ function tallyApiPlugin(): Plugin {
           return;
         }
         try {
-          const chunks: Buffer[] = [];
-          for await (const chunk of req) {
-            chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-          }
-          let payload: Record<string, unknown> = {};
-          try {
-            payload = JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}") as Record<string, unknown>;
-          } catch {
-            payload = {};
-          }
-          const mod = await import("./scripts/tally-xml.mjs");
-          const result = await mod.handleTallyAction(payload);
+          const payload = await jsonBody(req);
+          const mod = (await server.ssrLoadModule("/src/lib/erpnext/books.ts")) as {
+            handleBooksAction: (p: Record<string, unknown>) => Promise<unknown>;
+          };
+          const result = await mod.handleBooksAction(payload);
           res.statusCode = 200;
           res.setHeader("content-type", "application/json; charset=utf-8");
           res.end(JSON.stringify(result));
@@ -158,8 +165,38 @@ function tallyApiPlugin(): Plugin {
           if (isAbortNoise(err) || res.writableEnded || res.destroyed) return;
           res.statusCode = 500;
           res.setHeader("content-type", "application/json; charset=utf-8");
-          res.end(JSON.stringify({ ok: false, live: false, detail: String((err as Error)?.message || err) }));
+          res.end(JSON.stringify({ ok: false, live: false, name: "erpnext", detail: String((err as Error)?.message || err) }));
         }
+      });
+    },
+  };
+}
+
+/** Tally XML transport is gone. Keep the path so old clients get a clear 410. */
+function tallyGonePlugin(): Plugin {
+  return {
+    name: "atlas:tally-retired",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const pathOnly = (req.url ?? "").split("?", 1)[0] ?? "";
+        if (pathOnly !== "/api/tally") {
+          next();
+          return;
+        }
+        res.statusCode = 410;
+        res.setHeader("content-type", "application/json; charset=utf-8");
+        res.end(
+          JSON.stringify({
+            ok: false,
+            live: false,
+            retired: true,
+            name: "erpnext",
+            posted: [],
+            detail: "Tally transport retired. Books of record are ERPNext at D:\\ERPNext via /api/books.",
+            next: "/api/books",
+          }),
+        );
       });
     },
   };
@@ -287,7 +324,8 @@ export default defineConfig(({ command, isPreview }) => ({
     pgliteBootstrapPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),
-    tallyApiPlugin(),
+    booksApiPlugin(),
+    tallyGonePlugin(),
     ingestApiPlugin(),
     // Dev-only /__app-env, read by scripts/check-auth-invariant.mjs.
     appEnvPlugin(),

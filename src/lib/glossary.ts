@@ -89,7 +89,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   emi: {
     name: "Loan instalment",
     short: "EMI",
-    hint: "Monthly loan payment. Here it is only a reminder — the real books stay in Tally.",
+    hint: "Monthly loan payment. Here it is only a reminder — the real books stay in ERPNext.",
   },
   clu: {
     name: "Land use conversion",
@@ -104,8 +104,13 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   rera: { name: "RERA filing", hint: "Housing regulator filing. Buyers and the government can see project progress." },
   tally: {
     name: "Company accounts",
-    short: "Tally",
-    hint: "The official books. Atlas never types a voucher into Tally. We only match and flag mismatches.",
+    short: "ERPNext",
+    hint: "The official books, in ERPNext at D:\\ERPNext. Atlas never types a voucher unless posting is explicitly turned on. We only match and flag mismatches.",
+  },
+  erpnext: {
+    name: "Company accounts",
+    short: "ERPNext",
+    hint: "The official books. Sibling system at D:\\ERPNext. Atlas talks to it by API only.",
   },
   crm: {
     name: "Sales partners",
@@ -126,7 +131,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   inventory: { name: "Flats and shops", hint: "Which units are free, on hold, booked or sold." },
   "channel desk": { name: "Agent daily work", hint: "Today’s calls and visits, then hold a unit, then ask to book." },
   "channel firm": { name: "Agency office", hint: "This company’s agents, holds and commission. You cannot see another company." },
-  finance: { name: "Company accounts", short: "Tally", hint: "Match Atlas with Tally. Atlas never writes a voucher." },
+  finance: { name: "Company accounts", short: "ERPNext", hint: "Match Atlas with ERPNext. Atlas never writes a voucher unless posting is on." },
   phases: { name: "All desks", hint: "Only the desks this login is allowed to open." },
   org: { name: "People and companies", hint: "Who works here and which legal company owns the project." },
   audit: { name: "What changed", hint: "A list of who did what. Rows are not deleted." },
@@ -143,7 +148,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   },
   "land papers": {
     name: "Land papers",
-    hint: "Land records, government filings and loan reminders. The real accounts stay in Tally.",
+    hint: "Land records, government filings and loan reminders. The real accounts stay in ERPNext.",
   },
   ncrs: { name: "Failed work still open", short: "NCRs", hint: "Work that failed inspection and is not closed yet." },
   pass: { name: "Passed", hint: "Inspection found the work is OK." },
@@ -163,7 +168,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   diligence: { name: "Land checks", hint: "Title, road, conversion and other checks before you buy the land." },
   overdue: { name: "Late", hint: "The due date has passed. File or pay it now." },
   executed: { name: "Work started", hint: "The contract is signed and work or supply can run." },
-  reconcil: { name: "Matched", hint: "Atlas and Tally now agree. Tally is still the official book." },
+  reconcil: { name: "Matched", hint: "Atlas and ERPNext now agree. ERPNext is still the official book." },
 };
 
 const ALIAS: Record<string, string> = {
@@ -246,6 +251,7 @@ const ALIAS: Record<string, string> = {
   "paid extra work": "vo",
   "give keys": "handover",
   "company accounts": "tally",
+  erpnext: "tally",
   "sales partners": "crm",
   "buyer leads": "pipeline",
   "agent daily work": "channel desk",

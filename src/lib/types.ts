@@ -1,3 +1,7 @@
+import type { WaitingOn } from "./waiting-on";
+
+export type { WaitingOn };
+
 export type Role =
   | "owner"
   | "pm"
@@ -185,7 +189,7 @@ export interface Approval {
   title: string;
   projectId: string;
   amount?: number;
-  waitingOn: string;
+  waitingOn: WaitingOn;
   agingDays: number;
   status: "pending" | "approved" | "rejected";
   refId?: string;

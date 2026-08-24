@@ -57,7 +57,7 @@ function Land() {
       <PageHeader
         kicker="Phase 3"
         title="Land papers"
-        description="You cannot buy the land until checks are clear. Loan instalments here are only a reminder — the real accounts stay in Tally."
+        description="You cannot buy the land until checks are clear. Loan instalments here are only a reminder — the real accounts stay in ERPNext."
       />
 
       <div className="mb-6">
@@ -194,7 +194,7 @@ function Land() {
                           variant="outline"
                           onClick={() => {
                             const err = payEmi(e.id);
-                            toast(err ?? "Marked paid in operations. Books stay in Tally.");
+                            toast(err ?? "Marked paid in operations. Books stay in ERPNext.");
                           }}
                         >
                           Mark paid in ops

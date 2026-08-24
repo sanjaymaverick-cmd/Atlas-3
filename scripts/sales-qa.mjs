@@ -11,10 +11,11 @@ mkdirSync(OUT, { recursive: true });
 async function login(page, email, password) {
   await page.goto(BASE, { waitUntil: "networkidle", timeout: 30000 });
   await page.evaluate(() => {
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith("atlas3-sales-")) localStorage.removeItem(k);
+    }
     localStorage.removeItem("atlas3-company-day-v1");
     localStorage.removeItem("atlas3-clt-v1");
-    localStorage.removeItem("atlas3-sales-v1");
-    localStorage.removeItem("atlas3-sales-v2");
   });
   await page.reload({ waitUntil: "networkidle" });
   await page.locator("input").nth(0).fill(email);

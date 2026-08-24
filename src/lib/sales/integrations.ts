@@ -10,7 +10,7 @@ export const CONNECTORS = [
   { kind: "google", label: "Google Lead Forms", channel: "Lead Form webhook", live: false },
   { kind: "whatsapp", label: "WhatsApp Business", channel: "primary comms", live: false },
   { kind: "webhook", label: "Generic webhook", channel: "PI / partner post", live: false },
-  { kind: "razorpay", label: "Payment gateway", channel: "token / receipt (Tally stays books)", live: false },
+  { kind: "razorpay", label: "Payment gateway", channel: "token / receipt (ERPNext stays books)", live: false },
   { kind: "esign", label: "E-sign / docs", channel: "allotment + agreement", live: false },
   { kind: "telephony", label: "Telephony", channel: "click-to-call readiness", live: false },
 ] as const;

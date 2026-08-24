@@ -21,14 +21,14 @@ function Testing() {
       <PageHeader
         kicker="UAT · not live"
         title="Company day"
-        description="Local UAT. Prove invariants on this host. Atlas never posts Tally vouchers. Not live."
+        description="Local UAT. Prove invariants on this host. Atlas never posts ERPNext vouchers. Not live."
       />
 
       <Card className="mb-6 p-5">
         <h2 className="font-display text-xl">Run the day</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted">
           Twelve seats, including Pink City agent and company admin. Failures are the point: a refuse for the right
-          reason is a pass. Tally stays Atlas Mock LLP with prior-run books — Atlas never posts. UI notes from each
+          reason is a pass. ERPNext at D:\ERPNext stays MOCK ATLAS3 LLP — Atlas never posts. UI notes from each
           desk are listed after the run.
         </p>
         <Button

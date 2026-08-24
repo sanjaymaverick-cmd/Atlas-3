@@ -16,19 +16,23 @@
 | **Visibility of status** | Every material object shows: state chip + who waits + how long + amount (if money). |
 | **Error prevention** | Invalid actions are disabled or refuse with one plain-language reason. Do not open a form that cannot succeed. |
 | **Feedback** | Every Approve / Reject / Seal / Convert writes audit + on-screen confirmation (toast). |
-| **Consistency** | Same status chip language, same card anatomy, same left nav forever. |
+| **Consistency** | Same status chip language as `src/lib/glossary.ts` + `status.tsx`, same card anatomy, same left nav. Vocabulary is plain English (24 Aug 2026 lock). |
 | **Density** | Office screens may be dense and table-led. Site screens stay sparse, large targets, few fields. |
-| **Role filter** | Nav and default home adapt to role. Never show Tally actions to Site Engineer. |
+| **Role filter** | Nav and default home adapt to role. Never show company-accounts / ERPNext actions to Site Engineer. |
 
-### Status chip vocabulary (lock this)
+### Status chip vocabulary (lock this — plain English)
 
-| Value | Meaning | Tone |
-|-------|---------|------|
-| pending / open / due | Needs action | warn |
-| approved / active / clear / filed / ready / won | OK to proceed | ok |
+Short codes may appear in the hover (`Hint`), never as the only label. Full table: `DESIGN.md` and `src/components/status.tsx`.
+
+| Value | Chip | Tone |
+|-------|------|------|
+| pending | Waiting | warn |
+| review | Under check | warn |
+| quarantine | Waiting for virus scan | danger |
+| variance | Numbers do not match | warn |
+| accrued | Earned, not paid | warn |
+| approved / active / clear / filed / ready / won | as-is / glossary name | ok |
 | rejected / lost / cancelled / flagged / overdue / fail | Stop or fix | danger |
-| review / negotiation / visit / accrued / named | In progress | warn |
-| muted / closed / granted (consumed) | Historical | muted |
 
 ### Card anatomy (decision unit)
 
@@ -100,7 +104,7 @@ Command remains reachable for all office roles via nav.
 ### Role variants
 
 - Engineer: suppress money KPIs; keep quality + site signals.  
-- Finance: emphasize Tally open cases + collection.
+- Finance: emphasize company-accounts open cases + collection.
 
 ### Anti-patterns
 
@@ -275,7 +279,7 @@ Without it, Approvals shows PO-1042 with no path to “see quotations submitted�
 1. Parcels (status: identified → diligence → acquired)  
 2. Diligence checklist per parcel  
 3. Obligations (RERA / labour / insurance / tax)  
-4. EMI schedule (ops — not Tally)
+4. EMI schedule (ops — not ERPNext)
 
 ### Gate
 
@@ -359,13 +363,14 @@ SLA hours visible on RFI cards when set.
 
 ---
 
-## 14. Tally (`/app/finance`)
+## 14. Company accounts (`/app/finance`)
 
 **Primary question:** Which cases are open, and did a human accept the exception?
 
 ### Rules in chrome
 
-- Banner or description: **Atlas never posts a voucher. Tally remains the books.**
+- Banner or description: **Atlas never posts a voucher. ERPNext at D:\ERPNext remains the books. Posting is off by default.**
+- Title: **Company accounts (ERPNext)**
 
 ### Cases
 
@@ -464,7 +469,7 @@ Pass = a first-time MD can answer the primary question in ~5–15s; ≤6 L1 chun
 | Documents | Safe to use / who takes original? | yes | Status + hold reason | — | n/a | |
 | Customers | Unit free, collection honest? | yes | Next unpaid step | — | n/a | |
 | CRM | Funnel + commission accrued only? | yes | Convert value | — | n/a | |
-| Tally | Open cases; Atlas never posts? | yes | GateBanner | — | n/a | |
+| Company accounts | Open cases; Atlas never posts? | yes | GateBanner | — | n/a | |
 | Portfolio | Open items + health by project? | yes | Role queue | — | n/a | |
 | Capital | Plan vs JTD vs remaining? | yes | Table | — | n/a | |
 | Test pack | Scripts prove invariants? | yes | Numbered scripts | — | n/a | |

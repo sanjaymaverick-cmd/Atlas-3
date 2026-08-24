@@ -15,7 +15,7 @@ export const PHASES = [
     id: 3,
     title: "Land papers",
     path: "/app/land",
-    rule: "You cannot buy land until checks are clear. Loan instalments here are only a reminder — accounts stay in Tally.",
+    rule: "You cannot buy land until checks are clear. Loan instalments here are only a reminder — accounts stay in ERPNext.",
   },
   {
     id: 4,
@@ -51,7 +51,7 @@ export const PHASES = [
     id: 9,
     title: "Company accounts",
     path: "/app/finance",
-    rule: "Atlas never writes a voucher. We only match or flag a mismatch. Tally remains the books.",
+    rule: "Atlas never writes a voucher. We only match or flag a mismatch. ERPNext at D:\\ERPNext remains the books.",
   },
   {
     id: 10,

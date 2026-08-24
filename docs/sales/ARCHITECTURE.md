@@ -11,7 +11,7 @@
 | Data | Zustand persist `atlas3-sales-v6` | PostgreSQL + JSONB (`docs/sales/0003_scores.sql`) |
 | Scoring | Hybrid fallback; CatBoost native at `services/scoring` (`cat_features`, no OTS). Bound locally to `:8091`. | Same; override `VITE_SCORING_URL` |
 | Integrations | inbound inbox + WhatsApp template registry | Live 99acres / MagicBricks / Housing / Meta / Google / WhatsApp Business / Razorpay / e-sign / telephony |
-| Books | Tally remains the books. Atlas never posts. | Same invariant |
+| Books | ERPNext at D:\ERPNext remains the books. Atlas never posts unless ERPNEXT_POSTING_ENABLED. | Same invariant |
 
 ## Roles
 

@@ -119,10 +119,10 @@ These already work; rewriting them is a regression:
 
 - **Site diary** — one jade Seal, 48px, Pass/Fail, fail→NCR
 - **Local login** — seat chips, passwords on-host, Local only badge
-- **Status / RAG vocabulary** and `DecisionCard` anatomy
+- **DecisionCard anatomy** and RAG *tone* (warn/ok/danger). Chip *labels* are plain English as of 24 Aug 2026 — see `DESIGN.md`, not the old codes.
 - **Jade + limestone + Newsreader/Figtree**
 - **Channel isolation on Channel desk, Company, Inventory** (Pink City ≠ Desert Reach there)
-- **Tally never-posts** copy and the deny page for non-finance seats
+- **Books never-posts** copy and the deny page for non-finance seats (ERPNext at D:\ERPNext)
 - **Acquisition blocked until diligence** (toast proven)
 - **Watermarked preview, quarantine scan, four-eyes original**
 - **Over-issue material refuse**

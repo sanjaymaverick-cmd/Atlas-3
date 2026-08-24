@@ -6,7 +6,7 @@ import { ProjectTimeline } from "@/components/project-timeline";
 import { QueueStrip } from "@/components/queue-strip";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { canSeeTally } from "@/lib/roles";
+import { canSeeBooks } from "@/lib/roles";
 import { companyAgentIds, myCompanyId } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr, todayIso } from "@/lib/utils";
@@ -149,7 +149,7 @@ function Command() {
                     { to: "/app/approvals", label: "Waiting for a yes", count: pending.length },
                     { to: "/app/site", label: "Failed inspections", count: failed.length },
                     { to: "/app/changes", label: "Failed work still open", count: openNcr.length },
-                    ...(canSeeTally(role)
+                    ...(canSeeBooks(role)
                       ? [{ to: "/app/finance", label: "Account mismatches", count: openTally.length }]
                       : overdueObs.length
                         ? [{ to: "/app/land", label: "Late government filings", count: overdueObs.filter((o) => o.status === "overdue").length }]
@@ -161,7 +161,7 @@ function Command() {
     if (failed.length) exceptionLinks.push({ to: "/app/site", label: `${failed.length} failed inspection${failed.length === 1 ? "" : "s"}` });
     if (openNcr.length) exceptionLinks.push({ to: "/app/changes", label: `${openNcr.length} failed work still open` });
     if (pending.length) exceptionLinks.push({ to: "/app/approvals", label: `${pending.length} waiting for a yes · oldest ${oldest}d` });
-    if (canSeeTally(role) && openTally.length) exceptionLinks.push({ to: "/app/finance", label: `${openTally.length} account mismatches` });
+    if (canSeeBooks(role) && openTally.length) exceptionLinks.push({ to: "/app/finance", label: `${openTally.length} account mismatches` });
     if (role !== "engineer" && role !== "supervisor" && overdueObs.some((o) => o.status === "overdue")) {
       exceptionLinks.push({ to: "/app/land", label: `${overdueObs.filter((o) => o.status === "overdue").length} late government filings` });
     }

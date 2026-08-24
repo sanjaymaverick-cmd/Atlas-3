@@ -143,7 +143,7 @@ function SalesAnalytics() {
       </div>
 
       <h2 className="mb-3 mt-8 font-display text-2xl">Commission payouts</h2>
-      <p className="mb-3 text-sm text-muted">Accrued only. Atlas never pays and never posts Tally. Send to Approvals.</p>
+      <p className="mb-3 text-sm text-muted">Accrued only. Atlas never pays and never posts ERPNext. Send to Approvals.</p>
       <div className="space-y-2">
         {commissions
           .filter((c) => ids.includes(c.projectId))

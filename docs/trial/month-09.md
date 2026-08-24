@@ -95,17 +95,11 @@ list and it is implemented and working.
 
 ---
 
-## Tally
+## ERPNext
 
-**Baseline taken 24 Aug 2026 (after the company was loaded):**
-
-```
-MOCK ATLAS3 LLP · FY 20260401–20270331
-vouchers: 0
-ledgers:  0
-```
-
-Saved at `docs/trial/tally/baseline-2026-08-24.xml`.
+Baseline moves to `scripts/trial/probes/erpnext-baseline.mjs` once `D:\ERPNext`
+is up with company **MOCK ATLAS3 LLP**. Historic Tally XML remains at
+`docs/trial/tally/baseline-2026-08-24.xml` as an archive, not a live backend.
 
 **The company is empty** — no ledger masters, no vouchers. The mock books
 described in the run brief are in `Atlas Mock LLP` (3 Journal vouchers), not in

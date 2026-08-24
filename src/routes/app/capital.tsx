@@ -24,10 +24,10 @@ function Capital() {
       <PageHeader
         kicker="Capital planning"
         title="Plan vs reality"
-        description="Remaining ≈ Planned − JTD spent − Forecast. Concept/land is not committed until acquire. Atlas never posts this to Tally."
+        description="Remaining ≈ Planned − JTD spent − Forecast. Concept/land is not committed until acquire. Atlas never posts this to ERPNext."
       />
       <GateBanner>
-        Statutory books stay in Tally. These figures are an operations view for the MD — not a voucher.
+        Statutory books stay in ERPNext. These figures are an operations view for the MD — not a voucher.
       </GateBanner>
       <EntityTable columns={["Project", "Planned", "JTD spent", "Open commitments", "Forecast", "Remaining"]}>
         {rows.map((r) => (

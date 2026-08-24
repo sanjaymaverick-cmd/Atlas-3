@@ -74,9 +74,9 @@ export const OWNER_TODOS = [
     status: "open" as const,
   },
   {
-    id: "todo_tally_live",
-    title: "Live Tally sync",
-    detail: "Atlas must not post vouchers. A later cutover may reconcile to a live Tally company — owner decision.",
+    id: "todo_erpnext_posting",
+    title: "ERPNext posting (Phase 2)",
+    detail: "Read/reconcile is Phase 1. Controlled posting stays off until ERPNEXT_POSTING_ENABLED is an explicit owner decision.",
     status: "open" as const,
   },
   {

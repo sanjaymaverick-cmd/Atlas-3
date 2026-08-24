@@ -1,6 +1,6 @@
 # Activate 99acres, MagicBricks, Housing.com
 
-**Local only · not live.** Webhooks are bound on this host. Atlas never posts Tally. CatBoost is unchanged (`cat_features` only).
+**Local only · not live.** Webhooks are bound on this host. Atlas never posts ERPNext. CatBoost is unchanged (`cat_features` only).
 
 ## What is live on this machine
 
