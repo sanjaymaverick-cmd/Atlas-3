@@ -3,10 +3,10 @@
 Running list. Blockers are things that stop a build, a run, or a go-live decision.
 Add to it as the company run turns up more.
 
-**Seven fixed on 24 Aug 2026** (B1, B2, B7, B8, B9, B10, B13) — the build gates
-and the seams the company trial depends on. **Six still open** (B3, B4, B5, B6,
-B11, B12): two need a product decision, one is a wrong number on a finance desk,
-and B12 can kill the dev server mid-run.
+**Nine fixed on 24 Aug 2026** (B1, B2, B6, B7, B8, B9, B10, B12, B13) — the
+build gates, the aging number, the abort-kill, and the seams the company trial
+depends on. **Four still open** (B3, B4, B5, B11): two need a product decision,
+one is silent approval routing, and B11 is superseded for the trial.
 
 Status key: **OPEN** · **IN PROGRESS** · **FIXED** (add the commit) · **WONTFIX** (add why)
 
@@ -112,7 +112,8 @@ warning, just an approval nobody but the MD can action.
 
 ## B6 — Collections aging: the `90d+` bucket is wrong
 
-**Status:** OPEN
+**Status:** FIXED — 24 Aug 2026. `90d+` is `days > 90`; added `61–90d`; one
+`daysOverdue()` pass honours the trial clock.
 **Found:** 24 Aug 2026, code review
 **Where:** `src/routes/app/customers.tsx`
 
@@ -120,9 +121,8 @@ The bucket labelled `90d+` filters on `days > 60`. Invoices between 61 and 90 da
 old are counted as 90-plus, so the oldest aging band overstates. This is a wrong
 number on a finance desk, not a cosmetic slip.
 
-**Fix:** filter on `days > 90`. While in there: the same file repeats the
-day-difference arithmetic four times inside one IIFE, and this branch added an
-unused `daysUntil()` helper to `utils.ts` that does exactly that.
+**Fix applied:** filter on `days > 90`, add a `61–90d` chip so that band is not
+dropped, and compute overdue days once through `daysOverdue()` (trial clock).
 
 ---
 
@@ -245,7 +245,9 @@ harness bug, and will waste a day of the trial.
 
 ## B12 — An aborted HTTP request can kill the dev server
 
-**Status:** OPEN
+**Status:** FIXED — 24 Aug 2026. `scripts/abort-guard.mjs` installed at Vite
+config load; socket `clientError` / connection errors swallowed when they are
+abort noise; ingest and Tally body reads no longer write to a dead socket.
 **Found:** 24 Aug 2026, while bringing the trial harness up
 **Where:** dev server (Vite + nitro), seen during dependency optimisation
 
@@ -257,8 +259,9 @@ startup; the process exited and every subsequent request was refused.
 Matters for the trial: 20 seats reconnecting across 155 simulated days will abort
 requests occasionally, and each abort is a dead server and a lost day.
 
-**Fix:** an `unhandledRejection` / `uncaughtException` guard on the dev server, or
-find the unhandled promise in the request path.
+**Fix applied:** process-level `unhandledRejection` / `uncaughtException` guard
+that swallows abort noise only; real errors still exit. HTTP `clientError` and
+per-socket `error` listeners destroy the socket and return.
 
 ---
 

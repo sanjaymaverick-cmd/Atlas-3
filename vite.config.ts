@@ -10,7 +10,12 @@ import { nitro } from "nitro/vite";
 import { grokPwaPlugin } from "./scripts/grok-pwa-plugin.mjs";
 // @ts-expect-error JS plugin alongside the TS vite config
 import { appEnvPlugin } from "./scripts/app-env-plugin.mjs";
+// @ts-expect-error JS helper alongside the TS vite config
+import { installAbortGuard, isAbortNoise } from "./scripts/abort-guard.mjs";
 import { isMigrationFile } from "./scripts/migration-plan.mjs";
+
+/** Cover dep-opt and the first request — configureServer is too late for startup aborts. */
+installAbortGuard();
 
 /** The files `src/lib/db.ts` globs — same directory, same non-recursive scope. */
 function hasGlobbedMigrations(root: string): boolean {
@@ -106,6 +111,7 @@ function ingestApiPlugin(): Plugin {
           });
           res.end(Buffer.from(await response.arrayBuffer()));
         } catch (err) {
+          if (isAbortNoise(err) || res.writableEnded || res.destroyed) return;
           res.statusCode = 500;
           res.setHeader("content-type", "application/json; charset=utf-8");
           res.end(JSON.stringify({ ok: false, error: String((err as Error)?.message || err) }));
@@ -149,10 +155,32 @@ function tallyApiPlugin(): Plugin {
           res.setHeader("content-type", "application/json; charset=utf-8");
           res.end(JSON.stringify(result));
         } catch (err) {
+          if (isAbortNoise(err) || res.writableEnded || res.destroyed) return;
           res.statusCode = 500;
           res.setHeader("content-type", "application/json; charset=utf-8");
           res.end(JSON.stringify({ ok: false, live: false, detail: String((err as Error)?.message || err) }));
         }
+      });
+    },
+  };
+}
+
+function abortGuardPlugin(): Plugin {
+  return {
+    name: "atlas:abort-guard",
+    apply: "serve",
+    configureServer(server) {
+      installAbortGuard();
+      server.httpServer?.on("clientError", (err, socket) => {
+        if (isAbortNoise(err)) {
+          socket.destroy();
+          return;
+        }
+      });
+      server.httpServer?.on("connection", (socket) => {
+        socket.on("error", (err) => {
+          if (!isAbortNoise(err)) console.error("[atlas] socket error", err);
+        });
       });
     },
   };
@@ -255,6 +283,7 @@ export default defineConfig(({ command, isPreview }) => ({
   },
   resolve: { tsconfigPaths: true },
   plugins: [
+    abortGuardPlugin(),
     pgliteBootstrapPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),
