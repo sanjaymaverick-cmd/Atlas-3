@@ -53,7 +53,8 @@ function ChannelDesk() {
   const [notes, setNotes] = useState("");
   const [bookValue, setBookValue] = useState("6500000");
   const [moreFields, setMoreFields] = useState(false);
-  const firm = companyId ? partners.find((p) => p.id === companyId)?.name : "All channel firms";
+  const partner = companyId ? partners.find((p) => p.id === companyId) : undefined;
+  const firm = partner?.name ?? "All channel firms";
 
   useEffect(() => {
     const pre = sessionStorage.getItem("atlas-hold-unit");
@@ -179,6 +180,11 @@ function ChannelDesk() {
       </Card>
 
       <h2 className="mb-3 font-display text-2xl">3 · Live holds</h2>
+      {partner?.rate != null ? (
+        <p className="mb-3 text-sm text-muted">
+          This firm earns {partner.rate}% on convert. Atlas accrues it; it does not pay.
+        </p>
+      ) : null}
       <div className="space-y-3">
         {liveHolds.map((h) => {
           const u = units.find((x) => x.id === h.unitId);
@@ -191,6 +197,9 @@ function ChannelDesk() {
                 </p>
                 <p className="text-xs text-muted">
                   {ag?.name} · {holdExpiryLabel(h.until)} · {partners.find((p) => p.id === ag?.companyId)?.name}
+                  {partners.find((p) => p.id === ag?.companyId)?.rate != null
+                    ? ` · commission ${partners.find((p) => p.id === (companyId ?? ag?.companyId))?.rate}% (accrued, not paid)`
+                    : ""}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">

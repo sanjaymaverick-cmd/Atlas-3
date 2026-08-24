@@ -10,7 +10,8 @@ import { Field, Input } from "@/components/ui/input";
 import { booksAgent, type BooksResult } from "@/lib/books";
 import { canSeeBooks } from "@/lib/roles";
 import { useAtlas } from "@/lib/store";
-import { inr } from "@/lib/utils";
+import { COMPANY_ALLOWLIST } from "@/lib/erpnext/journal-post";
+import { inr, todayIso } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/finance")({ component: Finance });
 
@@ -23,6 +24,13 @@ function Finance() {
   const [fundPid, setFundPid] = useState("");
   const [sanctionedAt, setSanctionedAt] = useState("");
   const [validUntil, setValidUntil] = useState("");
+  const [jeSource, setJeSource] = useState("ops-manual-1");
+  const [jeCompany, setJeCompany] = useState("SATYAM BUILDCOM");
+  const [jeDate, setJeDate] = useState(todayIso());
+  const [jeDebitAcc, setJeDebitAcc] = useState("Construction Expenses - SBC");
+  const [jeCreditAcc, setJeCreditAcc] = useState("Cash - SBC");
+  const [jeAmt, setJeAmt] = useState("1000");
+  const [jeRemark, setJeRemark] = useState("Manual Finance post");
   const rows = tally.filter((t) => t.entityId === entityId);
   const entity = entities.find((e) => e.id === entityId);
   const [books, setBooks] = useState<BooksResult | null>(null);
@@ -179,6 +187,79 @@ function Finance() {
           </Card>
         ))}
       </div>
+      <h2 className="mb-3 mt-8 font-display text-2xl">Post a journal to ERPNext</h2>
+      <p className="mb-3 text-sm text-muted">
+        Explicit Finance action only. Posting stays off unless ERPNEXT_POSTING_ENABLED is true. Land, bookings, POs and CEO never post.
+      </p>
+      <Card className="mb-8 grid gap-3 p-5 sm:grid-cols-2">
+        <Field label="sourceId (idempotency)">
+          <Input value={jeSource} onChange={(e) => setJeSource(e.target.value)} />
+        </Field>
+        <Field label="Company">
+          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeCompany} onChange={(e) => setJeCompany(e.target.value)}>
+            {COMPANY_ALLOWLIST.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Posting date">
+          <Input type="date" value={jeDate} onChange={(e) => setJeDate(e.target.value)} />
+        </Field>
+        <Field label="Amount (₹)">
+          <Input type="number" value={jeAmt} onChange={(e) => setJeAmt(e.target.value)} />
+        </Field>
+        <Field label="Debit account">
+          <Input value={jeDebitAcc} onChange={(e) => setJeDebitAcc(e.target.value)} />
+        </Field>
+        <Field label="Credit account">
+          <Input value={jeCreditAcc} onChange={(e) => setJeCreditAcc(e.target.value)} />
+        </Field>
+        <Field label="Remark">
+          <Input value={jeRemark} onChange={(e) => setJeRemark(e.target.value)} />
+        </Field>
+        <div className="flex flex-wrap items-end gap-2">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              const amt = Number(jeAmt) || 0;
+              const r = await booksAgent("validate", {
+                sourceId: jeSource,
+                company: jeCompany,
+                postingDate: jeDate,
+                userRemark: jeRemark,
+                lines: [
+                  { account: jeDebitAcc, debit: amt },
+                  { account: jeCreditAcc, credit: amt },
+                ],
+              });
+              toast(r.detail);
+            }}
+          >
+            Check journal
+          </Button>
+          <Button
+            onClick={async () => {
+              const amt = Number(jeAmt) || 0;
+              const r = await booksAgent("post", {
+                sourceId: jeSource,
+                company: jeCompany,
+                postingDate: jeDate,
+                userRemark: jeRemark,
+                lines: [
+                  { account: jeDebitAcc, debit: amt },
+                  { account: jeCreditAcc, credit: amt },
+                ],
+              });
+              toast(r.detail);
+            }}
+          >
+            Post to ERPNext
+          </Button>
+        </div>
+      </Card>
+
       <h2 className="mb-3 mt-8 font-display text-2xl">Recent audit</h2>
       <div className="space-y-2">
         {audit.slice(0, 8).map((a) => (

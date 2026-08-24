@@ -1,4 +1,5 @@
 import { daysOverdue, daysUntil, todayIso } from "./utils";
+import { unitConfig } from "./unit-pick";
 import type {
   Approval,
   Booking,
@@ -8,11 +9,14 @@ import type {
   FundingSanction,
   InventoryUnit,
   LandParcel,
+  Lead,
+  LegalEntity,
   Obligation,
   PaymentStep,
   Project,
   PurchaseOrder,
   Snag,
+  Tower,
   UnitHold,
   Vendor,
 } from "./types";
@@ -20,8 +24,9 @@ import type {
 export interface CeoRisk {
   id: string;
   label: string;
-  to: "/app" | "/app/land" | "/app/commercial" | "/app/approvals" | "/app/site" | "/app/customers" | "/app/finance" | "/app/sales/channel";
+  to: "/app" | "/app/land" | "/app/commercial" | "/app/approvals" | "/app/site" | "/app/customers" | "/app/finance" | "/app/sales/channel" | "/app/org";
   count: number;
+  severity: "high" | "medium" | "low";
 }
 
 export interface CeoKpis {
@@ -49,6 +54,12 @@ export interface CeoReport {
   kpis: CeoKpis;
   risks: CeoRisk[];
   brief: string[];
+  mdWaiting: number;
+  weeklyVelocity: number;
+  weeksToSellout: number | null;
+  funnel: Array<{ stage: string; count: number }>;
+  channelMix: { inHouse: number; channel: number };
+  bhk: Array<{ config: string; available: number; booked: number }>;
 }
 
 export interface CeoInput {
@@ -67,6 +78,9 @@ export interface CeoInput {
   diaries: DiaryEntry[];
   approvals: Approval[];
   fundingSanctions: FundingSanction[];
+  leads: Lead[];
+  towers: Tower[];
+  entities: LegalEntity[];
 }
 
 export function filterProjects(projects: Project[], scope: "group" | { entityId?: string; projectId?: string }) {
@@ -82,6 +96,7 @@ export function buildCeoReport(
   input: CeoInput,
   scope: "group" | { entityId?: string; projectId?: string },
   books?: { configured: boolean; reachable: boolean; posted: number },
+  currentEntityId?: string,
 ): CeoReport {
   const asOf = todayIso();
   const month = asOf.slice(0, 7);
@@ -147,10 +162,17 @@ export function buildCeoReport(
       label: reraOverdue ? `${reraOverdue} RERA filing(s) overdue` : `${reraDue} RERA filing(s) due in 7 days`,
       to: "/app/land",
       count: reraOverdue || reraDue,
+      severity: reraOverdue ? "high" : "medium",
     });
   }
   if (vendorsApproval) {
-    risks.push({ id: "vendor", label: `${vendorsApproval} vendor(s) waiting to activate`, to: "/app/approvals", count: vendorsApproval });
+    risks.push({
+      id: "vendor",
+      label: `${vendorsApproval} vendor(s) waiting to activate`,
+      to: "/app/approvals",
+      count: vendorsApproval,
+      severity: "high",
+    });
   }
   const silentSite = plist.filter((p) => {
     if (!p.constructionStart || p.constructionStart > asOf) return false;
@@ -160,11 +182,23 @@ export function buildCeoReport(
     return daysUntil(last.date) <= -3;
   }).length;
   if (silentSite) {
-    risks.push({ id: "diary", label: `${silentSite} project(s) with no diary for 3+ days`, to: "/app/site", count: silentSite });
+    risks.push({
+      id: "diary",
+      label: `${silentSite} project(s) with no diary for 3+ days`,
+      to: "/app/site",
+      count: silentSite,
+      severity: "medium",
+    });
   }
   const expiring = holds.filter((h) => daysUntil(h.until) >= 0 && daysUntil(h.until) <= 3).length;
   if (expiring >= 1) {
-    risks.push({ id: "holds", label: `${expiring} hold(s) expire within 3 days`, to: "/app/sales/channel", count: expiring });
+    risks.push({
+      id: "holds",
+      label: `${expiring} hold(s) expire within 3 days`,
+      to: "/app/sales/channel",
+      count: expiring,
+      severity: "medium",
+    });
   }
   if (kpis.overdue61 || kpis.overdue90) {
     risks.push({
@@ -172,6 +206,7 @@ export function buildCeoReport(
       label: `${kpis.overdue61} in 61–90d · ${kpis.overdue90} in 90d+ overdue`,
       to: "/app/customers",
       count: kpis.overdue61 + kpis.overdue90,
+      severity: kpis.overdue90 ? "high" : "medium",
     });
   }
   if (books && (!books.configured || !books.reachable)) {
@@ -180,6 +215,17 @@ export function buildCeoReport(
       label: books.configured ? "Company accounts unreachable" : "Company accounts not configured",
       to: "/app/finance",
       count: 1,
+      severity: books.configured ? "high" : "low",
+    });
+  }
+  if ((input.entities?.length ?? 0) > 1 && currentEntityId) {
+    const header = input.entities.find((e) => e.id === currentEntityId)?.name ?? currentEntityId;
+    risks.push({
+      id: "entity",
+      label: `Header company is ${header}. Switch before filing a sister company.`,
+      to: "/app/org",
+      count: input.entities.length,
+      severity: "medium",
     });
   }
 
@@ -205,6 +251,35 @@ export function buildCeoReport(
       ? `Supply: ${kpis.vendorsApproval} vendor(s) not Active. Open orders ${kpis.openPoInr ? Math.round(kpis.openPoInr / 100000) / 10 + " Cr" : "₹0"} (ops, not ERPNext).`
       : "No vendors stuck in activation. No open PO exposure in this slice.",
   );
+  const mdWaiting = input.approvals.filter(
+    (a) => a.status === "pending" && a.waitingOn === "Managing Director" && (ids.size === 0 || ids.has(a.projectId)),
+  ).length;
+  const starts = plist.map((p) => p.start).filter(Boolean).sort();
+  const weeksElapsed = starts[0]
+    ? Math.max(1, Math.round((new Date(`${asOf}T12:00:00`).getTime() - new Date(`${starts[0]}T12:00:00`).getTime()) / (7 * 86_400_000)))
+    : 12;
+  const weeklyVelocity = kpis.booked > 0 ? Math.round((kpis.booked / weeksElapsed) * 10) / 10 : 0;
+  const weeksToSellout = weeklyVelocity > 0 ? Math.round((kpis.available / weeklyVelocity) * 10) / 10 : null;
+  const leads = (input.leads ?? []).filter((l) => ids.has(l.projectId));
+  const stages = ["inquiry", "contacted", "qualified", "visit", "negotiation", "won"] as const;
+  const funnel = stages.map((stage) => ({ stage, count: leads.filter((l) => l.stage === stage).length }));
+  const channelMix = {
+    inHouse: bookings.filter((b) => !b.partnerId).length,
+    channel: bookings.filter((b) => Boolean(b.partnerId)).length,
+  };
+  const bhkMap = new Map<string, { available: number; booked: number }>();
+  for (const u of units) {
+    const cfg = unitConfig(u, input.towers ?? []) || "other";
+    const row = bhkMap.get(cfg) ?? { available: 0, booked: 0 };
+    if (u.status === "available") row.available += 1;
+    if (u.status === "booked" || u.status === "sold") row.booked += 1;
+    bhkMap.set(cfg, row);
+  }
+  const bhk = [...bhkMap.entries()].map(([config, row]) => ({ config, ...row }));
+  brief[0] =
+    weeksToSellout != null
+      ? `${brief[0]} Sellout pace ~${weeklyVelocity}/week · ${weeksToSellout} weeks at this rate.`
+      : brief[0];
   brief.push(
     books?.reachable
       ? `Books: ERPNext answered. Atlas posted ${books.posted} voucher(s). Posting stays off unless you turn it on.`
@@ -212,5 +287,18 @@ export function buildCeoReport(
         ? "Books: ERPNext is configured but not reachable. Atlas still runs. Do not treat Home numbers as the P&L."
         : "Books: ERPNext not configured. Atlas still runs. P&L and balance sheet will be empty until posting is on.",
   );
-  return { asOf, kpis, risks, brief };
+  const five = brief.slice(0, 5);
+  while (five.length < 5) five.push("No further signal in this slice.");
+  return {
+    asOf,
+    kpis,
+    risks,
+    brief: five,
+    mdWaiting,
+    weeklyVelocity,
+    weeksToSellout,
+    funnel,
+    channelMix,
+    bhk,
+  };
 }

@@ -45,6 +45,7 @@ DUKIA GROUP seats use `@dukia.local` (example: `md@dukia.local` / `AtlasLocal-MD
 - **Funding master:** Finance desk; Aerovista/Acropolis SBI 60/40, Sunflower AU 60/40.
 - **Paper quotes:** RFQ desk (and site) can register a printed quote with a scan. Select/PO still needs vendor Active.
 - **Drawings:** `/app/drawings` PDF register. Channel seats cannot open it.
+- **Journal post:** Finance desk only. `ERPNEXT_POSTING_ENABLED` default false. Title `ATLAS-OPS {sourceId}`.
 
 ## Sales Command (local)
 

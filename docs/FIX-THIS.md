@@ -298,3 +298,12 @@ dies. Any long-lived browser profile under the repo will do this.
 **Still recorded, not flipped:** ERPNext posting default off. Commission accrues only. Full dataset still sits in the client store (L14 architecture); selectors and exclusive-channel lock are the operational filter. L14 is mitigated, not deleted.
 
 **Out of scope this pass:** 2024–2028 re-run, DWG/IFC viewer, enabling posting by default.
+
+## Follow-on (CEO + controlled JE)
+
+| Item | Status |
+|------|--------|
+| CEO analytics (funnel, in-house vs channel, BHK), weeks-to-sellout, MD strip, risk severity + entity risk | FIXED |
+| Channel blocked from `/app/ceo` | FIXED |
+| Typed `AtlasJournalPost` + Finance explicit post; flag default off; mock when ERPNext down | FIXED |
+| Paper quote + drawing register | FIXED earlier on this branch |

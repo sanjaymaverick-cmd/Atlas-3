@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Kpi } from "@/components/kpi";
 import { PageHeader } from "@/components/page-header";
 import { Card } from "@/components/ui/card";
 import { booksAgent, type BooksResult } from "@/lib/books";
 import { buildCeoReport } from "@/lib/ceo";
+import { isThirdParty } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr, todayIso } from "@/lib/utils";
 
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/app/ceo")({ component: CeoDesk });
 
 function CeoDesk() {
   const store = useAtlas();
-  const { entities, entityId, projectId, projects, simDate } = store;
+  const { entities, entityId, projectId, projects, simDate, user } = store;
   const [scope, setScope] = useState<"group" | "entity" | "project">("group");
   const [books, setBooks] = useState<BooksResult | null>(null);
 
@@ -32,11 +33,14 @@ function CeoDesk() {
               posted: books.posted?.length ?? 0,
             }
           : undefined,
+        entityId,
       ),
     [store, scope, entityId, projectId, books],
   );
   const k = report.kpis;
   const asOf = simDate || todayIso();
+
+  if (isThirdParty(user?.role)) return <Navigate to="/app/sales/channel" />;
 
   return (
     <div>
@@ -64,6 +68,13 @@ function CeoDesk() {
           </button>
         ))}
       </div>
+
+      {report.mdWaiting > 0 ? (
+        <Link to="/app/approvals" className="mb-6 block rounded-xl border border-primary/40 bg-surface p-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Waiting on the Managing Director</p>
+          <p className="font-display text-2xl">{report.mdWaiting} approval{report.mdWaiting === 1 ? "" : "s"}</p>
+        </Link>
+      ) : null}
 
       <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Link to="/app/sales/inventory">
@@ -100,6 +111,11 @@ function CeoDesk() {
         <Link to="/app/commercial">
           <Kpi label="Open PO exposure" value={inr(k.openPoInr, true)} vs={k.vendorsApproval ? `${k.vendorsApproval} vendor(s) in approval` : "vendors Active"} />
         </Link>
+        <Kpi
+          label="Weeks to sellout"
+          value={report.weeksToSellout != null ? String(report.weeksToSellout) : "—"}
+          vs={report.weeklyVelocity ? `${report.weeklyVelocity} bookings/week` : "no pace yet"}
+        />
         <Link to="/app/finance">
           <Kpi
             label="Books health"
@@ -120,6 +136,7 @@ function CeoDesk() {
               {report.risks.map((r) => (
                 <li key={r.id}>
                   <Link to={r.to} className="block rounded-md border border-line px-3 py-2 text-sm hover:bg-chip">
+                    <span className="mr-2 text-[10px] uppercase tracking-[0.12em] text-muted">{r.severity}</span>
                     {r.label}
                   </Link>
                 </li>
@@ -133,6 +150,38 @@ function CeoDesk() {
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
             {report.brief.map((b) => (
               <li key={b}>{b}</li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <Card className="p-5">
+          <h2 className="font-display text-xl">Funnel</h2>
+          <ul className="mt-3 space-y-1 text-sm">
+            {report.funnel.map((f) => (
+              <li key={f.stage} className="flex justify-between gap-2">
+                <span>{f.stage}</span>
+                <span className="tabular-nums">{f.count}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+        <Card className="p-5">
+          <h2 className="font-display text-xl">In-house vs channel</h2>
+          <p className="mt-3 text-sm">In-house {report.channelMix.inHouse}</p>
+          <p className="text-sm">Channel {report.channelMix.channel}</p>
+        </Card>
+        <Card className="p-5">
+          <h2 className="font-display text-xl">Inventory by BHK</h2>
+          <ul className="mt-3 space-y-1 text-sm">
+            {report.bhk.map((b) => (
+              <li key={b.config} className="flex justify-between gap-2">
+                <span>{b.config}</span>
+                <span className="tabular-nums">
+                  {b.available} free · {b.booked} booked
+                </span>
+              </li>
             ))}
           </ul>
         </Card>
