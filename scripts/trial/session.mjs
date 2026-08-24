@@ -79,7 +79,7 @@ export const SEATS = {
   agsbg1: "ag-sbg1@dukia.local",
 };
 
-const PASSWORDS = {
+export const PASSWORDS = {
   "md@dukia.local": "AtlasLocal-MD",
   "dir1@dukia.local": "AtlasLocal-DIR1",
   "dir2@dukia.local": "AtlasLocal-DIR2",

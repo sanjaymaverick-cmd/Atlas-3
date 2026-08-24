@@ -218,6 +218,7 @@ interface AtlasState {
   requestExport: (documentId: string) => string | null;
   consumeExport: (grantId: string) => string | null;
   setDiligence: (id: string, status: DiligenceItem["status"]) => void;
+  addDiligence: (input: { parcelId: string; title: string }) => string | null;
   fileObligation: (id: string, ack: string) => string | null;
   addParcel: (input: { projectId: string; name: string; khasra: string; area: string; rera: string }) => string | null;
   addObligation: (input: { projectId: string; kind: Obligation["kind"]; title: string; due: string }) => string | null;
@@ -1034,6 +1035,23 @@ export const useAtlas = create<AtlasState>()(
         if (!item) return;
         set({ diligence: get().diligence.map((d) => (d.id === id ? { ...d, status } : d)) });
         get().log(`Due diligence ${status}`, item.title);
+      },
+      addDiligence: (input) => {
+        if (!input.title.trim()) return "Title required.";
+        const parcel = get().parcels.find((p) => p.id === input.parcelId);
+        if (!parcel) return "Parcel not found.";
+        const row: DiligenceItem = {
+          id: uid("dd"),
+          parcelId: input.parcelId,
+          title: input.title.trim(),
+          status: "open",
+        };
+        set({
+          diligence: [row, ...get().diligence],
+          parcels: get().parcels.map((p) => (p.id === input.parcelId && p.status === "identified" ? { ...p, status: "diligence" } : p)),
+        });
+        get().log("Added diligence item", row.title);
+        return null;
       },
       fileObligation: (id, ack) => {
         const o = get().obligations.find((x) => x.id === id);

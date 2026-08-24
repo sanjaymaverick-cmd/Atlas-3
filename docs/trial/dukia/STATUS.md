@@ -1,24 +1,48 @@
 # DUKIA GROUP — run status
 
-**Clock:** 2024-06-17  
-**Opened:** 2024-06-03  
+**Clock:** 2028-12-31  
+**Workdays simulated:** 1396 (Sundays + listed festivals skipped)  
+**Jobs applied:** 640 (three project agents + group, date-ordered)
 
-## Done
-- Atlas seeded as DUKIA GROUP (persist `atlas3-dukia-v1`). Kanakpura/Pink City labels replaced.
-- 30 named logins. Three entities, three projects, 356 available units, three brokers (3.0 / 2.5 / 4.0%).
-- **2024-06-03** Land acquire **refused** (five diligence items open) — correct.
-- Documents: title search `d_6xu0oa2w`, funding picture `d_b49h1p31`.
-- **2024-06-17** Diligence cleared; parcel `lp_av` **acquired**.
+Operating group: DUKIA GROUP · Sisters: MGB PRIME ESTATES LLP · SATYAM BUILDCOM · SATYAM CONSTRUCTION
 
-## Books
-- ERPNext at D:\ERPNext was not reachable from this session (timeout). Atlas did **not** post vouchers.
-- MOCK ATLAS3 LLP may still be the only company in the desk. SATYAM BUILDCOM / SATYAM CONSTRUCTION / MGB PRIME ESTATES LLP still to be created when Docker is up.
+## Project agents (parallel modules, single company file)
 
-## Next full day (do not skip)
-- 2024-07-15 RERA file RAJ/P/2024/2144 + SBI sanction note (document, not voucher)
-- Then structure RFQ (vendors still **invited** — must pass KYC/activation before PO)
+| Agent | Company | Project | Land | Bookings (from run) |
+|-------|---------|---------|------|---------------------|
+| Aerovista | SATYAM BUILDCOM | AV-01 | `lp_av` acquired | 26 possessed + extra 3BHK in close |
+| Sunflower | SATYAM CONSTRUCTION | SF-01 | `lp_sf` acquired | 22 possessed + extra |
+| Acropolis | MGB PRIME ESTATES LLP | AC-01 | `lp_ac` acquired | 52 possessed + extra |
 
-## Logs
-- `docs/trial/dukia/agents/legal-m-iyer.md`
-- `docs/trial/dukia/agents/md-r-dukia.md`
-- `docs/trial/dukia/agents/finance-p-jain.md`
+Close snapshot (`close-2028.json`): **160 bookings** · **100 possessed** · **60 booked** · **196 still available** of 356.
+
+## Artefacts (real IDs in `artefacts.json`)
+
+- **RFQs (3, still open):** Aerovista / Sunflower / Acropolis structure-civil
+- **Quotes (3, submitted, not selected):** `q_0ipiqe9t` `q_jy7mjffa` `q_hpbniuqf` from Shakti Earthworks
+- **POs:** none — **correct gate**: vendor still `approval`, not Active. MD “activate vendor” job saw no pending card (`none pending`). Quote select refused: *Cannot select a quote from a vendor that is not Active.*
+- **RERA obligations:** 49 filed with challan refs through QPR 2028-09 for RAJ/P/2024/2144, RAJ/P/2025/0088, RAJ/P/2025/0312
+- **Diaries:** 292 (Mondays in each construction window)
+- **ERPNext:** posting off; Atlas posted **0** vouchers. Sister companies in the desk still operator-side if Docker is down.
+
+## Agent logs
+
+Per-seat files under `docs/trial/dukia/agents/` including parallel project files:
+
+- `project-aerovista.md`
+- `project-sunflower.md`
+- `project-acropolis.md`
+- `legal-m-iyer.md` `md-r-dukia.md` `finance-p-jain.md`
+
+## Not a clean PO pack
+
+Do not claim POs or vendor Active. That is the run finding, not a skip.
+
+## How to re-run
+
+```bat
+node scripts/trial/dukia/opening-2024-06.mjs --reset
+node scripts/trial/dukia/day-2024-06-17.mjs
+node scripts/trial/dukia/run-to-2028.mjs
+node scripts/trial/dukia/close-2028.mjs
+```

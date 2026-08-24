@@ -1,0 +1,640 @@
+- 2024-07-15 · ll · rera obligation · ok
+- 2024-07-15 · ll · file rera with challan · ok
+- 2024-07-15 · fl · bank sanction note · ok
+- 2024-07-22 · cm · GSTIN + onboard civil · approval
+- 2024-07-22 · cm · GSTIN + onboard electrical · approval
+- 2024-07-23 · md · MD activate vendors · none pending
+- 2024-09-02 · cm · structure RFQ · ok
+- 2024-09-16 · cm · civil quote · Cannot select a quote from a vendor that is not Active.
+- 2024-09-23 · cm · PO from selected quote · no selected quote
+- 2024-09-23 · md · MD approve PO · none pending
+- 2024-09-30 · ll · QPR · ok
+- 2024-09-30 · ll · QPR challan · ok
+- 2024-10-07 · svav · site diary · ok
+- 2024-10-14 · svav · site diary · ok
+- 2024-10-21 · svav · site diary · ok
+- 2024-10-28 · svav · site diary · ok
+- 2024-11-04 · svav · site diary · ok
+- 2024-11-11 · svav · site diary · ok
+- 2024-11-18 · svav · site diary · ok
+- 2024-11-25 · svav · site diary · ok
+- 2024-12-02 · svav · site diary · ok
+- 2024-12-09 · svav · site diary · ok
+- 2024-12-16 · svav · site diary · ok
+- 2024-12-23 · svav · site diary · ok
+- 2024-12-30 · svav · site diary · ok
+- 2024-12-31 · ll · QPR · ok
+- 2024-12-31 · ll · QPR challan · ok
+- 2025-01-06 · ll · open diligence · ok
+- 2025-01-06 · ll · open diligence · ok
+- 2025-01-06 · ll · open diligence · ok
+- 2025-01-06 · ll · land file · ok
+- 2025-01-06 · svav · site diary · ok
+- 2025-01-13 · svav · site diary · ok
+- 2025-01-20 · ll · clear diligence + acquire · ok
+- 2025-01-20 · svav · site diary · ok
+- 2025-01-27 · svav · site diary · ok
+- 2025-02-03 · ll · rera obligation · ok
+- 2025-02-03 · ll · file rera with challan · ok
+- 2025-02-03 · svav · site diary · ok
+- 2025-02-03 · fl · bank sanction note · ok
+- 2025-02-10 · svav · site diary · ok
+- 2025-02-17 · svav · site diary · ok
+- 2025-02-24 · svav · site diary · ok
+- 2025-03-03 · ll · open diligence · ok
+- 2025-03-03 · ll · open diligence · ok
+- 2025-03-03 · ll · open diligence · ok
+- 2025-03-03 · ll · land file · ok
+- 2025-03-03 · svav · site diary · ok
+- 2025-03-10 · svav · site diary · ok
+- 2025-03-17 · ll · clear diligence + acquire · ok
+- 2025-03-17 · svav · site diary · ok
+- 2025-03-24 · svav · site diary · ok
+- 2025-03-31 · ll · QPR · ok
+- 2025-03-31 · ll · QPR challan · ok
+- 2025-03-31 · ll · QPR · ok
+- 2025-03-31 · ll · QPR challan · ok
+- 2025-03-31 · svav · site diary · ok
+- 2025-04-07 · ll · rera obligation · ok
+- 2025-04-07 · ll · file rera with challan · ok
+- 2025-04-07 · cm · structure RFQ · ok
+- 2025-04-07 · svav · site diary · ok
+- 2025-04-07 · svsf · site diary · ok
+- 2025-04-07 · fl · bank sanction note · ok
+- 2025-04-14 · svav · site diary · ok
+- 2025-04-14 · svsf · site diary · ok
+- 2025-04-21 · cm · civil quote · Cannot select a quote from a vendor that is not Active.
+- 2025-04-21 · svav · site diary · ok
+- 2025-04-21 · svsf · site diary · ok
+- 2025-04-28 · cm · PO from selected quote · no selected quote
+- 2025-04-28 · svav · site diary · ok
+- 2025-04-28 · svsf · site diary · ok
+- 2025-04-28 · md · MD approve PO · none pending
+- 2025-05-05 · svav · site diary · ok
+- 2025-05-05 · svsf · site diary · ok
+- 2025-05-12 · svav · site diary · ok
+- 2025-05-12 · svsf · site diary · ok
+- 2025-05-19 · svav · site diary · ok
+- 2025-05-19 · svsf · site diary · ok
+- 2025-05-26 · svav · site diary · ok
+- 2025-05-26 · svsf · site diary · ok
+- 2025-06-02 · cm · structure RFQ · ok
+- 2025-06-02 · svav · site diary · ok
+- 2025-06-02 · svsf · site diary · ok
+- 2025-06-02 · svac · site diary · ok
+- 2025-06-02 · smav · launch lead · ok
+- 2025-06-04 · agap1 · channel daily report · ok
+- 2025-06-04 · smav · in-house booking · ok
+- 2025-06-09 · svav · site diary · ok
+- 2025-06-09 · svsf · site diary · ok
+- 2025-06-09 · svac · site diary · ok
+- 2025-06-11 · agap1 · channel daily report · ok
+- 2025-06-11 · smav · in-house booking · ok
+- 2025-06-16 · cm · civil quote · Cannot select a quote from a vendor that is not Active.
+- 2025-06-16 · svav · site diary · ok
+- 2025-06-16 · svsf · site diary · ok
+- 2025-06-16 · svac · site diary · ok
+- 2025-06-23 · cm · PO from selected quote · no selected quote
+- 2025-06-23 · svav · site diary · ok
+- 2025-06-23 · svsf · site diary · ok
+- 2025-06-23 · svac · site diary · ok
+- 2025-06-23 · md · MD approve PO · none pending
+- 2025-06-30 · ll · QPR · ok
+- 2025-06-30 · ll · QPR challan · ok
+- 2025-06-30 · ll · QPR · ok
+- 2025-06-30 · ll · QPR challan · ok
+- 2025-06-30 · ll · QPR · ok
+- 2025-06-30 · ll · QPR challan · ok
+- 2025-06-30 · svav · site diary · ok
+- 2025-06-30 · svsf · site diary · ok
+- 2025-06-30 · svac · site diary · ok
+- 2025-07-02 · agap1 · channel daily report · ok
+- 2025-07-02 · smav · in-house booking · ok
+- 2025-07-07 · svav · site diary · ok
+- 2025-07-07 · svsf · site diary · ok
+- 2025-07-07 · svac · site diary · ok
+- 2025-07-09 · agap1 · channel daily report · ok
+- 2025-07-09 · smav · in-house booking · ok
+- 2025-07-14 · svav · site diary · ok
+- 2025-07-14 · svsf · site diary · ok
+- 2025-07-14 · svac · site diary · ok
+- 2025-07-21 · svav · site diary · ok
+- 2025-07-21 · svsf · site diary · ok
+- 2025-07-21 · svac · site diary · ok
+- 2025-07-28 · svav · site diary · ok
+- 2025-07-28 · svsf · site diary · ok
+- 2025-07-28 · svac · site diary · ok
+- 2025-08-04 · svav · site diary · ok
+- 2025-08-04 · svsf · site diary · ok
+- 2025-08-04 · svac · site diary · ok
+- 2025-08-04 · smsf · launch lead · ok
+- 2025-08-06 · agap1 · channel daily report · ok
+- 2025-08-06 · agsy1 · channel daily report · ok
+- 2025-08-06 · smav · in-house booking · ok
+- 2025-08-06 · smsf · in-house booking · ok
+- 2025-08-11 · svav · site diary · ok
+- 2025-08-11 · svsf · site diary · ok
+- 2025-08-11 · svac · site diary · ok
+- 2025-08-13 · agap1 · channel daily report · ok
+- 2025-08-13 · agsy1 · channel daily report · ok
+- 2025-08-13 · smav · in-house booking · ok
+- 2025-08-13 · smsf · in-house booking · ok
+- 2025-08-18 · svav · site diary · ok
+- 2025-08-18 · svsf · site diary · ok
+- 2025-08-18 · svac · site diary · ok
+- 2025-08-25 · svav · site diary · ok
+- 2025-08-25 · svsf · site diary · ok
+- 2025-08-25 · svac · site diary · ok
+- 2025-09-01 · svav · site diary · ok
+- 2025-09-01 · svsf · site diary · ok
+- 2025-09-01 · svac · site diary · ok
+- 2025-09-01 · smac · launch lead · ok
+- 2025-09-03 · agap1 · channel daily report · ok
+- 2025-09-03 · agsy1 · channel daily report · ok
+- 2025-09-03 · agsbg1 · channel daily report · ok
+- 2025-09-03 · smav · in-house booking · ok
+- 2025-09-03 · smsf · in-house booking · ok
+- 2025-09-03 · smac · in-house booking · ok
+- 2025-09-08 · svav · site diary · ok
+- 2025-09-08 · svsf · site diary · ok
+- 2025-09-08 · svac · site diary · ok
+- 2025-09-10 · agap1 · channel daily report · ok
+- 2025-09-10 · agsy1 · channel daily report · ok
+- 2025-09-10 · agsbg1 · channel daily report · ok
+- 2025-09-10 · smav · in-house booking · ok
+- 2025-09-10 · smsf · in-house booking · ok
+- 2025-09-10 · smac · in-house booking · ok
+- 2025-09-15 · svav · site diary · ok
+- 2025-09-15 · svsf · site diary · ok
+- 2025-09-15 · svac · site diary · ok
+- 2025-09-22 · svav · site diary · ok
+- 2025-09-22 · svsf · site diary · ok
+- 2025-09-22 · svac · site diary · ok
+- 2025-09-29 · svav · site diary · ok
+- 2025-09-29 · svsf · site diary · ok
+- 2025-09-29 · svac · site diary · ok
+- 2025-09-30 · ll · QPR · ok
+- 2025-09-30 · ll · QPR challan · ok
+- 2025-09-30 · ll · QPR · ok
+- 2025-09-30 · ll · QPR challan · ok
+- 2025-09-30 · ll · QPR · ok
+- 2025-09-30 · ll · QPR challan · ok
+- 2025-10-01 · agap1 · channel daily report · ok
+- 2025-10-01 · agsy1 · channel daily report · ok
+- 2025-10-01 · agsbg1 · channel daily report · ok
+- 2025-10-01 · smav · in-house booking · ok
+- 2025-10-01 · smsf · in-house booking · ok
+- 2025-10-01 · smac · in-house booking · ok
+- 2025-10-06 · svav · site diary · ok
+- 2025-10-06 · svsf · site diary · ok
+- 2025-10-06 · svac · site diary · ok
+- 2025-10-08 · agap1 · channel daily report · ok
+- 2025-10-08 · agsy1 · channel daily report · ok
+- 2025-10-08 · agsbg1 · channel daily report · ok
+- 2025-10-08 · smav · in-house booking · ok
+- 2025-10-08 · smsf · in-house booking · ok
+- 2025-10-08 · smac · in-house booking · ok
+- 2025-10-13 · svav · site diary · ok
+- 2025-10-13 · svsf · site diary · ok
+- 2025-10-13 · svac · site diary · ok
+- 2025-10-20 · svav · site diary · ok
+- 2025-10-20 · svsf · site diary · ok
+- 2025-10-20 · svac · site diary · ok
+- 2025-10-27 · svav · site diary · ok
+- 2025-10-27 · svsf · site diary · ok
+- 2025-10-27 · svac · site diary · ok
+- 2025-11-03 · svav · site diary · ok
+- 2025-11-03 · svsf · site diary · ok
+- 2025-11-03 · svac · site diary · ok
+- 2025-11-05 · agap1 · channel daily report · ok
+- 2025-11-05 · agsy1 · channel daily report · ok
+- 2025-11-05 · agsbg1 · channel daily report · ok
+- 2025-11-05 · smav · in-house booking · ok
+- 2025-11-05 · smsf · in-house booking · ok
+- 2025-11-05 · smac · in-house booking · ok
+- 2025-11-10 · svav · site diary · ok
+- 2025-11-10 · svsf · site diary · ok
+- 2025-11-10 · svac · site diary · ok
+- 2025-11-12 · agap1 · channel daily report · ok
+- 2025-11-12 · agsy1 · channel daily report · ok
+- 2025-11-12 · agsbg1 · channel daily report · ok
+- 2025-11-12 · smav · in-house booking · ok
+- 2025-11-12 · smsf · in-house booking · ok
+- 2025-11-12 · smac · in-house booking · ok
+- 2025-11-17 · svav · site diary · ok
+- 2025-11-17 · svsf · site diary · ok
+- 2025-11-17 · svac · site diary · ok
+- 2025-11-24 · svav · site diary · ok
+- 2025-11-24 · svsf · site diary · ok
+- 2025-11-24 · svac · site diary · ok
+- 2025-12-01 · svav · site diary · ok
+- 2025-12-01 · svsf · site diary · ok
+- 2025-12-01 · svac · site diary · ok
+- 2025-12-03 · agap1 · channel daily report · ok
+- 2025-12-03 · agsy1 · channel daily report · ok
+- 2025-12-03 · agsbg1 · channel daily report · ok
+- 2025-12-03 · smav · in-house booking · ok
+- 2025-12-03 · smsf · in-house booking · ok
+- 2025-12-03 · smac · in-house booking · ok
+- 2025-12-08 · svav · site diary · ok
+- 2025-12-08 · svsf · site diary · ok
+- 2025-12-08 · svac · site diary · ok
+- 2025-12-10 · agap1 · channel daily report · ok
+- 2025-12-10 · agsy1 · channel daily report · ok
+- 2025-12-10 · agsbg1 · channel daily report · ok
+- 2025-12-10 · smav · in-house booking · ok
+- 2025-12-10 · smsf · in-house booking · ok
+- 2025-12-10 · smac · in-house booking · ok
+- 2025-12-15 · svav · site diary · ok
+- 2025-12-15 · svsf · site diary · ok
+- 2025-12-15 · svac · site diary · ok
+- 2025-12-22 · svav · site diary · ok
+- 2025-12-22 · svsf · site diary · ok
+- 2025-12-22 · svac · site diary · ok
+- 2025-12-29 · svav · site diary · ok
+- 2025-12-29 · svsf · site diary · ok
+- 2025-12-29 · svac · site diary · ok
+- 2025-12-31 · ll · QPR · ok
+- 2025-12-31 · ll · QPR challan · ok
+- 2025-12-31 · ll · QPR · ok
+- 2025-12-31 · ll · QPR challan · ok
+- 2025-12-31 · ll · QPR · ok
+- 2025-12-31 · ll · QPR challan · ok
+- 2026-01-05 · svav · site diary · ok
+- 2026-01-05 · svsf · site diary · ok
+- 2026-01-05 · svac · site diary · ok
+- 2026-01-07 · agap1 · channel daily report · ok
+- 2026-01-07 · agsy1 · channel daily report · ok
+- 2026-01-07 · agsbg1 · channel daily report · ok
+- 2026-01-07 · smav · in-house booking · ok
+- 2026-01-07 · smsf · in-house booking · ok
+- 2026-01-07 · smac · in-house booking · ok
+- 2026-01-12 · svav · site diary · ok
+- 2026-01-12 · svsf · site diary · ok
+- 2026-01-12 · svac · site diary · ok
+- 2026-01-14 · agap1 · channel daily report · ok
+- 2026-01-14 · agsy1 · channel daily report · ok
+- 2026-01-14 · agsbg1 · channel daily report · ok
+- 2026-01-14 · smav · in-house booking · ok
+- 2026-01-14 · smsf · in-house booking · ok
+- 2026-01-14 · smac · in-house booking · ok
+- 2026-01-19 · svav · site diary · ok
+- 2026-01-19 · svsf · site diary · ok
+- 2026-01-19 · svac · site diary · ok
+- 2026-02-02 · svav · site diary · ok
+- 2026-02-02 · svsf · site diary · ok
+- 2026-02-02 · svac · site diary · ok
+- 2026-02-04 · agap1 · channel daily report · ok
+- 2026-02-04 · agsy1 · channel daily report · ok
+- 2026-02-04 · agsbg1 · channel daily report · ok
+- 2026-02-04 · smav · in-house booking · ok
+- 2026-02-04 · smsf · in-house booking · ok
+- 2026-02-04 · smac · in-house booking · ok
+- 2026-02-09 · svav · site diary · ok
+- 2026-02-09 · svsf · site diary · ok
+- 2026-02-09 · svac · site diary · ok
+- 2026-02-11 · agap1 · channel daily report · ok
+- 2026-02-11 · agsy1 · channel daily report · ok
+- 2026-02-11 · agsbg1 · channel daily report · ok
+- 2026-02-11 · smav · in-house booking · ok
+- 2026-02-11 · smsf · in-house booking · ok
+- 2026-02-11 · smac · in-house booking · ok
+- 2026-02-16 · svav · site diary · ok
+- 2026-02-16 · svsf · site diary · ok
+- 2026-02-16 · svac · site diary · ok
+- 2026-02-23 · svav · site diary · ok
+- 2026-02-23 · svsf · site diary · ok
+- 2026-02-23 · svac · site diary · ok
+- 2026-03-02 · svav · site diary · ok
+- 2026-03-02 · svsf · site diary · ok
+- 2026-03-02 · svac · site diary · ok
+- 2026-03-04 · agap1 · channel daily report · ok
+- 2026-03-04 · agsy1 · channel daily report · ok
+- 2026-03-04 · agsbg1 · channel daily report · ok
+- 2026-03-04 · smav · in-house booking · ok
+- 2026-03-04 · smsf · in-house booking · ok
+- 2026-03-04 · smac · in-house booking · ok
+- 2026-03-09 · svav · site diary · ok
+- 2026-03-09 · svsf · site diary · ok
+- 2026-03-09 · svac · site diary · ok
+- 2026-03-11 · agap1 · channel daily report · ok
+- 2026-03-11 · agsy1 · channel daily report · ok
+- 2026-03-11 · agsbg1 · channel daily report · ok
+- 2026-03-11 · smav · in-house booking · ok
+- 2026-03-11 · smsf · in-house booking · ok
+- 2026-03-11 · smac · in-house booking · ok
+- 2026-03-16 · svav · site diary · ok
+- 2026-03-16 · svsf · site diary · ok
+- 2026-03-16 · svac · site diary · ok
+- 2026-03-23 · svav · site diary · ok
+- 2026-03-23 · svsf · site diary · ok
+- 2026-03-23 · svac · site diary · ok
+- 2026-03-30 · svav · site diary · ok
+- 2026-03-30 · svsf · site diary · ok
+- 2026-03-30 · svac · site diary · ok
+- 2026-03-31 · ll · QPR · ok
+- 2026-03-31 · ll · QPR challan · ok
+- 2026-03-31 · ll · QPR · ok
+- 2026-03-31 · ll · QPR challan · ok
+- 2026-03-31 · ll · QPR · ok
+- 2026-03-31 · ll · QPR challan · ok
+- 2026-04-01 · agap1 · channel daily report · ok
+- 2026-04-01 · agsy1 · channel daily report · ok
+- 2026-04-01 · agsbg1 · channel daily report · ok
+- 2026-04-01 · smav · in-house booking · ok
+- 2026-04-01 · smsf · in-house booking · ok
+- 2026-04-01 · smac · in-house booking · ok
+- 2026-04-06 · svav · site diary · ok
+- 2026-04-06 · svsf · site diary · ok
+- 2026-04-06 · svac · site diary · ok
+- 2026-04-08 · agap1 · channel daily report · ok
+- 2026-04-08 · agsy1 · channel daily report · ok
+- 2026-04-08 · agsbg1 · channel daily report · ok
+- 2026-04-08 · smav · in-house booking · ok
+- 2026-04-08 · smsf · in-house booking · ok
+- 2026-04-08 · smac · in-house booking · ok
+- 2026-04-13 · svav · site diary · ok
+- 2026-04-13 · svsf · site diary · ok
+- 2026-04-13 · svac · site diary · ok
+- 2026-04-20 · svav · site diary · ok
+- 2026-04-20 · svsf · site diary · ok
+- 2026-04-20 · svac · site diary · ok
+- 2026-04-27 · svav · site diary · ok
+- 2026-04-27 · svsf · site diary · ok
+- 2026-04-27 · svac · site diary · ok
+- 2026-05-04 · svav · site diary · ok
+- 2026-05-04 · svsf · site diary · ok
+- 2026-05-04 · svac · site diary · ok
+- 2026-05-06 · agap1 · channel daily report · ok
+- 2026-05-06 · agsy1 · channel daily report · ok
+- 2026-05-06 · agsbg1 · channel daily report · ok
+- 2026-05-06 · smav · in-house booking · ok
+- 2026-05-06 · smsf · in-house booking · ok
+- 2026-05-06 · smac · in-house booking · ok
+- 2026-05-11 · svav · site diary · ok
+- 2026-05-11 · svsf · site diary · ok
+- 2026-05-11 · svac · site diary · ok
+- 2026-05-13 · agap1 · channel daily report · ok
+- 2026-05-13 · agsy1 · channel daily report · ok
+- 2026-05-13 · agsbg1 · channel daily report · ok
+- 2026-05-13 · smav · in-house booking · ok
+- 2026-05-13 · smsf · in-house booking · ok
+- 2026-05-13 · smac · in-house booking · ok
+- 2026-05-18 · svav · site diary · ok
+- 2026-05-18 · svsf · site diary · ok
+- 2026-05-18 · svac · site diary · ok
+- 2026-05-25 · svav · site diary · ok
+- 2026-05-25 · svsf · site diary · ok
+- 2026-05-25 · svac · site diary · ok
+- 2026-06-01 · svav · site diary · ok
+- 2026-06-01 · svsf · site diary · ok
+- 2026-06-01 · svac · site diary · ok
+- 2026-06-03 · agap1 · channel daily report · ok
+- 2026-06-03 · agsy1 · channel daily report · ok
+- 2026-06-03 · agsbg1 · channel daily report · ok
+- 2026-06-03 · smav · in-house booking · ok
+- 2026-06-03 · smsf · in-house booking · ok
+- 2026-06-03 · smac · in-house booking · ok
+- 2026-06-08 · svav · site diary · ok
+- 2026-06-08 · svsf · site diary · ok
+- 2026-06-08 · svac · site diary · ok
+- 2026-06-10 · agap1 · channel daily report · ok
+- 2026-06-10 · agsy1 · channel daily report · ok
+- 2026-06-10 · agsbg1 · channel daily report · ok
+- 2026-06-10 · smav · in-house booking · ok
+- 2026-06-10 · smsf · in-house booking · ok
+- 2026-06-10 · smac · in-house booking · ok
+- 2026-06-15 · svav · site diary · ok
+- 2026-06-15 · svac · site diary · ok
+- 2026-06-15 · smsf · OC + collect + possession where ready · ok
+- 2026-06-22 · svav · site diary · ok
+- 2026-06-22 · svac · site diary · ok
+- 2026-06-29 · svav · site diary · ok
+- 2026-06-29 · svac · site diary · ok
+- 2026-06-30 · ll · QPR · ok
+- 2026-06-30 · ll · QPR challan · ok
+- 2026-06-30 · ll · QPR · ok
+- 2026-06-30 · ll · QPR challan · ok
+- 2026-06-30 · ll · QPR · ok
+- 2026-06-30 · ll · QPR challan · ok
+- 2026-07-01 · agap1 · channel daily report · ok
+- 2026-07-01 · agsbg1 · channel daily report · ok
+- 2026-07-01 · smav · in-house booking · no available unit
+- 2026-07-01 · smac · in-house booking · ok
+- 2026-07-06 · svav · site diary · ok
+- 2026-07-06 · svac · site diary · ok
+- 2026-07-08 · agap1 · channel daily report · ok
+- 2026-07-08 · agsbg1 · channel daily report · ok
+- 2026-07-08 · smav · in-house booking · no available unit
+- 2026-07-08 · smac · in-house booking · ok
+- 2026-07-13 · svav · site diary · ok
+- 2026-07-13 · svac · site diary · ok
+- 2026-07-20 · svav · site diary · ok
+- 2026-07-20 · svac · site diary · ok
+- 2026-07-27 · svav · site diary · ok
+- 2026-07-27 · svac · site diary · ok
+- 2026-08-03 · svav · site diary · ok
+- 2026-08-03 · svac · site diary · ok
+- 2026-08-05 · agap1 · channel daily report · ok
+- 2026-08-05 · agsbg1 · channel daily report · ok
+- 2026-08-05 · smav · in-house booking · no available unit
+- 2026-08-05 · smac · in-house booking · ok
+- 2026-08-10 · svav · site diary · ok
+- 2026-08-10 · svac · site diary · ok
+- 2026-08-12 · agap1 · channel daily report · ok
+- 2026-08-12 · agsbg1 · channel daily report · ok
+- 2026-08-12 · smav · in-house booking · no available unit
+- 2026-08-12 · smac · in-house booking · ok
+- 2026-08-17 · svav · site diary · ok
+- 2026-08-17 · svac · site diary · ok
+- 2026-08-24 · svav · site diary · ok
+- 2026-08-24 · svac · site diary · ok
+- 2026-08-31 · svav · site diary · ok
+- 2026-08-31 · svac · site diary · ok
+- 2026-09-02 · agap1 · channel daily report · ok
+- 2026-09-02 · agsbg1 · channel daily report · ok
+- 2026-09-02 · smav · in-house booking · no available unit
+- 2026-09-02 · smac · in-house booking · ok
+- 2026-09-07 · svav · site diary · ok
+- 2026-09-07 · svac · site diary · ok
+- 2026-09-09 · agap1 · channel daily report · ok
+- 2026-09-09 · agsbg1 · channel daily report · ok
+- 2026-09-09 · smav · in-house booking · no available unit
+- 2026-09-09 · smac · in-house booking · ok
+- 2026-09-14 · svav · site diary · ok
+- 2026-09-14 · svac · site diary · ok
+- 2026-09-21 · svav · site diary · ok
+- 2026-09-21 · svac · site diary · ok
+- 2026-09-28 · svav · site diary · ok
+- 2026-09-28 · svac · site diary · ok
+- 2026-09-30 · ll · QPR · ok
+- 2026-09-30 · ll · QPR challan · ok
+- 2026-09-30 · ll · QPR · ok
+- 2026-09-30 · ll · QPR challan · ok
+- 2026-09-30 · ll · QPR · ok
+- 2026-09-30 · ll · QPR challan · ok
+- 2026-10-05 · svav · site diary · ok
+- 2026-10-05 · svac · site diary · ok
+- 2026-10-07 · agap1 · channel daily report · ok
+- 2026-10-07 · agsbg1 · channel daily report · ok
+- 2026-10-07 · smav · in-house booking · no available unit
+- 2026-10-07 · smac · in-house booking · ok
+- 2026-10-12 · svav · site diary · ok
+- 2026-10-12 · svac · site diary · ok
+- 2026-10-14 · agap1 · channel daily report · ok
+- 2026-10-14 · agsbg1 · channel daily report · ok
+- 2026-10-14 · smav · in-house booking · no available unit
+- 2026-10-14 · smac · in-house booking · ok
+- 2026-10-19 · svav · site diary · ok
+- 2026-10-19 · svac · site diary · ok
+- 2026-10-26 · svav · site diary · ok
+- 2026-10-26 · svac · site diary · ok
+- 2026-11-02 · svac · site diary · ok
+- 2026-11-02 · smav · OC + collect + possession where ready · ok
+- 2026-11-04 · agsbg1 · channel daily report · ok
+- 2026-11-04 · smac · in-house booking · ok
+- 2026-11-09 · svac · site diary · ok
+- 2026-11-11 · agsbg1 · channel daily report · ok
+- 2026-11-11 · smac · in-house booking · ok
+- 2026-11-16 · svac · site diary · ok
+- 2026-11-23 · svac · site diary · ok
+- 2026-11-30 · svac · site diary · ok
+- 2026-12-02 · agsbg1 · channel daily report · ok
+- 2026-12-02 · smac · in-house booking · ok
+- 2026-12-07 · svac · site diary · ok
+- 2026-12-09 · agsbg1 · channel daily report · ok
+- 2026-12-09 · smac · in-house booking · ok
+- 2026-12-14 · svac · site diary · ok
+- 2026-12-21 · svac · site diary · ok
+- 2026-12-28 · svac · site diary · ok
+- 2026-12-31 · ll · QPR · ok
+- 2026-12-31 · ll · QPR challan · ok
+- 2026-12-31 · ll · QPR · ok
+- 2026-12-31 · ll · QPR challan · ok
+- 2026-12-31 · ll · QPR · ok
+- 2026-12-31 · ll · QPR challan · ok
+- 2027-01-04 · svac · site diary · ok
+- 2027-01-06 · agsbg1 · channel daily report · ok
+- 2027-01-06 · smac · in-house booking · ok
+- 2027-01-11 · svac · site diary · ok
+- 2027-01-13 · agsbg1 · channel daily report · ok
+- 2027-01-13 · smac · in-house booking · ok
+- 2027-01-18 · svac · site diary · ok
+- 2027-01-25 · svac · site diary · ok
+- 2027-02-01 · svac · site diary · ok
+- 2027-02-03 · agsbg1 · channel daily report · ok
+- 2027-02-03 · smac · in-house booking · ok
+- 2027-02-08 · svac · site diary · ok
+- 2027-02-10 · agsbg1 · channel daily report · ok
+- 2027-02-10 · smac · in-house booking · ok
+- 2027-02-15 · svac · site diary · ok
+- 2027-02-22 · svac · site diary · ok
+- 2027-03-01 · svac · site diary · ok
+- 2027-03-03 · agsbg1 · channel daily report · ok
+- 2027-03-03 · smac · in-house booking · ok
+- 2027-03-08 · svac · site diary · ok
+- 2027-03-10 · agsbg1 · channel daily report · ok
+- 2027-03-10 · smac · in-house booking · ok
+- 2027-03-15 · svac · site diary · ok
+- 2027-03-29 · svac · site diary · ok
+- 2027-03-31 · ll · QPR · ok
+- 2027-03-31 · ll · QPR challan · ok
+- 2027-03-31 · ll · QPR · ok
+- 2027-03-31 · ll · QPR challan · ok
+- 2027-03-31 · ll · QPR · ok
+- 2027-03-31 · ll · QPR challan · ok
+- 2027-04-05 · svac · site diary · ok
+- 2027-04-07 · agsbg1 · channel daily report · ok
+- 2027-04-07 · smac · in-house booking · ok
+- 2027-04-12 · svac · site diary · ok
+- 2027-04-14 · agsbg1 · channel daily report · ok
+- 2027-04-14 · smac · in-house booking · ok
+- 2027-04-19 · svac · site diary · ok
+- 2027-04-26 · svac · site diary · ok
+- 2027-05-03 · svac · site diary · ok
+- 2027-05-05 · agsbg1 · channel daily report · ok
+- 2027-05-05 · smac · in-house booking · ok
+- 2027-05-10 · svac · site diary · ok
+- 2027-05-12 · agsbg1 · channel daily report · ok
+- 2027-05-12 · smac · in-house booking · ok
+- 2027-05-17 · svac · site diary · ok
+- 2027-05-24 · svac · site diary · ok
+- 2027-05-31 · svac · site diary · ok
+- 2027-06-02 · agsbg1 · channel daily report · ok
+- 2027-06-02 · smac · in-house booking · ok
+- 2027-06-07 · svac · site diary · ok
+- 2027-06-09 · agsbg1 · channel daily report · ok
+- 2027-06-09 · smac · in-house booking · ok
+- 2027-06-14 · svac · site diary · ok
+- 2027-06-21 · svac · site diary · ok
+- 2027-06-28 · svac · site diary · ok
+- 2027-06-30 · ll · QPR · ok
+- 2027-06-30 · ll · QPR challan · ok
+- 2027-06-30 · ll · QPR · ok
+- 2027-06-30 · ll · QPR challan · ok
+- 2027-06-30 · ll · QPR · ok
+- 2027-06-30 · ll · QPR challan · ok
+- 2027-07-05 · svac · site diary · ok
+- 2027-07-07 · agsbg1 · channel daily report · ok
+- 2027-07-07 · smac · in-house booking · ok
+- 2027-07-12 · svac · site diary · ok
+- 2027-07-14 · agsbg1 · channel daily report · ok
+- 2027-07-14 · smac · in-house booking · ok
+- 2027-07-19 · svac · site diary · ok
+- 2027-07-26 · svac · site diary · ok
+- 2027-08-02 · svac · site diary · ok
+- 2027-08-04 · agsbg1 · channel daily report · ok
+- 2027-08-04 · smac · in-house booking · ok
+- 2027-08-09 · svac · site diary · ok
+- 2027-08-11 · agsbg1 · channel daily report · ok
+- 2027-08-11 · smac · in-house booking · ok
+- 2027-08-16 · svac · site diary · ok
+- 2027-08-23 · svac · site diary · ok
+- 2027-08-30 · svac · site diary · ok
+- 2027-09-01 · agsbg1 · channel daily report · ok
+- 2027-09-01 · smac · in-house booking · ok
+- 2027-09-06 · svac · site diary · ok
+- 2027-09-08 · agsbg1 · channel daily report · ok
+- 2027-09-08 · smac · in-house booking · ok
+- 2027-09-13 · svac · site diary · ok
+- 2027-09-20 · svac · site diary · ok
+- 2027-09-27 · svac · site diary · ok
+- 2027-09-30 · ll · QPR · ok
+- 2027-09-30 · ll · QPR challan · ok
+- 2027-09-30 · ll · QPR · ok
+- 2027-09-30 · ll · QPR challan · ok
+- 2027-09-30 · ll · QPR · ok
+- 2027-09-30 · ll · QPR challan · ok
+- 2027-10-04 · svac · site diary · ok
+- 2027-10-06 · agsbg1 · channel daily report · ok
+- 2027-10-06 · smac · in-house booking · ok
+- 2027-10-11 · svac · site diary · ok
+- 2027-10-13 · agsbg1 · channel daily report · ok
+- 2027-10-13 · smac · in-house booking · ok
+- 2027-10-18 · svac · site diary · ok
+- 2027-10-25 · svac · site diary · ok
+- 2027-11-01 · smac · OC + collect + possession where ready · ok
+- 2027-12-31 · ll · QPR · ok
+- 2027-12-31 · ll · QPR challan · ok
+- 2027-12-31 · ll · QPR · ok
+- 2027-12-31 · ll · QPR challan · ok
+- 2027-12-31 · ll · QPR · ok
+- 2027-12-31 · ll · QPR challan · ok
+- 2028-03-31 · ll · QPR · ok
+- 2028-03-31 · ll · QPR challan · ok
+- 2028-03-31 · ll · QPR · ok
+- 2028-03-31 · ll · QPR challan · ok
+- 2028-03-31 · ll · QPR · ok
+- 2028-03-31 · ll · QPR challan · ok
+- 2028-06-30 · ll · QPR · ok
+- 2028-06-30 · ll · QPR challan · ok
+- 2028-06-30 · ll · QPR · ok
+- 2028-06-30 · ll · QPR challan · ok
+- 2028-06-30 · ll · QPR · ok
+- 2028-06-30 · ll · QPR challan · ok
+- 2028-09-30 · ll · QPR · ok
+- 2028-09-30 · ll · QPR challan · ok
+- 2028-09-30 · ll · QPR · ok
+- 2028-09-30 · ll · QPR challan · ok
+- 2028-09-30 · ll · QPR · ok
+- 2028-09-30 · ll · QPR challan · ok

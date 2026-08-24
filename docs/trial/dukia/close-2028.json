@@ -1,0 +1,28 @@
+{
+  "notes": [
+    "select q_hpbniuqf -> Cannot select a quote from a vendor that is not Active.",
+    "select q_jy7mjffa -> Cannot select a quote from a vendor that is not Active.",
+    "select q_0ipiqe9t -> Cannot select a quote from a vendor that is not Active."
+  ],
+  "booked": 60,
+  "simDate": "2028-12-31",
+  "vendors": [
+    "v_civ:approval",
+    "v_pnt:invited",
+    "v_plb:invited",
+    "v_til:invited",
+    "v_elc:approval",
+    "v_lft:invited",
+    "v_fin:invited"
+  ],
+  "pos": [],
+  "quotes": [
+    "q_hpbniuqf:submitted",
+    "q_jy7mjffa:submitted",
+    "q_0ipiqe9t:submitted"
+  ],
+  "bookings": 160,
+  "available": 196,
+  "sold": 100,
+  "bookedU": 60
+}
