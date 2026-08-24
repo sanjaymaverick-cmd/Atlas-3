@@ -16,6 +16,7 @@ import { Route as AppApprovalsRouteImport } from './routes/app/approvals'
 import { Route as AppAssistantRouteImport } from './routes/app/assistant'
 import { Route as AppAuditRouteImport } from './routes/app/audit'
 import { Route as AppCapitalRouteImport } from './routes/app/capital'
+import { Route as AppCeoRouteImport } from './routes/app/ceo'
 import { Route as AppChangesRouteImport } from './routes/app/changes'
 import { Route as AppCommercialRouteImport } from './routes/app/commercial'
 import { Route as AppControlsRouteImport } from './routes/app/controls'
@@ -23,6 +24,7 @@ import { Route as AppCrmRouteImport } from './routes/app/crm'
 import { Route as AppCustomersRouteImport } from './routes/app/customers'
 import { Route as AppDecisionsRouteImport } from './routes/app/decisions'
 import { Route as AppDocumentsRouteImport } from './routes/app/documents'
+import { Route as AppDrawingsRouteImport } from './routes/app/drawings'
 import { Route as AppFinanceRouteImport } from './routes/app/finance'
 import { Route as AppLandRouteImport } from './routes/app/land'
 import { Route as AppOrgRouteImport } from './routes/app/org'
@@ -80,6 +82,11 @@ const AppCapitalRoute = AppCapitalRouteImport.update({
   path: '/capital',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCeoRoute = AppCeoRouteImport.update({
+  id: '/ceo',
+  path: '/ceo',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppChangesRoute = AppChangesRouteImport.update({
   id: '/changes',
   path: '/changes',
@@ -113,6 +120,11 @@ const AppDecisionsRoute = AppDecisionsRouteImport.update({
 const AppDocumentsRoute = AppDocumentsRouteImport.update({
   id: '/documents',
   path: '/documents',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDrawingsRoute = AppDrawingsRouteImport.update({
+  id: '/drawings',
+  path: '/drawings',
   getParentRoute: () => AppRoute,
 } as any)
 const AppFinanceRoute = AppFinanceRouteImport.update({
@@ -228,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/app/assistant': typeof AppAssistantRoute
   '/app/audit': typeof AppAuditRoute
   '/app/capital': typeof AppCapitalRoute
+  '/app/ceo': typeof AppCeoRoute
   '/app/changes': typeof AppChangesRoute
   '/app/commercial': typeof AppCommercialRoute
   '/app/controls': typeof AppControlsRoute
@@ -235,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/app/customers': typeof AppCustomersRoute
   '/app/decisions': typeof AppDecisionsRoute
   '/app/documents': typeof AppDocumentsRoute
+  '/app/drawings': typeof AppDrawingsRoute
   '/app/finance': typeof AppFinanceRoute
   '/app/land': typeof AppLandRoute
   '/app/org': typeof AppOrgRoute
@@ -264,6 +278,7 @@ export interface FileRoutesByTo {
   '/app/assistant': typeof AppAssistantRoute
   '/app/audit': typeof AppAuditRoute
   '/app/capital': typeof AppCapitalRoute
+  '/app/ceo': typeof AppCeoRoute
   '/app/changes': typeof AppChangesRoute
   '/app/commercial': typeof AppCommercialRoute
   '/app/controls': typeof AppControlsRoute
@@ -271,6 +286,7 @@ export interface FileRoutesByTo {
   '/app/customers': typeof AppCustomersRoute
   '/app/decisions': typeof AppDecisionsRoute
   '/app/documents': typeof AppDocumentsRoute
+  '/app/drawings': typeof AppDrawingsRoute
   '/app/finance': typeof AppFinanceRoute
   '/app/land': typeof AppLandRoute
   '/app/org': typeof AppOrgRoute
@@ -301,6 +317,7 @@ export interface FileRoutesById {
   '/app/assistant': typeof AppAssistantRoute
   '/app/audit': typeof AppAuditRoute
   '/app/capital': typeof AppCapitalRoute
+  '/app/ceo': typeof AppCeoRoute
   '/app/changes': typeof AppChangesRoute
   '/app/commercial': typeof AppCommercialRoute
   '/app/controls': typeof AppControlsRoute
@@ -308,6 +325,7 @@ export interface FileRoutesById {
   '/app/customers': typeof AppCustomersRoute
   '/app/decisions': typeof AppDecisionsRoute
   '/app/documents': typeof AppDocumentsRoute
+  '/app/drawings': typeof AppDrawingsRoute
   '/app/finance': typeof AppFinanceRoute
   '/app/land': typeof AppLandRoute
   '/app/org': typeof AppOrgRoute
@@ -340,6 +358,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/audit'
     | '/app/capital'
+    | '/app/ceo'
     | '/app/changes'
     | '/app/commercial'
     | '/app/controls'
@@ -347,6 +366,7 @@ export interface FileRouteTypes {
     | '/app/customers'
     | '/app/decisions'
     | '/app/documents'
+    | '/app/drawings'
     | '/app/finance'
     | '/app/land'
     | '/app/org'
@@ -376,6 +396,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/audit'
     | '/app/capital'
+    | '/app/ceo'
     | '/app/changes'
     | '/app/commercial'
     | '/app/controls'
@@ -383,6 +404,7 @@ export interface FileRouteTypes {
     | '/app/customers'
     | '/app/decisions'
     | '/app/documents'
+    | '/app/drawings'
     | '/app/finance'
     | '/app/land'
     | '/app/org'
@@ -412,6 +434,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/audit'
     | '/app/capital'
+    | '/app/ceo'
     | '/app/changes'
     | '/app/commercial'
     | '/app/controls'
@@ -419,6 +442,7 @@ export interface FileRouteTypes {
     | '/app/customers'
     | '/app/decisions'
     | '/app/documents'
+    | '/app/drawings'
     | '/app/finance'
     | '/app/land'
     | '/app/org'
@@ -499,6 +523,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCapitalRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/ceo': {
+      id: '/app/ceo'
+      path: '/ceo'
+      fullPath: '/app/ceo'
+      preLoaderRoute: typeof AppCeoRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/changes': {
       id: '/app/changes'
       path: '/changes'
@@ -546,6 +577,13 @@ declare module '@tanstack/react-router' {
       path: '/documents'
       fullPath: '/app/documents'
       preLoaderRoute: typeof AppDocumentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/drawings': {
+      id: '/app/drawings'
+      path: '/drawings'
+      fullPath: '/app/drawings'
+      preLoaderRoute: typeof AppDrawingsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/finance': {
@@ -745,6 +783,7 @@ interface AppRouteChildren {
   AppAssistantRoute: typeof AppAssistantRoute
   AppAuditRoute: typeof AppAuditRoute
   AppCapitalRoute: typeof AppCapitalRoute
+  AppCeoRoute: typeof AppCeoRoute
   AppChangesRoute: typeof AppChangesRoute
   AppCommercialRoute: typeof AppCommercialRoute
   AppControlsRoute: typeof AppControlsRoute
@@ -752,6 +791,7 @@ interface AppRouteChildren {
   AppCustomersRoute: typeof AppCustomersRoute
   AppDecisionsRoute: typeof AppDecisionsRoute
   AppDocumentsRoute: typeof AppDocumentsRoute
+  AppDrawingsRoute: typeof AppDrawingsRoute
   AppFinanceRoute: typeof AppFinanceRoute
   AppLandRoute: typeof AppLandRoute
   AppOrgRoute: typeof AppOrgRoute
@@ -770,6 +810,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAssistantRoute: AppAssistantRoute,
   AppAuditRoute: AppAuditRoute,
   AppCapitalRoute: AppCapitalRoute,
+  AppCeoRoute: AppCeoRoute,
   AppChangesRoute: AppChangesRoute,
   AppCommercialRoute: AppCommercialRoute,
   AppControlsRoute: AppControlsRoute,
@@ -777,6 +818,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCustomersRoute: AppCustomersRoute,
   AppDecisionsRoute: AppDecisionsRoute,
   AppDocumentsRoute: AppDocumentsRoute,
+  AppDrawingsRoute: AppDrawingsRoute,
   AppFinanceRoute: AppFinanceRoute,
   AppLandRoute: AppLandRoute,
   AppOrgRoute: AppOrgRoute,

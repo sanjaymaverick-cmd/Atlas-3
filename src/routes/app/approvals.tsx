@@ -25,8 +25,8 @@ function Approvals() {
   return (
     <div>
       <PageHeader
-        title="Waiting for a yes"
-        description="A person must say yes or no before money is spent or a paper is released. Production would ask for a second step."
+        title="Approvals"
+        description="A person must say yes or no before money is spent or a paper is released. Vendor activation cards land here after GST is complete."
       />
       {pending.length === 0 ? (
         <Empty
@@ -75,7 +75,7 @@ function Approvals() {
                 </>
               }
               actions={
-                canActOnApproval(role, a.waitingOn, a.kind) ? (
+                canActOnApproval(role, a.waitingOn, a.kind, user) ? (
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -96,7 +96,10 @@ function Approvals() {
                     </Button>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted">Waiting on {a.waitingOn}.</p>
+                  <p className="text-sm text-muted">
+                    Waiting on {a.waitingOn}
+                    {user?.grade === "director" && a.waitingOn === "Managing Director" ? " — Directors cannot activate. Ask the MD." : "."}
+                  </p>
                 )
               }
             />

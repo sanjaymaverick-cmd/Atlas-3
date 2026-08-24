@@ -36,6 +36,17 @@ Open the URL the terminal prints (usually port 8080).
 
 Do not use these on a public host.
 
+DUKIA GROUP seats use `@dukia.local` (example: `md@dukia.local` / `AtlasLocal-MD`). Same password pattern.
+
+## What this branch closed
+
+- **Books:** ERPNext is the ledger. Atlas never posts unless `ERPNEXT_POSTING_ENABLED` is on.
+- **CEO pulse:** `/app/ceo` — group KPIs, risk queue, five-bullet brief. Drill-through to desks.
+- **Funding master:** Finance desk; Aerovista/Acropolis SBI 60/40, Sunflower AU 60/40.
+- **Paper quotes:** RFQ desk (and site) can register a printed quote with a scan. Select/PO still needs vendor Active.
+- **Drawings:** `/app/drawings` PDF register. Channel seats cannot open it.
+- **Journal post:** Finance desk only. `ERPNEXT_POSTING_ENABLED` default false. Title `ATLAS-OPS {sourceId}`.
+
 ## Sales Command (local)
 
 Third-party portal first, in-house pipeline next. Inventory locks a unit on hold or booking. Commission accrues and never pays itself. Atlas never posts ERPNext. Books of record live at `D:\ERPNext` (https://github.com/frappe/erpnext), linked by REST only. See `docs/finance/ERPNEXT.md`.

@@ -1,6 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { EntityChip } from "@/components/entity-chip";
+import { GateBanner } from "@/components/gate-banner";
+import { Hint } from "@/components/hint";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -27,7 +30,12 @@ function Land() {
     addObligation,
     payEmi,
     acquireParcel,
+    recordParcelDeed,
+    startDiligencePack,
+    clearDiligencePack,
+    fundingSanctions,
   } = useAtlas();
+  const [deed, setDeed] = useState<Record<string, { inr: string; no: string; date: string; advocate: string }>>({});
   const [ack, setAck] = useState<Record<string, string>>({});
   const [showAdd, setShowAdd] = useState(false);
   const [pname, setPname] = useState("");
@@ -56,8 +64,8 @@ function Land() {
     <div>
       <PageHeader
         kicker="Phase 3"
-        title="Land papers"
-        description="You cannot buy the land until checks are clear. Loan instalments here are only a reminder — the real accounts stay in ERPNext."
+        title="Land & acquisition"
+        description="You cannot buy the land until title checks are clear. Consideration and sale deed are required on acquire. Loan instalments here are only a reminder — the real accounts stay in ERPNext."
       />
 
       <div className="mb-6">
@@ -133,6 +141,8 @@ function Land() {
           const p = projects.find((x) => x.id === r.projectId);
           const items = diligence.filter((d) => d.parcelId === r.id);
           const loanEmis = emis.filter((e) => e.parcelId === r.id);
+          const fund = fundingSanctions.find((f) => f.projectId === r.projectId);
+          const readyToBuy = r.status !== "acquired" && items.length > 0 && items.every((i) => i.status === "clear");
           return (
             <Card key={r.id} className="p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -141,24 +151,64 @@ function Land() {
                     {p?.code} · Khasra {r.khasra}
                   </p>
                   <h2 className="font-display text-2xl">{r.name}</h2>
-                  <p className="text-sm text-muted">{r.area}</p>
+                  <p className="text-sm text-muted">
+                    {r.area}
+                    {r.status === "identified" ? (
+                      <>
+                        {" "}
+                        · <Hint term="identified">not yet owned</Hint>
+                      </>
+                    ) : null}
+                  </p>
+                  <EntityChip projectId={r.projectId} />
+                  {fund ? (
+                    <p className="mt-1 text-xs text-muted">
+                      Construction finance: {fund.bank} {fund.loanPct}/{fund.equityPct} · {fund.sanctionNo}
+                    </p>
+                  ) : r.status === "acquired" ? (
+                    <p className="mt-1 text-xs text-muted">
+                      No sanction on this project.{" "}
+                      <Link to="/app/finance" className="underline-offset-4 hover:underline">
+                        Record on Company accounts
+                      </Link>
+                    </p>
+                  ) : null}
                 </div>
                 <Status value={r.status === "acquired" ? "approved" : r.status === "diligence" ? "review" : r.status} />
               </div>
               <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
                 <div>
                   <dt className="text-muted">RERA</dt>
-                  <dd className="tabular-nums">{r.rera}</dd>
+                  <dd className="tabular-nums">
+                    {obligations.some((o) => o.projectId === r.projectId && o.kind === "rera" && o.status === "filed")
+                      ? r.rera
+                      : r.rera
+                        ? `Target ${r.rera} — not filed`
+                        : "—"}
+                  </dd>
                 </div>
                 <div>
-                  <dt className="text-muted">Term loan (ops. ref)</dt>
-                  <dd className="tabular-nums">{r.loan ? inr(r.loan, true) : "—"}</dd>
+                  <dt className="text-muted">Consideration</dt>
+                  <dd className="tabular-nums">{r.considerationInr ? inr(r.considerationInr, true) : "—"}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Sale deed</dt>
+                  <dd>{r.saleDeedNo || "—"}</dd>
                 </div>
                 <div>
                   <dt className="text-muted">Open diligence</dt>
                   <dd>{items.filter((i) => i.status !== "clear").length}</dd>
                 </div>
               </dl>
+              {r.status === "identified" ? (
+                <Button
+                  className="mt-4"
+                  variant="outline"
+                  onClick={() => toast(startDiligencePack(r.id) ?? "Standard title pack opened (five checks).")}
+                >
+                  Start standard title pack
+                </Button>
+              ) : null}
               {items.length > 0 ? (
                 <ul className="mt-4 space-y-2 border-t border-line pt-3">
                   {items.map((i) => (
@@ -180,6 +230,16 @@ function Land() {
                     </li>
                   ))}
                 </ul>
+              ) : null}
+              {items.some((i) => i.status !== "clear") ? (
+                <Button
+                  className="mt-3"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toast(clearDiligencePack(r.id) ?? "Pack marked clear.")}
+                >
+                  Mark pack complete
+                </Button>
               ) : null}
               {loanEmis.length > 0 ? (
                 <ul className="mt-3 space-y-2 text-sm">
@@ -206,17 +266,92 @@ function Land() {
                   ))}
                 </ul>
               ) : null}
-              {r.status !== "acquired" ? (
-                <Button
-                  className="mt-4"
-                  onClick={() => {
-                    const err = acquireParcel(r.id);
-                    toast(err ?? "Parcel marked acquired.");
-                  }}
-                >
-                  Complete acquisition
-                </Button>
+              {readyToBuy ? (
+                <GateBanner>Title pack is clear. Enter consideration and sale deed, then complete acquisition.</GateBanner>
               ) : null}
+              {r.status !== "acquired" ? (
+                <div className={`mt-4 grid gap-3 sm:grid-cols-2 ${readyToBuy ? "rounded-xl border border-primary/40 p-4" : ""}`}>
+                  <Field label="Consideration (₹)">
+                    <Input
+                      type="number"
+                      value={deed[r.id]?.inr ?? ""}
+                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: e.target.value, no: s[r.id]?.no ?? "", date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "" } }))}
+                    />
+                  </Field>
+                  <Field label="Sale deed number">
+                    <Input
+                      value={deed[r.id]?.no ?? ""}
+                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: e.target.value, date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "" } }))}
+                    />
+                  </Field>
+                  <Field label="Sale deed date">
+                    <Input
+                      type="date"
+                      value={deed[r.id]?.date ?? todayIso()}
+                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: s[r.id]?.no ?? "", date: e.target.value, advocate: s[r.id]?.advocate ?? "" } }))}
+                    />
+                  </Field>
+                  <Field label="Advocate (optional)">
+                    <Input
+                      value={deed[r.id]?.advocate ?? ""}
+                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: s[r.id]?.no ?? "", date: s[r.id]?.date ?? todayIso(), advocate: e.target.value } }))}
+                    />
+                  </Field>
+                  <div className="sm:col-span-2">
+                    <Button
+                      onClick={() => {
+                        const d = deed[r.id];
+                        const err = acquireParcel(r.id, {
+                          considerationInr: Number(d?.inr) || 0,
+                          saleDeedNo: d?.no ?? "",
+                          saleDeedDate: d?.date,
+                          advocateName: d?.advocate,
+                        });
+                        toast(err ?? "Parcel marked acquired.");
+                      }}
+                    >
+                      Complete acquisition
+                    </Button>
+                  </div>
+                </div>
+              ) : !r.considerationInr ? (
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <p className="sm:col-span-2 text-sm text-muted">Land is acquired. Record consideration and sale deed so Finance can brief capital.</p>
+                  <Field label="Consideration (₹)">
+                    <Input
+                      type="number"
+                      value={deed[r.id]?.inr ?? ""}
+                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: e.target.value, no: s[r.id]?.no ?? "", date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "" } }))}
+                    />
+                  </Field>
+                  <Field label="Sale deed number">
+                    <Input
+                      value={deed[r.id]?.no ?? ""}
+                      onChange={(e) => setDeed((s) => ({ ...s, [r.id]: { inr: s[r.id]?.inr ?? "", no: e.target.value, date: s[r.id]?.date ?? todayIso(), advocate: s[r.id]?.advocate ?? "" } }))}
+                    />
+                  </Field>
+                  <div className="sm:col-span-2">
+                    <Button
+                      onClick={() => {
+                        const d = deed[r.id];
+                        const err = recordParcelDeed(r.id, {
+                          considerationInr: Number(d?.inr) || 0,
+                          saleDeedNo: d?.no ?? "",
+                          saleDeedDate: d?.date,
+                          advocateName: d?.advocate,
+                        });
+                        toast(err ?? "Consideration and sale deed recorded.");
+                      }}
+                    >
+                      Record consideration
+                    </Button>
+                  </div>
+                </div>
+              ) : r.advocateName ? (
+                <p className="mt-3 text-xs text-muted">Advocate {r.advocateName} · deed {r.saleDeedDate}</p>
+              ) : (
+                <p className="mt-3 text-xs text-muted">Deed {r.saleDeedDate || r.saleDeedNo}</p>
+              )}
             </Card>
           );
         })}
@@ -234,16 +369,20 @@ function Land() {
             <div className="flex items-center gap-2">
               <Status value={o.status === "filed" ? "approved" : o.status === "overdue" ? "fail" : "pending"} />
               {o.status !== "filed" ? (
-                <div className="flex flex-wrap items-center gap-2">
-                  <Input
-                    className="h-11 w-40"
-                    placeholder="Challan / ack no."
-                    value={ack[o.id] ?? ""}
-                    onChange={(e) => setAck((s) => ({ ...s, [o.id]: e.target.value }))}
-                  />
+                <div className="flex flex-wrap items-end gap-2">
+                  <Field label="Challan / acknowledgement (required)">
+                    <Input
+                      className="h-11 w-48"
+                      placeholder="e.g. ACK-RAJ/P/2024/2144"
+                      value={ack[o.id] ?? ""}
+                      onChange={(e) => setAck((s) => ({ ...s, [o.id]: e.target.value }))}
+                      aria-required
+                    />
+                  </Field>
                   <Button
                     size="sm"
                     variant="outline"
+                    className="mb-0.5"
                     onClick={() => {
                       const err = fileObligation(o.id, ack[o.id] ?? "");
                       toast(err ?? "Marked filed.");

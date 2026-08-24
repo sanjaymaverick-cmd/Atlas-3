@@ -18,9 +18,10 @@ export const ROLE_HOME: Record<
   | "/app/sales"
   | "/app/sales/channel"
   | "/app/sales/company"
+  | "/app/ceo"
 > =
   {
-    owner: "/app/approvals",
+    owner: "/app/ceo",
     pm: "/app",
     engineer: "/app/site",
     supervisor: "/app/site",
@@ -73,12 +74,12 @@ export const NAV_ROLES = {
   phases: EVERY,
   testing: ["owner"] as Role[],
   org: ["owner", "pm", "accountant"] as Role[],
-  approvals: ["owner", "pm", "accountant", "sales"] as Role[],
+  approvals: ["owner", "pm", "accountant", "sales", "commercial"] as Role[],
   projects: EVERY,
   documents: ["owner", "pm", "engineer", "docs", "legal"] as Role[],
   land: ["owner", "pm", "accountant", "legal"] as Role[],
   commercial: ["owner", "pm", "accountant", "commercial"] as Role[],
-  quotations: ["owner", "pm", "accountant", "commercial"] as Role[],
+  quotations: ["owner", "pm", "accountant", "commercial", "engineer", "supervisor"] as Role[],
   site: SITE,
   controls: SITE,
   changes: ["owner", "pm", "engineer", "supervisor"] as Role[],
@@ -90,6 +91,8 @@ export const NAV_ROLES = {
   assistant: [...OFFICE, "engineer", "supervisor", "stores"] as Role[],
   portfolio: ["owner", "pm", "accountant"] as Role[],
   capital: ["owner", "pm", "accountant"] as Role[],
+  ceo: ["owner"] as Role[],
+  drawings: ["owner", "pm", "engineer", "docs", "legal"] as Role[],
   sales: ["owner", "pm", "sales", "accountant", "channel", "channel_admin"] as Role[],
   salesInventory: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
   salesChannel: ["owner", "pm", "sales", "channel", "channel_admin"] as Role[],
@@ -119,6 +122,7 @@ export const WAITING_ON_ROLES: Record<WaitingOn, Role[]> = {
   "Finance Lead": ["accountant"],
   "Sales Manager": ["sales"],
   "Sales Manager / MD": ["sales", "owner"],
+  "Commercial Manager": ["commercial"],
   "Four-eyes approver": ["owner", "pm"],
 };
 
@@ -139,17 +143,39 @@ function readMdBypass(): boolean {
 
 export const MD_BYPASS_FOUR_EYES = readMdBypass();
 
-/** Approve/Reject only if this seat is the named waiter. */
-export function canActOnApproval(role: Role | undefined, waitingOn: WaitingOn | string, _kind = "") {
+export function isManagingDirector(user?: { grade?: string; title?: string; role?: Role } | null) {
+  if (!user) return false;
+  if (user.grade === "md") return true;
+  if (user.grade === "director") return false;
+  return user.role === "owner" && /managing director/i.test(user.title ?? "");
+}
+
+export function isGroupDirector(user?: { grade?: string; title?: string } | null) {
+  if (!user) return false;
+  if (user.grade === "director") return true;
+  return /^director\b/i.test(user.title ?? "") && !/managing/i.test(user.title ?? "");
+}
+
+/** Approve/Reject only if this seat is the named waiter. Directors are not the MD. */
+export function canActOnApproval(
+  role: Role | undefined,
+  waitingOn: WaitingOn | string,
+  _kind = "",
+  user?: { grade?: string; title?: string; role?: Role } | null,
+) {
   if (!role || !canDecideApprovals(role)) return false;
-  if (role === "owner" && MD_BYPASS_FOUR_EYES) return true;
+  if (isGroupDirector(user) && waitingOn === "Managing Director") return false;
+  if (role === "owner" && MD_BYPASS_FOUR_EYES && !isGroupDirector(user)) return true;
   const mapped = WAITING_ON_ROLES[waitingOn as WaitingOn];
-  if (mapped?.includes(role)) return true;
+  if (mapped?.includes(role)) {
+    if (waitingOn === "Managing Director" && isGroupDirector(user)) return false;
+    return true;
+  }
   return false;
 }
 
 export function homeForRole(role: Role | string | undefined, pendingApprovals = 0) {
-  if (role === "owner") return pendingApprovals > 0 ? "/app/approvals" : "/app";
+  if (role === "owner") return pendingApprovals > 0 ? "/app/approvals" : "/app/ceo";
   if (role && role in ROLE_HOME) return ROLE_HOME[role as Role];
   return "/app" as const;
 }

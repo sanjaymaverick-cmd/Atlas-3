@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
@@ -13,14 +13,16 @@ import { inr } from "@/lib/utils";
 export const Route = createFileRoute("/app/projects")({ component: Projects });
 
 function Projects() {
+  const params = useParams({ strict: false }) as { id?: string };
   const { projects, entityId, createProject, user } = useAtlas();
-  const rows = projects.filter((p) => p.entityId === entityId);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [city, setCity] = useState("Jaipur");
   const [units, setUnits] = useState("48");
   const [budget, setBudget] = useState("120000000");
+  if (params.id) return <Outlet />;
+  const rows = projects.filter((p) => p.entityId === entityId);
 
   return (
     <div>

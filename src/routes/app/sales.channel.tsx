@@ -7,7 +7,7 @@ import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
-import { companyAgentIds, myAgent, myCompanyId } from "@/lib/sales-scope";
+import { companyAgentIds, myAgent, myCompanyId, scopedDailyReports, scopedHolds, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { holdExpiryLabel, todayIso } from "@/lib/utils";
 import { inr } from "@/lib/utils";
@@ -31,17 +31,15 @@ function ChannelDesk() {
     fileDailyReport,
   } = useAtlas();
   const companyId = myCompanyId(user, agents);
-  const ids = companyId
-    ? projects.map((p) => p.id)
-    : projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id);
+  const ids = scopedProjectIds(user, agents, projects, entityId, projectId);
   const mine = companyId ? agents.filter((a) => a.companyId === companyId) : agents.filter((a) => !a.inHouse);
   const agentIds = companyAgentIds(agents, companyId);
   const self = myAgent(user, agents);
   const [agentId, setAgentId] = useState(self?.id ?? mine[0]?.id ?? "");
   const fieldAgent = user?.role === "channel";
-  const free = units.filter((u) => ids.includes(u.projectId) && u.status === "available");
-  const liveHolds = holds.filter((h) => h.status === "held" && ids.includes(h.projectId) && agentIds.includes(h.agentId));
-  const reports = dailyReports.filter((d) => agentIds.includes(d.agentId));
+  const free = scopedUnits(units, ids, { thirdParty: Boolean(companyId) }).filter((u) => u.status === "available");
+  const liveHolds = scopedHolds(holds, ids, agentIds);
+  const reports = scopedDailyReports(dailyReports, agentIds);
   const reportedToday = reports.some((d) => d.agentId === agentId && d.date === todayIso());
   const [unitId, setUnitId] = useState(free[0]?.id ?? "");
   const [customer, setCustomer] = useState("");
@@ -55,7 +53,8 @@ function ChannelDesk() {
   const [notes, setNotes] = useState("");
   const [bookValue, setBookValue] = useState("6500000");
   const [moreFields, setMoreFields] = useState(false);
-  const firm = companyId ? partners.find((p) => p.id === companyId)?.name : "All channel firms";
+  const partner = companyId ? partners.find((p) => p.id === companyId) : undefined;
+  const firm = partner?.name ?? "All channel firms";
 
   useEffect(() => {
     const pre = sessionStorage.getItem("atlas-hold-unit");
@@ -181,6 +180,11 @@ function ChannelDesk() {
       </Card>
 
       <h2 className="mb-3 font-display text-2xl">3 · Live holds</h2>
+      {partner?.rate != null ? (
+        <p className="mb-3 text-sm text-muted">
+          This firm earns {partner.rate}% on convert. Atlas accrues it; it does not pay.
+        </p>
+      ) : null}
       <div className="space-y-3">
         {liveHolds.map((h) => {
           const u = units.find((x) => x.id === h.unitId);
@@ -193,6 +197,9 @@ function ChannelDesk() {
                 </p>
                 <p className="text-xs text-muted">
                   {ag?.name} · {holdExpiryLabel(h.until)} · {partners.find((p) => p.id === ag?.companyId)?.name}
+                  {partners.find((p) => p.id === ag?.companyId)?.rate != null
+                    ? ` · commission ${partners.find((p) => p.id === (companyId ?? ag?.companyId))?.rate}% (accrued, not paid)`
+                    : ""}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">

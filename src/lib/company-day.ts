@@ -34,7 +34,8 @@ export interface CompanyDayReport {
 const SEATS = USERS.filter((u) => u.id !== "u_test");
 
 function asUser(email: string) {
-  const row = USERS.find((u) => u.email === email);
+  const mapped = USERS.some((u) => u.email === email) ? email : email.replace("@atlas.local", "@dukia.local");
+  const row = USERS.find((u) => u.email === mapped);
   if (!row) throw new Error(`Unknown seat ${email}`);
   const err = useAtlas.getState().signInLocal(row.email, row.password);
   if (err) throw new Error(err);
@@ -89,16 +90,22 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
 
   // ── Legal: land ──────────────────────────────────────────────────────
   const legal = asUser("ll@atlas.local");
-  useAtlas.getState().setEntity("le_homes");
-  const acquireBlocked = useAtlas.getState().acquireParcel("lp2");
-  record("land-refuse", legal.title, legal.role, "Acquire Baggad while diligence is open", acquireBlocked, true);
+  useAtlas.getState().setEntity("le_sbc");
+  const acquireBlocked = useAtlas.getState().acquireParcel("lp_av");
+  record("land-refuse", legal.title, legal.role, "Acquire Aerovista while diligence is open", acquireBlocked, true);
   if (!acquireBlocked) {
     addUx(legal.title, "Land", "Acquire succeeded with open diligence — refuse reason should list open/flagged items.");
   }
-  useAtlas.getState().setDiligence("dd1", "clear");
-  useAtlas.getState().setDiligence("dd3", "clear");
-  const acquired = useAtlas.getState().acquireParcel("lp2");
-  record("land-acquire", legal.title, legal.role, "Acquire Baggad after diligence clear", acquired);
+  useAtlas.getState().clearDiligencePack("lp_av");
+  const noDeed = useAtlas.getState().acquireParcel("lp_av");
+  record("land-deed", legal.title, legal.role, "Acquire without consideration / sale deed refused", noDeed, true);
+  const acquired = useAtlas.getState().acquireParcel("lp_av", {
+    considerationInr: 180_000_000,
+    saleDeedNo: "AV/SD/2024/0412",
+    saleDeedDate: todayIso(),
+    advocateName: "M. Iyer",
+  });
+  record("land-acquire", legal.title, legal.role, "Acquire Aerovista after diligence + deed", acquired);
 
   // ── Documents: quarantine → four-eyes → single-use ───────────────────
   const docs = asUser("dc@atlas.local");
@@ -192,32 +199,69 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
   adv = noGst ? useAtlas.getState().advanceVendor(noGst.id) : adv;
   record("vendor-gstin", com.title, com.role, "Advance to verified without GSTIN refused", adv, true);
 
+  useAtlas.getState().setEntity("le_sbc");
   const poKyc = useAtlas.getState().createPO({
-    projectId: "p_kanak",
-    vendorId: "v2",
+    projectId: "p_av",
+    vendorId: "v_pnt",
     title: "Should not issue",
     amount: 1000,
   });
   record("po-not-active", com.title, com.role, "PO against non-Active vendor refused", poKyc, true);
 
-  const selBad = useAtlas.getState().selectQuote("q4");
-  record("quote-inactive", com.title, com.role, "Select quote from invited vendor refused", selBad, true);
-
-  const selOk = useAtlas.getState().selectQuote("q5");
-  record("quote-select", com.title, com.role, "Select Active vendor quote on waterproofing RFQ", selOk);
-  const poFrom = useAtlas.getState().createPOFromQuote("q5");
-  record("po-from-quote", com.title, com.role, "Create PO from selected quote", poFrom);
-  const poDup = useAtlas.getState().createPOFromQuote("q5");
-  record("po-dup", com.title, com.role, "Second Create PO on same quote refused", poDup, true);
-  if (poDup === null) {
-    addUx(
-      com.title,
-      "Quotations",
-      "Create PO stays enabled after the first PO from this quote — a second click mints a duplicate order.",
-    );
+  useAtlas.getState().setVendorGstin("v_civ", "08AASFE2211C1Z8");
+  let onboard = null as string | null;
+  for (let i = 0; i < 8; i++) {
+    const v = useAtlas.getState().vendors.find((x) => x.id === "v_civ");
+    if (!v || v.stage === "approval" || v.stage === "active") break;
+    onboard = useAtlas.getState().advanceVendor("v_civ");
+    if (onboard) break;
   }
+  if (useAtlas.getState().vendors.find((x) => x.id === "v_civ")?.stage === "approval") {
+    useAtlas.getState().advanceVendor("v_civ");
+  }
+  const civCard = useAtlas.getState().approvals.find((a) => a.kind === "Vendor" && a.refId === "v_civ" && a.status === "pending");
+  record("vendor-card", com.title, com.role, "KYC complete creates MD activation card", Boolean(civCard) || useAtlas.getState().vendors.find((x) => x.id === "v_civ")?.stage === "active");
 
   const md2 = asUser("md@atlas.local");
+  useAtlas.getState().setEntity("le_sbc");
+  const act = civCard ? useAtlas.getState().decideApproval(civCard.id, "approved") : useAtlas.getState().vendors.find((x) => x.id === "v_civ")?.stage === "active" ? null : "card missing";
+  record("vendor-activate", md2.title, md2.role, "MD activates Shakti Earthworks", act);
+  record(
+    "vendor-active-stage",
+    md2.title,
+    md2.role,
+    "Shakti stage is Active",
+    useAtlas.getState().vendors.find((x) => x.id === "v_civ")?.stage === "active",
+  );
+
+  const cm2 = asUser("cm@atlas.local");
+  useAtlas.getState().setEntity("le_sbc");
+  useAtlas.getState().createRfq({
+    projectId: "p_av",
+    title: "Company-day structure / civil",
+    package: "Structure / civil",
+    due: todayIso(),
+    required: true,
+  });
+  const rfq = useAtlas.getState().rfqs.find((r) => r.projectId === "p_av" && r.status === "open");
+  const qErr = rfq
+    ? useAtlas.getState().submitQuote({
+        rfqId: rfq.id,
+        vendorId: "v_civ",
+        amount: 42_00_00_000,
+        validity: todayIso(),
+        exclusions: "as per spec",
+      })
+    : "rfq missing";
+  const q = useAtlas.getState().quotes.find((x) => x.vendorId === "v_civ" && x.status === "submitted");
+  const selOk = q ? useAtlas.getState().selectQuote(q.id) : "quote missing";
+  record("quote-select", cm2.title, cm2.role, "Select Active vendor quote", selOk);
+  const poFrom = q ? useAtlas.getState().createPOFromQuote(q.id) : "quote missing";
+  record("po-from-quote", cm2.title, cm2.role, "Create PO from selected quote", poFrom);
+  const poDup = q ? useAtlas.getState().createPOFromQuote(q.id) : "quote missing";
+  record("po-dup", cm2.title, cm2.role, "Second Create PO on same quote refused", poDup, true);
+
+  const mdPo = asUser("md@atlas.local");
   const poCard = useAtlas
     .getState()
     .approvals.find(
@@ -225,23 +269,13 @@ export async function executeCompanyDay(): Promise<CompanyDayReport> {
     );
   record(
     "po-context",
-    md2.title,
-    md2.role,
+    mdPo.title,
+    mdPo.role,
     "PO approval card carries quote context",
     Boolean(poCard?.context && poCard.context.toLowerCase().includes("quote")),
   );
   const poApprove = poCard ? useAtlas.getState().decideApproval(poCard.id, "approved") : "PO card missing";
-  record("po-approve", md2.title, md2.role, "MD approves PO from quote", poApprove);
-
-  const vendorActivate = useAtlas.getState().approvals.find((a) => a.id === "a4" && a.status === "pending");
-  const v2 = useAtlas.getState().vendors.find((v) => v.id === "v2");
-  if (vendorActivate && v2?.stage === "approval") {
-    const act = useAtlas.getState().decideApproval(vendorActivate.id, "approved");
-    record("vendor-activate", md2.title, md2.role, "MD activates vendor already in approval stage", act);
-  } else if (vendorActivate && v2 && v2.stage !== "approval") {
-    const act = useAtlas.getState().decideApproval(vendorActivate.id, "approved");
-    record("vendor-skip-block", md2.title, md2.role, "Refuse activate while vendor is not in approval", act, true);
-  }
+  record("po-approve", mdPo.title, mdPo.role, "MD approves PO from quote", poApprove);
 
   // ── Sales: booking, commission accrue, possession gate ───────────────
   const sales = asUser("sm@atlas.local");

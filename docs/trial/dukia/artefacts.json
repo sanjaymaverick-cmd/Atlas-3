@@ -1,0 +1,6559 @@
+{
+  "snap": {
+    "simDate": "2028-09-30",
+    "entities": [
+      "MGB PRIME ESTATES LLP",
+      "SATYAM BUILDCOM",
+      "SATYAM CONSTRUCTION"
+    ],
+    "projects": [
+      {
+        "id": "p_av",
+        "name": "Aerovista",
+        "status": "planning",
+        "sold": 0,
+        "units": 119,
+        "progress": 0
+      },
+      {
+        "id": "p_sf",
+        "name": "Sunflower",
+        "status": "planning",
+        "sold": 0,
+        "units": 53,
+        "progress": 0
+      },
+      {
+        "id": "p_ac",
+        "name": "Acropolis",
+        "status": "planning",
+        "sold": 0,
+        "units": 184,
+        "progress": 0
+      }
+    ],
+    "parcels": [
+      {
+        "id": "lp_av",
+        "status": "acquired",
+        "name": "Muhana Mandi khasra 41/2 — Aerovista"
+      },
+      {
+        "id": "lp_sf",
+        "status": "acquired",
+        "name": "Patrakar Colony khasra 9 — Sunflower"
+      },
+      {
+        "id": "lp_ac",
+        "status": "acquired",
+        "name": "Mansarovar khasra 112/3 — Acropolis"
+      }
+    ],
+    "vendors": [
+      {
+        "id": "v_civ",
+        "name": "Shakti Earthworks",
+        "stage": "approval"
+      },
+      {
+        "id": "v_pnt",
+        "name": "Jaipur Colour Works",
+        "stage": "invited"
+      },
+      {
+        "id": "v_plb",
+        "name": "Marwar Plumbing",
+        "stage": "invited"
+      },
+      {
+        "id": "v_til",
+        "name": "Rajputana Stones",
+        "stage": "invited"
+      },
+      {
+        "id": "v_elc",
+        "name": "Pink City Electricals",
+        "stage": "approval"
+      },
+      {
+        "id": "v_lft",
+        "name": "Aravali Lifts",
+        "stage": "invited"
+      },
+      {
+        "id": "v_fin",
+        "name": "Desert Finishers",
+        "stage": "invited"
+      }
+    ],
+    "rfqs": [
+      {
+        "id": "rfq_zca4j3a8",
+        "title": "Acropolis structure / civil package",
+        "status": "open",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "rfq_mflci5kb",
+        "title": "Sunflower structure / civil package",
+        "status": "open",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "rfq_ahcays9d",
+        "title": "Aerovista structure / civil package",
+        "status": "open",
+        "projectId": "p_av"
+      }
+    ],
+    "quotes": [
+      {
+        "id": "q_hpbniuqf",
+        "rfqId": "rfq_zca4j3a8",
+        "amount": 89900000,
+        "status": "submitted",
+        "vendorId": "v_civ"
+      },
+      {
+        "id": "q_jy7mjffa",
+        "rfqId": "rfq_mflci5kb",
+        "amount": 90200000,
+        "status": "submitted",
+        "vendorId": "v_civ"
+      },
+      {
+        "id": "q_0ipiqe9t",
+        "rfqId": "rfq_ahcays9d",
+        "amount": 91800000,
+        "status": "submitted",
+        "vendorId": "v_civ"
+      }
+    ],
+    "pos": [],
+    "bookings": [
+      {
+        "id": "b_mnsfj0ly",
+        "unit": "ACA-1304",
+        "customer": "Buyer ACA-1304",
+        "value": 8910000,
+        "collected": 8910000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_ifcy1xw7",
+        "unit": "ACA-1303",
+        "customer": "Buyer ACA-1303",
+        "value": 8910000,
+        "collected": 8910000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_0zwjlkfo",
+        "unit": "ACA-1302",
+        "customer": "Buyer ACA-1302",
+        "value": 8910000,
+        "collected": 8910000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_em0hl8zp",
+        "unit": "ACA-1301",
+        "customer": "Buyer ACA-1301",
+        "value": 8910000,
+        "collected": 8910000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_841t87j2",
+        "unit": "ACA-1204",
+        "customer": "Buyer ACA-1204",
+        "value": 8840000,
+        "collected": 8840000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_euean6df",
+        "unit": "ACA-1203",
+        "customer": "Buyer ACA-1203",
+        "value": 8840000,
+        "collected": 8840000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_wlkfna6b",
+        "unit": "ACA-1202",
+        "customer": "Buyer ACA-1202",
+        "value": 8840000,
+        "collected": 8840000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_fsjybqte",
+        "unit": "ACA-1201",
+        "customer": "Buyer ACA-1201",
+        "value": 8840000,
+        "collected": 8840000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_3nfx1dxl",
+        "unit": "ACA-1104",
+        "customer": "Buyer ACA-1104",
+        "value": 8770000,
+        "collected": 8770000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_3b3aoenc",
+        "unit": "ACA-1103",
+        "customer": "Buyer ACA-1103",
+        "value": 8770000,
+        "collected": 8770000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_lespprki",
+        "unit": "ACA-1102",
+        "customer": "Buyer ACA-1102",
+        "value": 8770000,
+        "collected": 8770000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_jk1lvnui",
+        "unit": "ACA-1101",
+        "customer": "Buyer ACA-1101",
+        "value": 8770000,
+        "collected": 8770000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_am7u7vee",
+        "unit": "ACA-1004",
+        "customer": "Buyer ACA-1004",
+        "value": 8700000,
+        "collected": 8700000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_ons1yeya",
+        "unit": "ACA-1003",
+        "customer": "Buyer ACA-1003",
+        "value": 8700000,
+        "collected": 8700000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_n4d9h99p",
+        "unit": "ACA-1002",
+        "customer": "Buyer ACA-1002",
+        "value": 8700000,
+        "collected": 8700000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_o3uycbzp",
+        "unit": "ACA-1001",
+        "customer": "Buyer ACA-1001",
+        "value": 8700000,
+        "collected": 8700000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_c5fqswe7",
+        "unit": "ACA-0904",
+        "customer": "Buyer ACA-0904",
+        "value": 8630000,
+        "collected": 8630000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_8p1d7wrr",
+        "unit": "ACA-0903",
+        "customer": "Buyer ACA-0903",
+        "value": 8630000,
+        "collected": 8630000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_s300oedt",
+        "unit": "ACA-0902",
+        "customer": "Buyer ACA-0902",
+        "value": 8630000,
+        "collected": 8630000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_ni9svd7i",
+        "unit": "ACA-0901",
+        "customer": "Buyer ACA-0901",
+        "value": 8630000,
+        "collected": 8630000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_eryr4rqb",
+        "unit": "ACA-0804",
+        "customer": "Buyer ACA-0804",
+        "value": 8560000,
+        "collected": 8560000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_1dy1bbu7",
+        "unit": "ACA-0803",
+        "customer": "Buyer ACA-0803",
+        "value": 8560000,
+        "collected": 8560000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_o5epr763",
+        "unit": "ACA-0802",
+        "customer": "Buyer ACA-0802",
+        "value": 8560000,
+        "collected": 8560000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_kn8iyiq2",
+        "unit": "ACA-0801",
+        "customer": "Buyer ACA-0801",
+        "value": 8560000,
+        "collected": 8560000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_ntfe7f9b",
+        "unit": "ACA-0704",
+        "customer": "Buyer ACA-0704",
+        "value": 8490000,
+        "collected": 8490000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_ffmuvewy",
+        "unit": "ACA-0703",
+        "customer": "Buyer ACA-0703",
+        "value": 8490000,
+        "collected": 8490000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_tcp3q1md",
+        "unit": "ACA-0702",
+        "customer": "Buyer ACA-0702",
+        "value": 8490000,
+        "collected": 8490000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_58mkb9c7",
+        "unit": "ACA-0701",
+        "customer": "Buyer ACA-0701",
+        "value": 8490000,
+        "collected": 8490000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_ogcrd75e",
+        "unit": "ACA-0604",
+        "customer": "Buyer ACA-0604",
+        "value": 8420000,
+        "collected": 8420000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_cd8fo37x",
+        "unit": "ACA-0603",
+        "customer": "Buyer ACA-0603",
+        "value": 8420000,
+        "collected": 8420000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_1z4hal9c",
+        "unit": "ACA-0602",
+        "customer": "Buyer ACA-0602",
+        "value": 8420000,
+        "collected": 8420000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_ucy1ku9d",
+        "unit": "ACA-0601",
+        "customer": "Buyer ACA-0601",
+        "value": 8420000,
+        "collected": 8420000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_7wtvh58u",
+        "unit": "ACA-0504",
+        "customer": "Buyer ACA-0504",
+        "value": 8350000,
+        "collected": 8350000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_llyjt320",
+        "unit": "SFA-0602",
+        "customer": "Buyer SFA-0602",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_4kp1ok9b",
+        "unit": "AVA-0702",
+        "customer": "Buyer AVA-0702",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_lnf3olwn",
+        "unit": "ACA-0503",
+        "customer": "Buyer ACA-0503",
+        "value": 8350000,
+        "collected": 8350000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_pmss2r30",
+        "unit": "SFA-0601",
+        "customer": "Buyer SFA-0601",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_bo51wh4y",
+        "unit": "AVA-0701",
+        "customer": "Buyer AVA-0701",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_ic8ktsys",
+        "unit": "ACA-0502",
+        "customer": "Buyer ACA-0502",
+        "value": 8350000,
+        "collected": 8350000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_x15k3qs1",
+        "unit": "SFA-0504",
+        "customer": "Buyer SFA-0504",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_r9sh6i19",
+        "unit": "AVA-0604",
+        "customer": "Buyer AVA-0604",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_67ge3xb7",
+        "unit": "ACA-0501",
+        "customer": "Buyer ACA-0501",
+        "value": 8350000,
+        "collected": 8350000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_5bbtjjft",
+        "unit": "SFA-0503",
+        "customer": "Buyer SFA-0503",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_fyv4r3te",
+        "unit": "AVA-0603",
+        "customer": "Buyer AVA-0603",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_vpa9qxzg",
+        "unit": "ACA-0404",
+        "customer": "Buyer ACA-0404",
+        "value": 8280000,
+        "collected": 8280000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_bteryevi",
+        "unit": "SFA-0502",
+        "customer": "Buyer SFA-0502",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_5wtw0ou4",
+        "unit": "AVA-0602",
+        "customer": "Buyer AVA-0602",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_lbd3l2k0",
+        "unit": "ACA-0403",
+        "customer": "Buyer ACA-0403",
+        "value": 8280000,
+        "collected": 8280000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_f8rk82ll",
+        "unit": "SFA-0501",
+        "customer": "Buyer SFA-0501",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_nur9excz",
+        "unit": "AVA-0601",
+        "customer": "Buyer AVA-0601",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_mtjhfoey",
+        "unit": "ACA-0402",
+        "customer": "Buyer ACA-0402",
+        "value": 8280000,
+        "collected": 8280000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_3pggz6jt",
+        "unit": "SFA-0404",
+        "customer": "Buyer SFA-0404",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_4whqivr8",
+        "unit": "AVA-0504",
+        "customer": "Buyer AVA-0504",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_my0ngxkv",
+        "unit": "ACA-0401",
+        "customer": "Buyer ACA-0401",
+        "value": 8280000,
+        "collected": 8280000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_cwjnjhes",
+        "unit": "SFA-0403",
+        "customer": "Buyer SFA-0403",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_5oxa82i5",
+        "unit": "AVA-0503",
+        "customer": "Buyer AVA-0503",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_nyac3iv2",
+        "unit": "ACA-0304",
+        "customer": "Buyer ACA-0304",
+        "value": 8210000,
+        "collected": 8210000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_iv4v8g6r",
+        "unit": "SFA-0402",
+        "customer": "Buyer SFA-0402",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_q9ecfrke",
+        "unit": "AVA-0502",
+        "customer": "Buyer AVA-0502",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_rpm84b5e",
+        "unit": "ACA-0303",
+        "customer": "Buyer ACA-0303",
+        "value": 8210000,
+        "collected": 8210000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_2qwbe6t8",
+        "unit": "SFA-0401",
+        "customer": "Buyer SFA-0401",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_63wmsdq1",
+        "unit": "AVA-0501",
+        "customer": "Buyer AVA-0501",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_yx6ms9el",
+        "unit": "ACA-0302",
+        "customer": "Buyer ACA-0302",
+        "value": 8210000,
+        "collected": 8210000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_6n603lnq",
+        "unit": "SFA-0304",
+        "customer": "Buyer SFA-0304",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_dq9ovhw8",
+        "unit": "AVA-0404",
+        "customer": "Buyer AVA-0404",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_vv8686fm",
+        "unit": "ACA-0301",
+        "customer": "Buyer ACA-0301",
+        "value": 8210000,
+        "collected": 8210000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_f0nvm43b",
+        "unit": "SFA-0303",
+        "customer": "Buyer SFA-0303",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_pcuslswa",
+        "unit": "AVA-0403",
+        "customer": "Buyer AVA-0403",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_lnw1rssx",
+        "unit": "ACA-0204",
+        "customer": "Buyer ACA-0204",
+        "value": 8140000,
+        "collected": 8140000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_antde4xu",
+        "unit": "SFA-0302",
+        "customer": "Buyer SFA-0302",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_qqpsm2ij",
+        "unit": "AVA-0402",
+        "customer": "Buyer AVA-0402",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_golh3adp",
+        "unit": "ACA-0203",
+        "customer": "Buyer ACA-0203",
+        "value": 8140000,
+        "collected": 8140000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_wp8zfphm",
+        "unit": "SFA-0301",
+        "customer": "Buyer SFA-0301",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_7fvl8e0z",
+        "unit": "AVA-0401",
+        "customer": "Buyer AVA-0401",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_c6x01ypk",
+        "unit": "ACA-0202",
+        "customer": "Buyer ACA-0202",
+        "value": 8140000,
+        "collected": 8140000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_jnm66thy",
+        "unit": "SFA-0204",
+        "customer": "Buyer SFA-0204",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_fwli65q1",
+        "unit": "AVA-0304",
+        "customer": "Buyer AVA-0304",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_4a8dggr3",
+        "unit": "ACA-0201",
+        "customer": "Buyer ACA-0201",
+        "value": 8140000,
+        "collected": 8140000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_1t1h0zme",
+        "unit": "SFA-0203",
+        "customer": "Buyer SFA-0203",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_qp4nv8cr",
+        "unit": "AVA-0303",
+        "customer": "Buyer AVA-0303",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_kflyudb1",
+        "unit": "ACA-0104",
+        "customer": "Buyer ACA-0104",
+        "value": 8070000,
+        "collected": 8070000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_jo9fwrp8",
+        "unit": "SFA-0202",
+        "customer": "Buyer SFA-0202",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_jl9rnwik",
+        "unit": "AVA-0302",
+        "customer": "Buyer AVA-0302",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_vg8stxhd",
+        "unit": "ACA-0103",
+        "customer": "Buyer ACA-0103",
+        "value": 8070000,
+        "collected": 8070000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_bitze3c3",
+        "unit": "SFA-0201",
+        "customer": "Buyer SFA-0201",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_0dmr2ait",
+        "unit": "AVA-0301",
+        "customer": "Buyer AVA-0301",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_ydlprp6f",
+        "unit": "ACA-0102",
+        "customer": "Buyer ACA-0102",
+        "value": 8070000,
+        "collected": 8070000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_6qc6okuq",
+        "unit": "SFA-0104",
+        "customer": "Buyer SFA-0104",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_13ayc14c",
+        "unit": "AVA-0204",
+        "customer": "Buyer AVA-0204",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_kokb0d1b",
+        "unit": "ACA-0101",
+        "customer": "Buyer ACA-0101",
+        "value": 8070000,
+        "collected": 8070000,
+        "status": "possession",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "b_drr7w2ak",
+        "unit": "SFA-0103",
+        "customer": "Buyer SFA-0103",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_wft63syg",
+        "unit": "AVA-0203",
+        "customer": "Buyer AVA-0203",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_s3kwhk0h",
+        "unit": "SFA-0102",
+        "customer": "Buyer SFA-0102",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_9k6bpoqm",
+        "unit": "AVA-0202",
+        "customer": "Buyer AVA-0202",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_za8bubm7",
+        "unit": "SFA-0101",
+        "customer": "Buyer SFA-0101",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "b_a33xc7s7",
+        "unit": "AVA-0201",
+        "customer": "Buyer AVA-0201",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_fti4kg8q",
+        "unit": "AVA-0104",
+        "customer": "Buyer AVA-0104",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_foxlltm9",
+        "unit": "AVA-0103",
+        "customer": "Buyer AVA-0103",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_95sbj56v",
+        "unit": "AVA-0102",
+        "customer": "Buyer AVA-0102",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      },
+      {
+        "id": "b_hily8it4",
+        "unit": "AVA-0101",
+        "customer": "Buyer AVA-0101",
+        "value": 4500000,
+        "collected": 4500000,
+        "status": "possession",
+        "projectId": "p_av"
+      }
+    ],
+    "commissions": [],
+    "documents": [
+      {
+        "id": "d_js3qoiwe",
+        "title": "SBI construction finance sanction note — Acropolis 60/40",
+        "status": "quarantine",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "d_neuto3z6",
+        "title": "Acropolis land file opened",
+        "status": "quarantine",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "d_pahd5ne8",
+        "title": "AU Small Finance Bank construction finance sanction note — Sunflower 60/40",
+        "status": "quarantine",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "d_52mkixuh",
+        "title": "Sunflower land file opened",
+        "status": "quarantine",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "d_y160awvi",
+        "title": "SBI construction finance sanction note — Aerovista 60/40",
+        "status": "quarantine",
+        "projectId": "p_av"
+      },
+      {
+        "id": "d_13eqwogj",
+        "title": "Partner capital — Aerovista land (ops record, not ERPNext voucher)",
+        "status": "quarantine",
+        "projectId": "p_av"
+      },
+      {
+        "id": "d_j7g9wvfn",
+        "title": "Funding picture — Aerovista land equity + construction 60% SBI / 40% partner+advances",
+        "status": "quarantine",
+        "projectId": "p_av"
+      },
+      {
+        "id": "d_iyst17kt",
+        "title": "Title search request — Muhana Mandi khasra 41/2",
+        "status": "quarantine",
+        "projectId": "p_av"
+      }
+    ],
+    "obligations": [
+      {
+        "id": "ob_oosf3rq0",
+        "title": "RERA QPR 2028-09 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2028-09-30",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_e4k4kf1a",
+        "title": "RERA QPR 2028-09 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2028-09-30",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_srr6ejqq",
+        "title": "RERA QPR 2028-09 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2028-09-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_meu7q4xs",
+        "title": "RERA QPR 2028-06 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2028-06-30",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_e8k5ay63",
+        "title": "RERA QPR 2028-06 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2028-06-30",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_03hlmovs",
+        "title": "RERA QPR 2028-06 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2028-06-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_26xqhefl",
+        "title": "RERA QPR 2028-03 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2028-03-31",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_7w8vfnpw",
+        "title": "RERA QPR 2028-03 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2028-03-31",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_u6pykpbi",
+        "title": "RERA QPR 2028-03 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2028-03-31",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_knhnuss6",
+        "title": "RERA QPR 2027-12 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2027-12-31",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_6wa2yxvz",
+        "title": "RERA QPR 2027-12 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2027-12-31",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_8s379f11",
+        "title": "RERA QPR 2027-12 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2027-12-31",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_qs0uwz0u",
+        "title": "RERA QPR 2027-09 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2027-09-30",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_q7jiwvjx",
+        "title": "RERA QPR 2027-09 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2027-09-30",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_9ri3zbdy",
+        "title": "RERA QPR 2027-09 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2027-09-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_ef38tw53",
+        "title": "RERA QPR 2027-06 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2027-06-30",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_dp8c09ch",
+        "title": "RERA QPR 2027-06 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2027-06-30",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_3gydwizi",
+        "title": "RERA QPR 2027-06 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2027-06-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_d03nmegm",
+        "title": "RERA QPR 2027-03 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2027-03-31",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_y3shkvdi",
+        "title": "RERA QPR 2027-03 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2027-03-31",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_7vb48b82",
+        "title": "RERA QPR 2027-03 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2027-03-31",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_uvrj4exq",
+        "title": "RERA QPR 2026-12 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2026-12-31",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_45itgt7d",
+        "title": "RERA QPR 2026-12 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2026-12-31",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_znpr2bln",
+        "title": "RERA QPR 2026-12 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2026-12-31",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_bx54ruli",
+        "title": "RERA QPR 2026-09 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2026-09-30",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_hq2rhbwb",
+        "title": "RERA QPR 2026-09 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2026-09-30",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_c4q0m0zs",
+        "title": "RERA QPR 2026-09 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2026-09-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_l0iyt7rq",
+        "title": "RERA QPR 2026-06 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2026-06-30",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_ocp5eisv",
+        "title": "RERA QPR 2026-06 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2026-06-30",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_9wmmrq43",
+        "title": "RERA QPR 2026-06 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2026-06-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_00c5eu05",
+        "title": "RERA QPR 2026-03 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2026-03-31",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_fom1is71",
+        "title": "RERA QPR 2026-03 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2026-03-31",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_hb7z30c0",
+        "title": "RERA QPR 2026-03 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2026-03-31",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_sqaimw5o",
+        "title": "RERA QPR 2025-12 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2025-12-31",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_26h5cd8o",
+        "title": "RERA QPR 2025-12 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2025-12-31",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_q729ep27",
+        "title": "RERA QPR 2025-12 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2025-12-31",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_brdwfob2",
+        "title": "RERA QPR 2025-09 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2025-09-30",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_7qtzb885",
+        "title": "RERA QPR 2025-09 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2025-09-30",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_2ys8iffo",
+        "title": "RERA QPR 2025-09 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2025-09-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_6xd0x8zh",
+        "title": "RERA QPR 2025-06 RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0312-2025-06-30",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_hu817s1k",
+        "title": "RERA QPR 2025-06 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2025-06-30",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_ny85esc9",
+        "title": "RERA QPR 2025-06 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2025-06-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_jj3y21nt",
+        "title": "RERA registration RAJ/P/2025/0312",
+        "status": "filed",
+        "filedRef": "ACK-RAJ/P/2025/0312",
+        "projectId": "p_ac"
+      },
+      {
+        "id": "ob_qd8ov1tv",
+        "title": "RERA QPR 2025-03 RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2025/0088-2025-03-31",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_brmbr7af",
+        "title": "RERA QPR 2025-03 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2025-03-31",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_t83loizu",
+        "title": "RERA registration RAJ/P/2025/0088",
+        "status": "filed",
+        "filedRef": "ACK-RAJ/P/2025/0088",
+        "projectId": "p_sf"
+      },
+      {
+        "id": "ob_qyhairxz",
+        "title": "RERA QPR 2024-12 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2024-12-31",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_gf8jny7w",
+        "title": "RERA QPR 2024-09 RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "QPR-RAJ/P/2024/2144-2024-09-30",
+        "projectId": "p_av"
+      },
+      {
+        "id": "ob_0gcwcehd",
+        "title": "RERA registration RAJ/P/2024/2144",
+        "status": "filed",
+        "filedRef": "ACK-RAJ/P/2024/2144",
+        "projectId": "p_av"
+      }
+    ],
+    "diaries": 292,
+    "unitsAvailable": 256,
+    "unitsBooked": 0,
+    "unitsSold": 100,
+    "audit": 2353
+  },
+  "events": [
+    {
+      "day": "2024-07-15",
+      "seat": "ll",
+      "agent": "av",
+      "note": "rera obligation",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2024-07-15",
+      "seat": "ll",
+      "agent": "av",
+      "note": "file rera with challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2024-07-15",
+      "seat": "fl",
+      "agent": "av",
+      "note": "bank sanction note",
+      "op": "registerDocument",
+      "result": "ok"
+    },
+    {
+      "day": "2024-07-22",
+      "seat": "cm",
+      "agent": "group",
+      "note": "GSTIN + onboard civil",
+      "op": "_activateVendor",
+      "result": "approval"
+    },
+    {
+      "day": "2024-07-22",
+      "seat": "cm",
+      "agent": "group",
+      "note": "GSTIN + onboard electrical",
+      "op": "_activateVendor",
+      "result": "approval"
+    },
+    {
+      "day": "2024-07-23",
+      "seat": "md",
+      "agent": "group",
+      "note": "MD activate vendors",
+      "op": "_approvePending",
+      "result": "none pending"
+    },
+    {
+      "day": "2024-09-02",
+      "seat": "cm",
+      "agent": "av",
+      "note": "structure RFQ",
+      "op": "createRfq",
+      "result": "ok"
+    },
+    {
+      "day": "2024-09-16",
+      "seat": "cm",
+      "agent": "av",
+      "note": "civil quote",
+      "op": "_quotesOnOpenRfq",
+      "result": "Cannot select a quote from a vendor that is not Active."
+    },
+    {
+      "day": "2024-09-23",
+      "seat": "cm",
+      "agent": "av",
+      "note": "PO from selected quote",
+      "op": "_poFromSelected",
+      "result": "no selected quote"
+    },
+    {
+      "day": "2024-09-23",
+      "seat": "md",
+      "agent": "av",
+      "note": "MD approve PO",
+      "op": "_approvePending",
+      "result": "none pending"
+    },
+    {
+      "day": "2024-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2024-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2024-10-07",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-10-14",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-10-21",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-10-28",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-11-04",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-11-11",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-11-18",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-11-25",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-12-02",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-12-09",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-12-16",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-12-23",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-12-30",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2024-12-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2024-12-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-06",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "open diligence",
+      "op": "addDiligence",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-06",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "open diligence",
+      "op": "addDiligence",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-06",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "open diligence",
+      "op": "addDiligence",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-06",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "land file",
+      "op": "registerDocument",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-06",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-13",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-20",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "clear diligence + acquire",
+      "op": "_clearAndAcquire",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-20",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-01-27",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-02-03",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "rera obligation",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-02-03",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "file rera with challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-02-03",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-02-03",
+      "seat": "fl",
+      "agent": "sf",
+      "note": "bank sanction note",
+      "op": "registerDocument",
+      "result": "ok"
+    },
+    {
+      "day": "2025-02-10",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-02-17",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-02-24",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-03",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "open diligence",
+      "op": "addDiligence",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-03",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "open diligence",
+      "op": "addDiligence",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-03",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "open diligence",
+      "op": "addDiligence",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-03",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "land file",
+      "op": "registerDocument",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-03",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-10",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-17",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "clear diligence + acquire",
+      "op": "_clearAndAcquire",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-17",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-24",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-03-31",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-07",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "rera obligation",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-07",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "file rera with challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-07",
+      "seat": "cm",
+      "agent": "sf",
+      "note": "structure RFQ",
+      "op": "createRfq",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-07",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-07",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-07",
+      "seat": "fl",
+      "agent": "ac",
+      "note": "bank sanction note",
+      "op": "registerDocument",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-14",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-14",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-21",
+      "seat": "cm",
+      "agent": "sf",
+      "note": "civil quote",
+      "op": "_quotesOnOpenRfq",
+      "result": "Cannot select a quote from a vendor that is not Active."
+    },
+    {
+      "day": "2025-04-21",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-21",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-28",
+      "seat": "cm",
+      "agent": "sf",
+      "note": "PO from selected quote",
+      "op": "_poFromSelected",
+      "result": "no selected quote"
+    },
+    {
+      "day": "2025-04-28",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-28",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-04-28",
+      "seat": "md",
+      "agent": "sf",
+      "note": "MD approve PO",
+      "op": "_approvePending",
+      "result": "none pending"
+    },
+    {
+      "day": "2025-05-05",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-05-05",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-05-12",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-05-12",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-05-19",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-05-19",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-05-26",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-05-26",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-02",
+      "seat": "cm",
+      "agent": "ac",
+      "note": "structure RFQ",
+      "op": "createRfq",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-02",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-02",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-02",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-02",
+      "seat": "smav",
+      "agent": "av",
+      "note": "launch lead",
+      "op": "addLead",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-04",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-04",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-09",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-09",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-09",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-11",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-11",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-16",
+      "seat": "cm",
+      "agent": "ac",
+      "note": "civil quote",
+      "op": "_quotesOnOpenRfq",
+      "result": "Cannot select a quote from a vendor that is not Active."
+    },
+    {
+      "day": "2025-06-16",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-16",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-16",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-23",
+      "seat": "cm",
+      "agent": "ac",
+      "note": "PO from selected quote",
+      "op": "_poFromSelected",
+      "result": "no selected quote"
+    },
+    {
+      "day": "2025-06-23",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-23",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-23",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-23",
+      "seat": "md",
+      "agent": "ac",
+      "note": "MD approve PO",
+      "op": "_approvePending",
+      "result": "none pending"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-06-30",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-02",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-02",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-07",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-07",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-07",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-09",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-09",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-14",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-14",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-14",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-21",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-21",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-21",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-28",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-28",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-07-28",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-04",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-04",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-04",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-04",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "launch lead",
+      "op": "addLead",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-06",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-06",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-06",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-06",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-11",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-11",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-11",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-13",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-13",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-13",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-13",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-18",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-18",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-18",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-25",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-25",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-08-25",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-01",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-01",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-01",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-01",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "launch lead",
+      "op": "addLead",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-03",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-03",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-03",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-03",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-03",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-03",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-08",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-08",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-08",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-10",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-10",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-10",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-10",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-10",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-10",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-15",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-15",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-15",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-22",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-22",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-22",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-29",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-29",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-29",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-09-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-01",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-01",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-01",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-01",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-01",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-01",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-06",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-06",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-06",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-08",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-08",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-08",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-08",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-08",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-08",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-13",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-13",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-13",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-20",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-20",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-20",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-27",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-27",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-10-27",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-03",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-03",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-03",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-05",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-05",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-05",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-05",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-05",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-05",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-10",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-10",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-10",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-12",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-12",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-12",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-12",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-12",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-12",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-17",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-17",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-17",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-24",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-24",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-11-24",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-01",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-01",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-01",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-03",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-03",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-03",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-03",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-03",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-03",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-08",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-08",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-08",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-10",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-10",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-10",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-10",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-10",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-10",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-15",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-15",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-15",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-22",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-22",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-22",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-29",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-29",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-29",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2025-12-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-05",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-05",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-05",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-07",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-07",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-07",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-07",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-07",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-07",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-12",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-12",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-12",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-14",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-14",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-14",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-14",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-14",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-14",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-19",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-19",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-01-19",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-02",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-02",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-02",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-04",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-04",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-04",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-04",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-04",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-04",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-09",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-09",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-09",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-11",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-11",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-11",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-11",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-11",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-11",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-16",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-16",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-16",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-23",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-23",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-02-23",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-02",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-02",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-02",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-04",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-04",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-04",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-04",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-04",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-04",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-09",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-09",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-09",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-11",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-11",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-11",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-11",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-11",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-11",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-16",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-16",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-16",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-23",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-23",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-23",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-30",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-30",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-30",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-03-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-01",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-01",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-01",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-01",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-01",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-01",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-06",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-06",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-06",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-08",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-08",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-08",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-08",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-08",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-08",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-13",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-13",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-13",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-20",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-20",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-20",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-27",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-27",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-04-27",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-04",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-04",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-04",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-06",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-06",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-06",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-06",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-06",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-06",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-11",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-11",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-11",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-13",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-13",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-13",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-13",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-13",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-13",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-18",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-18",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-18",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-25",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-25",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-05-25",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-01",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-01",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-01",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-03",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-03",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-03",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-03",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-03",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-03",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-08",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-08",
+      "seat": "svsf",
+      "agent": "sf",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-08",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-10",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-10",
+      "seat": "agsy1",
+      "agent": "sf",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-10",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-10",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-10",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-10",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-15",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-15",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-15",
+      "seat": "smsf",
+      "agent": "sf",
+      "note": "OC + collect + possession where ready",
+      "op": "_preparePossession",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-22",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-22",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-29",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-29",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-06-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-01",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-01",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-01",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "no available unit"
+    },
+    {
+      "day": "2026-07-01",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-06",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-06",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-08",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-08",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-08",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "no available unit"
+    },
+    {
+      "day": "2026-07-08",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-13",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-13",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-20",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-20",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-27",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-07-27",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-03",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-03",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-05",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-05",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-05",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "no available unit"
+    },
+    {
+      "day": "2026-08-05",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-10",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-10",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-12",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-12",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-12",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "no available unit"
+    },
+    {
+      "day": "2026-08-12",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-17",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-17",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-24",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-24",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-31",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-08-31",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-02",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-02",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-02",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "no available unit"
+    },
+    {
+      "day": "2026-09-02",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-07",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-07",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-09",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-09",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-09",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "no available unit"
+    },
+    {
+      "day": "2026-09-09",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-14",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-14",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-21",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-21",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-28",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-28",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-09-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-05",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-05",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-07",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-07",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-07",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "no available unit"
+    },
+    {
+      "day": "2026-10-07",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-12",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-12",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-14",
+      "seat": "agap1",
+      "agent": "av",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-14",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-14",
+      "seat": "smav",
+      "agent": "av",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "no available unit"
+    },
+    {
+      "day": "2026-10-14",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-19",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-19",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-26",
+      "seat": "svav",
+      "agent": "av",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-10-26",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-02",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-02",
+      "seat": "smav",
+      "agent": "av",
+      "note": "OC + collect + possession where ready",
+      "op": "_preparePossession",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-04",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-04",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-09",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-11",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-11",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-16",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-23",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-11-30",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-02",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-02",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-07",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-09",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-09",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-14",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-21",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-28",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2026-12-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-01-04",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-01-06",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-01-06",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-01-11",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-01-13",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-01-13",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-01-18",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-01-25",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-02-01",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-02-03",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-02-03",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-02-08",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-02-10",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-02-10",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-02-15",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-02-22",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-01",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-03",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-03",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-08",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-10",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-10",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-15",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-29",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-03-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-04-05",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-04-07",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-04-07",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-04-12",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-04-14",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-04-14",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-04-19",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-04-26",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-03",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-05",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-05",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-10",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-12",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-12",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-17",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-24",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-05-31",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-02",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-02",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-07",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-09",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-09",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-14",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-21",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-28",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-06-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-07-05",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-07-07",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-07-07",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-07-12",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-07-14",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-07-14",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-07-19",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-07-26",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-02",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-04",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-04",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-09",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-11",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-11",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-16",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-23",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-08-30",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-01",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-01",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-06",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-08",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-08",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-13",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-20",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-27",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-09-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-10-04",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-10-06",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-10-06",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-10-11",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-10-13",
+      "seat": "agsbg1",
+      "agent": "ac",
+      "note": "channel daily report",
+      "op": "fileDailyReport",
+      "result": "ok"
+    },
+    {
+      "day": "2027-10-13",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "in-house booking",
+      "op": "_bookNextAvailable",
+      "result": "ok"
+    },
+    {
+      "day": "2027-10-18",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-10-25",
+      "seat": "svac",
+      "agent": "ac",
+      "note": "site diary",
+      "op": "addDiary",
+      "result": "ok"
+    },
+    {
+      "day": "2027-11-01",
+      "seat": "smac",
+      "agent": "ac",
+      "note": "OC + collect + possession where ready",
+      "op": "_preparePossession",
+      "result": "ok"
+    },
+    {
+      "day": "2027-12-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-12-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-12-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-12-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2027-12-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2027-12-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-03-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-03-31",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-03-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-03-31",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-03-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-03-31",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-06-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-06-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-06-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-06-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-06-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-06-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-09-30",
+      "seat": "ll",
+      "agent": "av",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-09-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-09-30",
+      "seat": "ll",
+      "agent": "sf",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    },
+    {
+      "day": "2028-09-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR",
+      "op": "addObligation",
+      "result": "ok"
+    },
+    {
+      "day": "2028-09-30",
+      "seat": "ll",
+      "agent": "ac",
+      "note": "QPR challan",
+      "op": "_fileLatestRera",
+      "result": "ok"
+    }
+  ]
+}

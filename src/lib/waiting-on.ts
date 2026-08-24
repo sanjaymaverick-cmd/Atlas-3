@@ -8,6 +8,7 @@ export const WAITING_ON = [
   "Finance Lead",
   "Sales Manager",
   "Sales Manager / MD",
+  "Commercial Manager",
   "Four-eyes approver",
 ] as const;
 

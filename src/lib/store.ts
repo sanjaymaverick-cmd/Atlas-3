@@ -31,6 +31,7 @@ import {
   PARCELS,
   QUANTITIES,
   OWNER_TODOS,
+  FUNDING,
 } from "./extra-seed";
 import { COMMISSIONS, HOSTS, LEADS, PARTNERS, PAYMENTS, SNAGS } from "./crm-seed";
 import {
@@ -119,8 +120,15 @@ import type {
   WaTemplate,
   WaSend,
   SalesNotice,
+  FundingSanction,
+  ParcelAcquireDetails,
+  Drawing,
+  QuoteSource,
 } from "./types";
-import { nowIso, registerClock, todayIso, uid } from "./utils";
+import { STANDARD_DILIGENCE } from "./diligence-pack";
+import { pickNextUnit } from "./unit-pick";
+import { ensureVendorActivationCards, VENDOR_NEXT, vendorApprovalCard } from "./vendor-flow";
+import { addDaysIso, nowIso, registerClock, todayIso, uid } from "./utils";
 import type { CompanyDayReport } from "./company-day";
 
 interface AtlasState {
@@ -129,6 +137,9 @@ interface AtlasState {
   simDate: string | null;
   entityId: string;
   projectId: string | "all";
+  entityByUser: Record<string, string>;
+  fundingSanctions: FundingSanction[];
+  drawings: Drawing[];
   users: User[];
   entities: LegalEntity[];
   projects: Project[];
@@ -195,8 +206,34 @@ interface AtlasState {
   scheduleInspection: (input: { projectId: string; template: string; location: string }) => void;
   cancelBooking: (id: string) => string | null;
   createPO: (input: { projectId: string; vendorId: string; title: string; amount: number; quoteId?: string; rfqId?: string }) => string | null;
-  createRfq: (input: { projectId: string; title: string; package: string; due: string; required?: boolean }) => void;
-  submitQuote: (input: { rfqId: string; vendorId: string; amount: number; validity: string; exclusions: string }) => string | null;
+  createRfq: (input: { projectId: string; title: string; package: string; due: string; required?: boolean }) => string | null;
+  submitQuote: (input: {
+    rfqId: string;
+    vendorId: string;
+    amount: number;
+    validity: string;
+    exclusions: string;
+    source?: QuoteSource;
+    taxAmount?: number;
+    fileName?: string;
+    fileKind?: string;
+    fileSize?: number;
+    fileDataUrl?: string;
+    sha256?: string;
+  }) => string | null;
+  addDrawing: (input: {
+    projectId: string;
+    title: string;
+    kind: Drawing["kind"];
+    revision: string;
+    status?: Drawing["status"];
+    towerId?: string;
+    fileName?: string;
+    fileKind?: string;
+    fileSize?: number;
+    fileDataUrl?: string;
+    sha256?: string;
+  }) => string | null;
   selectQuote: (quoteId: string) => string | null;
   createPOFromQuote: (quoteId: string) => string | null;
   raiseChange: (item: Omit<ChangeItem, "id">) => void;
@@ -218,11 +255,22 @@ interface AtlasState {
   requestExport: (documentId: string) => string | null;
   consumeExport: (grantId: string) => string | null;
   setDiligence: (id: string, status: DiligenceItem["status"]) => void;
+  addDiligence: (input: { parcelId: string; title: string }) => string | null;
   fileObligation: (id: string, ack: string) => string | null;
   addParcel: (input: { projectId: string; name: string; khasra: string; area: string; rera: string }) => string | null;
   addObligation: (input: { projectId: string; kind: Obligation["kind"]; title: string; due: string }) => string | null;
   payEmi: (id: string) => string | null;
-  acquireParcel: (id: string) => string | null;
+  acquireParcel: (id: string, details?: ParcelAcquireDetails) => string | null;
+  recordParcelDeed: (id: string, details: ParcelAcquireDetails) => string | null;
+  startDiligencePack: (parcelId: string) => string | null;
+  clearDiligencePack: (parcelId: string) => string | null;
+  addFundingSanction: (input: Omit<FundingSanction, "id" | "status"> & { status?: FundingSanction["status"] }) => string | null;
+  bookNextAvailable: (
+    projectId: string,
+    opts?: { prefix?: string; towerId?: string; config?: string; customer?: string },
+  ) => string | null;
+  copyForwardDiary: (projectId: string) => string | null;
+  setProjectLaunch: (projectId: string, input?: { exclusivePartnerId?: string; freezePrices?: boolean }) => string | null;
   executeContract: (id: string, evidenceId: string) => string | null;
   receiveMaterial: (id: string, qty: number) => void;
   issueMaterial: (id: string, qty: number) => string | null;
@@ -272,6 +320,7 @@ interface AtlasState {
   completeVisit: (id: string, result: "done" | "no-show") => string | null;
   toggleBookingDoc: (id: string) => string | null;
   setHandoverOc: (id: string) => string | null;
+  setHandoverOcForProject: (projectId: string) => string | null;
   acceptInbound: (id: string) => string | null;
   rejectInbound: (id: string) => string | null;
   inviteAgent: (input: { name: string; phone: string; companyId: string }) => string | null;
@@ -283,18 +332,77 @@ interface AtlasState {
   nurtureLead: (id: string) => void;
 }
 
-const VENDOR_NEXT: Record<string, Vendor["stage"] | undefined> = {
-  invited: "kyc",
-  kyc: "verified",
-  verified: "bank",
-  bank: "compliance",
-  compliance: "approval",
-  approval: "active",
-};
-
 function nextRev(current: string) {
   const n = Number(current.replace(/\D/g, "")) || 0;
   return `R${n + 1}`;
+}
+
+function projectEntityError(state: Pick<AtlasState, "projects" | "entities" | "entityId">, projectId: string): string | null {
+  const p = state.projects.find((x) => x.id === projectId);
+  if (!p) return "Project not found.";
+  if (p.entityId !== state.entityId) {
+    const name = state.entities.find((e) => e.id === p.entityId)?.name ?? p.entityId;
+    return `This project belongs to ${name}. Switch company in the header before filing.`;
+  }
+  return null;
+}
+
+function exclusiveChannelError(
+  state: Pick<AtlasState, "projects" | "partners">,
+  projectId: string,
+  partnerId?: string,
+): string | null {
+  const p = state.projects.find((x) => x.id === projectId);
+  if (!p?.exclusivePartnerId) return null;
+  if (!partnerId) return null;
+  if (partnerId === p.exclusivePartnerId) return null;
+  const firm = state.partners.find((x) => x.id === p.exclusivePartnerId)?.name ?? p.exclusivePartnerId;
+  return `This project is locked to ${firm}.`;
+}
+
+const PROJECT_EXTRAS: Record<string, Partial<Project>> = {
+  p_av: { constructionStart: "2024-10-01", constructionEnd: "2026-10-31", exclusivePartnerId: "pt_ap" },
+  p_sf: { constructionStart: "2025-04-01", constructionEnd: "2026-06-14", exclusivePartnerId: "pt_sy" },
+  p_ac: { constructionStart: "2025-06-02", constructionEnd: "2027-10-31", exclusivePartnerId: "pt_sbg" },
+};
+
+function migratePersisted(state: unknown) {
+  const s = (state ?? {}) as Partial<AtlasState>;
+  const projects = (s.projects ?? []).map((p) => {
+    const extra = PROJECT_EXTRAS[p.id] ?? {};
+    return {
+      ...p,
+      constructionStart: p.constructionStart ?? extra.constructionStart,
+      constructionEnd: p.constructionEnd ?? extra.constructionEnd,
+      exclusivePartnerId: p.exclusivePartnerId ?? extra.exclusivePartnerId,
+    };
+  });
+  const parcels = (s.parcels ?? []).map((p) => ({
+    ...p,
+    considerationInr: p.considerationInr ?? 0,
+    saleDeedNo: p.saleDeedNo ?? "",
+    saleDeedDate: p.saleDeedDate ?? "",
+    advocateName: p.advocateName ?? "",
+  }));
+  const gradeOf = (id?: string, grade?: User["grade"]) =>
+    grade ?? (id === "u_md" ? "md" : id === "u_dir1" || id === "u_dir2" ? "director" : undefined);
+  const users = (s.users ?? []).map((u) => ({ ...u, grade: gradeOf(u.id, u.grade) }));
+  const user = s.user ? { ...s.user, grade: gradeOf(s.user.id, s.user.grade) } : s.user;
+  return {
+    ...s,
+    projects,
+    parcels,
+    users,
+    user,
+    approvals: ensureVendorActivationCards(s.vendors ?? [], s.approvals ?? [], projects),
+    fundingSanctions: (() => {
+      const have = new Set((s.fundingSanctions ?? []).map((f) => f.projectId));
+      const extra = FUNDING.filter((f) => !have.has(f.projectId));
+      return [...(s.fundingSanctions ?? []), ...extra];
+    })(),
+    drawings: s.drawings ?? [],
+    entityByUser: s.entityByUser ?? {},
+  };
 }
 
 function moveUnit(units: InventoryUnit[], events: UnitEvent[], unitId: string, to: UnitStatus, note: string) {
@@ -450,8 +558,11 @@ export const useAtlas = create<AtlasState>()(
     (set, get) => ({
       user: null,
       simDate: null,
-      entityId: "le_llp",
+      entityId: "le_sbc",
       projectId: "all",
+      entityByUser: {},
+      fundingSanctions: FUNDING,
+      drawings: [],
       users: USERS,
       entities: ENTITIES,
       projects: PROJECTS,
@@ -513,7 +624,11 @@ export const useAtlas = create<AtlasState>()(
       signInLocal: (email, password) => {
         const found = USERS.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
         if (!found || found.password !== password) return "Email or password is wrong. Local test accounts only.";
-        set({ user: { ...found, password: "" } });
+        const remembered = get().entityByUser[found.id];
+        set({
+          user: { ...found, password: "" },
+          entityId: remembered && get().entities.some((e) => e.id === remembered) ? remembered : get().entityId,
+        });
         get().log("Signed in (local test)", found.email);
         return null;
       },
@@ -522,7 +637,14 @@ export const useAtlas = create<AtlasState>()(
         set({ simDate: iso });
         get().log("Trial clock set", iso ?? "real time");
       },
-      setEntity: (id) => set({ entityId: id, projectId: "all" }),
+      setEntity: (id) => {
+        const uidKey = get().user?.id;
+        set({
+          entityId: id,
+          projectId: "all",
+          entityByUser: uidKey ? { ...get().entityByUser, [uidKey]: id } : get().entityByUser,
+        });
+      },
       setProject: (id) => set({ projectId: id }),
       log: (action, entity) => {
         const actor = get().user?.name ?? "System";
@@ -553,8 +675,10 @@ export const useAtlas = create<AtlasState>()(
           (d) => d.projectId === entry.projectId && d.date === entry.date && d.deviceKey === entry.deviceKey,
         );
         if (exists) return "A diary for this device and date already exists.";
+        const trades = (entry.labourCivil ?? 0) + (entry.labourMep ?? 0) + (entry.labourFinish ?? 0);
         const row: DiaryEntry = {
           ...entry,
+          labour: entry.labour || trades,
           id: uid("dy"),
           author: get().user?.name ?? "Site",
         };
@@ -627,22 +751,23 @@ export const useAtlas = create<AtlasState>()(
       advanceVendor: (id) => {
         const v = get().vendors.find((x) => x.id === id);
         if (!v) return "Vendor not found.";
+        if (v.stage === "active") return "Vendor is already Active.";
+        if (v.stage === "suspended") return "Suspended vendors cannot be advanced.";
+        if (v.stage === "approval") {
+          const existing = get().approvals.find((a) => a.kind === "Vendor" && a.refId === id && a.status === "pending");
+          if (existing) return "Waiting on Managing Director to activate.";
+          const approval = vendorApprovalCard(v, get().projects[0]?.id ?? "p_av", uid("a"));
+          set({ approvals: [approval, ...get().approvals] });
+          get().log("Vendor sent for activation approval", v.name);
+          return null;
+        }
         const next = VENDOR_NEXT[v.stage];
         if (!next) return "No further stage.";
-        if (next === "verified" && (!v.gstin || v.gstin === "—")) {
+        if ((next === "verified" || next === "approval") && (!v.gstin || v.gstin === "—")) {
           return "GSTIN is required before verification.";
         }
-        if (next === "active") {
-          const approval: Approval = {
-            id: uid("a"),
-            kind: "Vendor",
-            title: `Activate ${v.name}`,
-            projectId: get().projects[0]?.id ?? "p_kanak",
-            waitingOn: "Managing Director",
-            agingDays: 0,
-            status: "pending",
-            refId: v.id,
-          };
+        if (next === "approval") {
+          const approval = vendorApprovalCard(v, get().projects[0]?.id ?? "p_av", uid("a"));
           set({
             vendors: get().vendors.map((x) => (x.id === id ? { ...x, stage: "approval" } : x)),
             approvals: [approval, ...get().approvals],
@@ -697,6 +822,8 @@ export const useAtlas = create<AtlasState>()(
         return null;
       },
       createPO: (input) => {
+        const entityErr = projectEntityError(get(), input.projectId);
+        if (entityErr) return entityErr;
         const vendor = get().vendors.find((v) => v.id === input.vendorId);
         if (!vendor || vendor.stage !== "active") {
           return "Purchase orders cannot be issued until the vendor is Active.";
@@ -732,6 +859,8 @@ export const useAtlas = create<AtlasState>()(
         return null;
       },
       createRfq: (input) => {
+        const entityErr = projectEntityError(get(), input.projectId);
+        if (entityErr) return entityErr;
         const row: Rfq = {
           id: uid("rfq"),
           projectId: input.projectId,
@@ -743,6 +872,7 @@ export const useAtlas = create<AtlasState>()(
         };
         set({ rfqs: [row, ...get().rfqs] });
         get().log("Raised RFQ", row.title);
+        return null;
       },
       submitQuote: (input) => {
         const rfq = get().rfqs.find((r) => r.id === input.rfqId);
@@ -759,9 +889,40 @@ export const useAtlas = create<AtlasState>()(
           exclusions: input.exclusions || "—",
           status: "submitted",
           submittedAt: todayIso(),
+          source: input.source ?? "portal",
+          taxAmount: input.taxAmount,
+          fileName: input.fileName,
+          fileKind: input.fileKind,
+          fileSize: input.fileSize,
+          fileDataUrl: input.fileDataUrl,
+          sha256: input.sha256,
         };
         set({ quotes: [row, ...get().quotes] });
-        get().log("Quote submitted", `${vendor.name} · ${rfq.title}`);
+        get().log("Quote submitted", `${vendor.name} · ${rfq.title}${input.source === "paper" ? " · paper" : ""}`);
+        return null;
+      },
+      addDrawing: (input) => {
+        const entityErr = projectEntityError(get(), input.projectId);
+        if (entityErr) return entityErr;
+        if (!input.title.trim()) return "Title required.";
+        const row: Drawing = {
+          id: uid("dr"),
+          projectId: input.projectId,
+          title: input.title.trim(),
+          kind: input.kind,
+          towerId: input.towerId,
+          revision: input.revision.trim() || "R0",
+          status: input.status ?? "draft",
+          fileName: input.fileName,
+          fileKind: input.fileKind,
+          fileSize: input.fileSize,
+          fileDataUrl: input.fileDataUrl,
+          sha256: input.sha256,
+          uploadedAt: todayIso(),
+          uploadedBy: get().user?.name ?? "Docs",
+        };
+        set({ drawings: [row, ...get().drawings] });
+        get().log("Registered drawing", `${row.title} · ${row.revision}`);
         return null;
       },
       selectQuote: (quoteId) => {
@@ -826,6 +987,10 @@ export const useAtlas = create<AtlasState>()(
         get().log(`Raised ${item.kind.toUpperCase()}`, item.title);
       },
       addBooking: (b) => {
+        const entityErr = projectEntityError(get(), b.projectId);
+        if (entityErr) return entityErr;
+        const lock = exclusiveChannelError(get(), b.projectId, b.partnerId);
+        if (lock) return lock;
         const inv = get().units.find((u) => u.projectId === b.projectId && u.code === b.unit);
         const locked = refuseBook(inv, get().bookings, b.projectId, b.unit);
         if (locked) return locked;
@@ -1035,6 +1200,23 @@ export const useAtlas = create<AtlasState>()(
         set({ diligence: get().diligence.map((d) => (d.id === id ? { ...d, status } : d)) });
         get().log(`Due diligence ${status}`, item.title);
       },
+      addDiligence: (input) => {
+        if (!input.title.trim()) return "Title required.";
+        const parcel = get().parcels.find((p) => p.id === input.parcelId);
+        if (!parcel) return "Parcel not found.";
+        const row: DiligenceItem = {
+          id: uid("dd"),
+          parcelId: input.parcelId,
+          title: input.title.trim(),
+          status: "open",
+        };
+        set({
+          diligence: [row, ...get().diligence],
+          parcels: get().parcels.map((p) => (p.id === input.parcelId && p.status === "identified" ? { ...p, status: "diligence" } : p)),
+        });
+        get().log("Added diligence item", row.title);
+        return null;
+      },
       fileObligation: (id, ack) => {
         const o = get().obligations.find((x) => x.id === id);
         if (!o) return "Obligation not found.";
@@ -1050,6 +1232,8 @@ export const useAtlas = create<AtlasState>()(
       },
       addParcel: (input) => {
         if (!input.name.trim() || !input.khasra.trim()) return "Name and khasra required.";
+        const entityErr = projectEntityError(get(), input.projectId);
+        if (entityErr) return entityErr;
         const row: LandParcel = {
           id: uid("lp"),
           projectId: input.projectId,
@@ -1086,13 +1270,164 @@ export const useAtlas = create<AtlasState>()(
         get().log("Recorded EMI (ops. ref — ERPNext remains books)", String(e.amount));
         return null;
       },
-      acquireParcel: (id) => {
+      acquireParcel: (id, details) => {
         const parcel = get().parcels.find((x) => x.id === id);
         if (!parcel) return "Parcel not found.";
+        const entityErr = projectEntityError(get(), parcel.projectId);
+        if (entityErr) return entityErr;
         const open = get().diligence.filter((d) => d.parcelId === id && d.status !== "clear");
         if (open.length) return "All due-diligence items must be clear before acquisition.";
-        set({ parcels: get().parcels.map((x) => (x.id === id ? { ...x, status: "acquired" } : x)) });
-        get().log("Land acquired", parcel.name);
+        const consideration = details?.considerationInr ?? parcel.considerationInr ?? 0;
+        const saleDeedNo = (details?.saleDeedNo ?? parcel.saleDeedNo ?? "").trim();
+        if (!consideration || consideration <= 0) return "Consideration (₹) is required to acquire the parcel.";
+        if (!saleDeedNo) return "Sale deed number is required to acquire the parcel.";
+        set({
+          parcels: get().parcels.map((x) =>
+            x.id === id
+              ? {
+                  ...x,
+                  status: "acquired",
+                  considerationInr: consideration,
+                  saleDeedNo,
+                  saleDeedDate: details?.saleDeedDate ?? x.saleDeedDate ?? todayIso(),
+                  advocateName: details?.advocateName ?? x.advocateName,
+                }
+              : x,
+          ),
+        });
+        get().log("Land acquired", `${parcel.name} · ${consideration} · ${saleDeedNo}`);
+        return null;
+      },
+      recordParcelDeed: (id, details) => {
+        const parcel = get().parcels.find((x) => x.id === id);
+        if (!parcel) return "Parcel not found.";
+        if (parcel.status !== "acquired") return "Acquire the parcel first.";
+        const entityErr = projectEntityError(get(), parcel.projectId);
+        if (entityErr) return entityErr;
+        if (!details.considerationInr || details.considerationInr <= 0) return "Consideration (₹) is required.";
+        if (!details.saleDeedNo.trim()) return "Sale deed number is required.";
+        set({
+          parcels: get().parcels.map((x) =>
+            x.id === id
+              ? {
+                  ...x,
+                  considerationInr: details.considerationInr,
+                  saleDeedNo: details.saleDeedNo.trim(),
+                  saleDeedDate: details.saleDeedDate ?? x.saleDeedDate ?? todayIso(),
+                  advocateName: details.advocateName ?? x.advocateName,
+                }
+              : x,
+          ),
+        });
+        get().log("Recorded sale deed / consideration", `${parcel.name} · ${details.saleDeedNo}`);
+        return null;
+      },
+      startDiligencePack: (parcelId) => {
+        const parcel = get().parcels.find((x) => x.id === parcelId);
+        if (!parcel) return "Parcel not found.";
+        const existing = new Set(get().diligence.filter((d) => d.parcelId === parcelId).map((d) => d.title.toLowerCase()));
+        const added: DiligenceItem[] = [];
+        for (const title of STANDARD_DILIGENCE) {
+          if (existing.has(title.toLowerCase())) continue;
+          added.push({ id: uid("dd"), parcelId, title, status: "open" });
+        }
+        if (!added.length) return "Standard title pack is already on this parcel.";
+        set({
+          diligence: [...added, ...get().diligence],
+          parcels: get().parcels.map((p) => (p.id === parcelId && p.status === "identified" ? { ...p, status: "diligence" } : p)),
+        });
+        get().log("Opened standard title pack", parcel.name);
+        return null;
+      },
+      clearDiligencePack: (parcelId) => {
+        const parcel = get().parcels.find((x) => x.id === parcelId);
+        if (!parcel) return "Parcel not found.";
+        const open = get().diligence.filter((d) => d.parcelId === parcelId && d.status !== "clear");
+        if (!open.length) return "Nothing left to clear.";
+        set({
+          diligence: get().diligence.map((d) => (d.parcelId === parcelId && d.status !== "clear" ? { ...d, status: "clear" } : d)),
+        });
+        get().log("Cleared diligence pack", parcel.name);
+        return null;
+      },
+      addFundingSanction: (input) => {
+        const entityErr = projectEntityError(get(), input.projectId);
+        if (entityErr) return entityErr;
+        if (!input.bank.trim() || !input.sanctionNo.trim()) return "Bank and sanction number required.";
+        if (input.loanPct + input.equityPct !== 100) return "Loan % and partner/equity % must add to 100.";
+        const row: FundingSanction = {
+          id: uid("fs"),
+          projectId: input.projectId,
+          bank: input.bank.trim(),
+          sanctionNo: input.sanctionNo.trim(),
+          loanPct: input.loanPct,
+          equityPct: input.equityPct,
+          amount: input.amount,
+          status: input.status ?? "sanctioned",
+          sanctionedAt: input.sanctionedAt ?? todayIso(),
+          validUntil: input.validUntil,
+        };
+        set({ fundingSanctions: [row, ...get().fundingSanctions] });
+        get().log("Recorded funding sanction", `${row.bank} · ${row.sanctionNo}`);
+        return null;
+      },
+      bookNextAvailable: (projectId, opts) => {
+        const entityErr = projectEntityError(get(), projectId);
+        if (entityErr) return entityErr;
+        const unit = pickNextUnit(get().units, get().towers, projectId, opts);
+        if (!unit) return "no available unit";
+        const customer = opts?.customer ?? `Buyer ${unit.code}`;
+        const leadErr = get().addLead({
+          projectId,
+          name: customer,
+          phone: `97${unit.code.replace(/\D/g, "").slice(0, 8).padEnd(8, "0")}`,
+          source: "walk-in",
+          unit: unit.code,
+          note: "next available",
+          budget: unit.price,
+          kind: "flat",
+        });
+        const lead = get().leads.find((l) => l.unit === unit.code && l.stage !== "won" && l.stage !== "lost");
+        return leadErr || (lead ? get().convertLead(lead.id, unit.price) : "lead missing");
+      },
+      copyForwardDiary: (projectId) => {
+        const last = get()
+          .diaries.filter((d) => d.projectId === projectId)
+          .slice()
+          .sort((a, b) => (a.date < b.date ? 1 : -1))[0];
+        if (!last) return "No previous diary to copy.";
+        return get().addDiary({
+          projectId,
+          date: todayIso(),
+          weather: last.weather,
+          labour: last.labour,
+          labourCivil: last.labourCivil,
+          labourMep: last.labourMep,
+          labourFinish: last.labourFinish,
+          work: last.work,
+          materials: last.materials,
+          safety: last.safety,
+          deviceKey: `demo-${projectId}-${todayIso()}`,
+        });
+      },
+      setProjectLaunch: (projectId, input) => {
+        const p = get().projects.find((x) => x.id === projectId);
+        if (!p) return "Project not found.";
+        const entityErr = projectEntityError(get(), projectId);
+        if (entityErr) return entityErr;
+        set({
+          projects: get().projects.map((x) =>
+            x.id === projectId
+              ? {
+                  ...x,
+                  launchedAt: todayIso(),
+                  exclusivePartnerId: input?.exclusivePartnerId ?? x.exclusivePartnerId,
+                  priceListFrozen: input?.freezePrices ?? true,
+                }
+              : x,
+          ),
+        });
+        get().log("Sales launch", p.name);
         return null;
       },
       executeContract: (id, evidenceId) => {
@@ -1269,6 +1604,10 @@ export const useAtlas = create<AtlasState>()(
         if (!l) return "Lead not found.";
         if (l.stage === "lost" || l.stage === "won") return "This lead is closed.";
         if (!l.unit) return "Unit interest is required to convert.";
+        const entityErr = projectEntityError(get(), l.projectId);
+        if (entityErr) return entityErr;
+        const lock = exclusiveChannelError(get(), l.projectId, l.partnerId);
+        if (lock) return lock;
         const clash = get().bookings.find(
           (x) => x.projectId === l.projectId && x.unit === l.unit && (x.status === "active" || x.status === "possession"),
         );
@@ -1288,11 +1627,13 @@ export const useAtlas = create<AtlasState>()(
           partnerId: l.partnerId,
         };
         const token = Math.round(value * 0.1);
+        const today = todayIso();
+        const possessionDue = get().projects.find((p) => p.id === l.projectId)?.possession ?? addDaysIso(today, 365);
         const steps: PaymentStep[] = [
-          { id: uid("py"), bookingId: booking.id, label: "Booking token", due: todayIso(), amount: token, paid: 0 },
-          { id: uid("py"), bookingId: booking.id, label: "Agreement", due: todayIso(), amount: token, paid: 0 },
-          { id: uid("py"), bookingId: booking.id, label: "Construction", due: todayIso(), amount: Math.round(value * 0.4), paid: 0 },
-          { id: uid("py"), bookingId: booking.id, label: "Possession", due: todayIso(), amount: value - token * 2 - Math.round(value * 0.4), paid: 0 },
+          { id: uid("py"), bookingId: booking.id, label: "Booking token", due: today, amount: token, paid: 0 },
+          { id: uid("py"), bookingId: booking.id, label: "Agreement", due: addDaysIso(today, 15), amount: token, paid: 0 },
+          { id: uid("py"), bookingId: booking.id, label: "Construction", due: addDaysIso(today, 90), amount: Math.round(value * 0.4), paid: 0 },
+          { id: uid("py"), bookingId: booking.id, label: "Possession", due: possessionDue, amount: value - token * 2 - Math.round(value * 0.4), paid: 0 },
         ];
         const cu = upsertCustomer(get().customers, l.name, l.phone, l.source);
         booking.customerId = cu.id;
@@ -1392,6 +1733,11 @@ export const useAtlas = create<AtlasState>()(
         const unit = get().units.find((u) => u.id === input.unitId);
         const locked = refuseHold(unit);
         if (locked || !unit) return locked ?? "Unit not found.";
+        const entityErr = projectEntityError(get(), unit.projectId);
+        if (entityErr) return entityErr;
+        const agent = get().agents.find((a) => a.id === input.agentId);
+        const lock = exclusiveChannelError(get(), unit.projectId, agent?.companyId);
+        if (lock) return lock;
         const hold: UnitHold = {
           id: uid("hd"),
           unitId: unit.id,
@@ -1483,6 +1829,10 @@ export const useAtlas = create<AtlasState>()(
         return null;
       },
       ingestLead: (input) => {
+        const entityErr = projectEntityError(get(), input.projectId);
+        if (entityErr) return entityErr;
+        const lock = exclusiveChannelError(get(), input.projectId, input.partnerId);
+        if (lock) return lock;
         const phone = normalizePhone(input.phone);
         const dup = findDuplicate(get().leads, phone, input.projectId);
         if (dup) return `Duplicate lead on ${dup.phone} — already ${dup.stage}.`;
@@ -1710,6 +2060,15 @@ export const useAtlas = create<AtlasState>()(
         get().log("OC/CC received", h.unit);
         return null;
       },
+      setHandoverOcForProject: (projectId) => {
+        const rows = get().handovers.filter((h) => h.projectId === projectId && h.oc !== "received");
+        if (!rows.length) return "Every unit on this project already has permission to live, or none are in handover.";
+        set({
+          handovers: get().handovers.map((h) => (h.projectId === projectId ? { ...h, oc: "received" } : h)),
+        });
+        get().log("OC/CC received for project", `${projectId} · ${rows.length} units`);
+        return null;
+      },
       acceptInbound: (id) => {
         const row = get().inbound.find((x) => x.id === id);
         if (!row) return "Inbound event not found.";
@@ -1733,7 +2092,7 @@ export const useAtlas = create<AtlasState>()(
         } else {
           const source = row.kind === "email" || row.kind === "webhook" ? "website" : row.kind;
           const err = get().ingestLead({
-            projectId: row.projectId ?? "p_kanak",
+            projectId: row.projectId ?? "p_av",
             name: row.name ?? "Portal lead",
             phone: row.phone ?? uid("ph"),
             source,
@@ -1855,7 +2214,25 @@ export const useAtlas = create<AtlasState>()(
         return report;
       },
     }),
-    { name: "atlas3-sales-v11" },
+    {
+      name: "atlas3-dukia-v1",
+      version: 5,
+      migrate: (persisted) => migratePersisted(persisted),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<AtlasState>;
+        return {
+          ...current,
+          ...p,
+          fundingSanctions: (() => {
+            const cur = p.fundingSanctions?.length ? p.fundingSanctions : current.fundingSanctions ?? [];
+            const have = new Set(cur.map((f) => f.projectId));
+            return [...cur, ...FUNDING.filter((f) => !have.has(f.projectId))];
+          })(),
+          drawings: p.drawings ?? current.drawings ?? [],
+          entityByUser: p.entityByUser ?? current.entityByUser ?? {},
+        };
+      },
+    },
   ),
 );
 

@@ -47,6 +47,25 @@ export type DecisionId =
   | "crm";
 
 export type DocKind = "Drawing" | "Statutory" | "Report" | "Spec" | "Contract";
+
+export type QuoteSource = "portal" | "paper" | "email" | "whatsapp";
+
+export interface Drawing {
+  id: string;
+  projectId: string;
+  title: string;
+  kind: "master" | "floor" | "structural" | "mep" | "other";
+  towerId?: string;
+  revision: string;
+  status: "draft" | "ifc" | "as-built";
+  fileName?: string;
+  fileKind?: string;
+  fileSize?: number;
+  fileDataUrl?: string;
+  sha256?: string;
+  uploadedAt: string;
+  uploadedBy: string;
+}
 export type DocClass = "internal" | "confidential" | "restricted";
 export type DocStatus = "quarantine" | "review" | "approved" | "issued" | "superseded";
 
@@ -57,6 +76,8 @@ export interface User {
   title: string;
   email: string;
   password: string;
+  /** Distinguishes MD from group Directors who share the owner role. */
+  grade?: "md" | "director";
 }
 
 export interface LegalEntity {
@@ -85,6 +106,32 @@ export interface Project {
   forecast: number;
   /** Concept / land — planned is not committed capital until acquire/approve. */
   concept: boolean;
+  constructionStart?: string;
+  constructionEnd?: string;
+  /** Channel firm locked to this project. Other brokers cannot hold or book. */
+  exclusivePartnerId?: string;
+  launchedAt?: string;
+  priceListFrozen?: boolean;
+}
+
+export interface FundingSanction {
+  id: string;
+  projectId: string;
+  bank: string;
+  sanctionNo: string;
+  loanPct: number;
+  equityPct: number;
+  amount: number;
+  status: "draft" | "sanctioned" | "disbursing" | "closed";
+  sanctionedAt?: string;
+  validUntil?: string;
+}
+
+export interface ParcelAcquireDetails {
+  considerationInr: number;
+  saleDeedNo: string;
+  saleDeedDate?: string;
+  advocateName?: string;
 }
 
 export interface OwnerTodo {
@@ -171,6 +218,13 @@ export interface Quote {
   exclusions: string;
   status: QuoteStatus;
   submittedAt: string;
+  source?: QuoteSource;
+  taxAmount?: number;
+  fileName?: string;
+  fileKind?: string;
+  fileSize?: number;
+  fileDataUrl?: string;
+  sha256?: string;
 }
 
 export interface Contract {
@@ -202,6 +256,9 @@ export interface DiaryEntry {
   date: string;
   weather: string;
   labour: number;
+  labourCivil?: number;
+  labourMep?: number;
+  labourFinish?: number;
   work: string;
   materials: string;
   safety: string;
@@ -283,6 +340,10 @@ export interface LandParcel {
   status: "identified" | "diligence" | "acquired" | "closed";
   rera: string;
   loan: number;
+  considerationInr?: number;
+  saleDeedNo?: string;
+  saleDeedDate?: string;
+  advocateName?: string;
 }
 
 export interface DiligenceItem {

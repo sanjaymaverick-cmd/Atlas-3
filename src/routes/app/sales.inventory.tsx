@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { companyAgentIds, isThirdParty, myAgent, myCompanyId } from "@/lib/sales-scope";
+import { companyAgentIds, isThirdParty, myAgent, myCompanyId, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
 import { toast } from "sonner";
@@ -18,19 +18,11 @@ function Inventory() {
   const third = isThirdParty(user?.role);
   const companyId = myCompanyId(user, agents);
   const agentIds = companyAgentIds(agents, companyId);
-  const ids = third
-    ? projects.map((p) => p.id)
-    : projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id);
+  const ids = scopedProjectIds(user, agents, projects, entityId, projectId);
   const ownHeld = new Set(
     holds.filter((h) => h.status === "held" && agentIds.includes(h.agentId)).map((h) => h.unitId),
   );
-  const rows = units.filter((u) => {
-    if (!ids.includes(u.projectId)) return false;
-    if (!third) return true;
-    if (u.status === "available") return true;
-    if (u.status === "held" && ownHeld.has(u.id)) return true;
-    return false;
-  });
+  const rows = scopedUnits(units, ids, { thirdParty: third, ownHeld });
   const towerOpts = towers.filter((t) => rows.some((u) => u.towerId === t.id));
   const [towerId, setTowerId] = useState(towerOpts[0]?.id ?? "");
   const [filter, setFilter] = useState<"all" | "available" | "held">("all");

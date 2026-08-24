@@ -29,11 +29,18 @@ export interface BooksBackend {
   health(): Promise<BooksResult>;
   baselineCount(): Promise<BooksResult>;
   journal(limit?: number): Promise<BooksResult>;
-  /** Exists for Phase 2. Refuses unless ERPNEXT_POSTING_ENABLED=true. */
+  /** Explicit Finance post only. Refuses unless ERPNEXT_POSTING_ENABLED=true. */
   postJournal(input: Record<string, unknown>): Promise<BooksResult>;
 }
 
 export interface BooksActionPayload {
   action?: string;
+  journal?: unknown;
+  sourceId?: string;
+  company?: string;
+  postingDate?: string;
+  userRemark?: string;
+  lines?: unknown;
+  limit?: number;
   [key: string]: unknown;
 }

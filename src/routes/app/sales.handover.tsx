@@ -1,4 +1,5 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Hint } from "@/components/hint";
 import { PageHeader } from "@/components/page-header";
@@ -22,9 +23,11 @@ function Handover() {
     user,
     advanceHandover,
     setHandoverOc,
+    setHandoverOcForProject,
     closeSnag,
     toggleBookingDoc,
   } = useAtlas();
+  const [filter, setFilter] = useState<"all" | "ready" | "waiting">("all");
   const ids = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id);
   const rows = handovers.filter((h) => ids.includes(h.projectId));
   const liveBooks = bookings.filter((b) => ids.includes(b.projectId) && b.status === "active");
@@ -32,9 +35,9 @@ function Handover() {
   if (isThirdParty(user?.role)) return <Navigate to="/app/sales/channel" />;
 
   const steps = [
-    { key: "docs", label: "Papers" },
     { key: "oc", label: "Permission to live" },
     { key: "snags", label: "Defects" },
+    { key: "docs", label: "Papers" },
     { key: "possession", label: "Keys" },
     { key: "society", label: "Society" },
     { key: "dlp", label: "Defect period" },
@@ -44,15 +47,41 @@ function Handover() {
     <div>
       <PageHeader
         title="Give keys"
-        description="First finish papers, then government permission to live in the building, then close defects. Keys come after that. Hover a dotted word if you need the meaning."
+        description="Permission to live first, then close defects, then buyer papers. Keys come after that. Hover a dotted word if you need the meaning."
       />
+      <div className="mb-4 flex flex-wrap gap-2">
+        {(
+          [
+            ["all", "All units"],
+            ["ready", "Ready for keys"],
+            ["waiting", "Booked, not ready"],
+          ] as const
+        ).map(([id, label]) => (
+          <Button key={id} size="sm" variant={filter === id ? "default" : "outline"} onClick={() => setFilter(id)}>
+            {label}
+          </Button>
+        ))}
+        {projectId !== "all" ? (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => toast(setHandoverOcForProject(projectId) ?? "Permission to live recorded for this project.")}
+          >
+            Record permission to live for this project
+          </Button>
+        ) : null}
+      </div>
       <div className="space-y-3">
         {rows.map((h) => {
           const open = snags.filter((s) => s.unit === h.unit && s.status === "open");
           const book = liveBooks.find((b) => b.unit === h.unit);
           const docs = book ? bookingDocs.filter((d) => d.bookingId === book.id) : [];
           const docsOpen = docs.some((d) => d.status === "open");
-          const current = docsOpen ? 0 : h.oc !== "received" ? 1 : open.length ? 2 : h.status === "possession" ? 3 : h.status === "society" ? 4 : 5;
+          const ready = h.oc === "received" && !open.length && !docsOpen;
+          const current =
+            h.oc !== "received" ? 0 : open.length ? 1 : docsOpen ? 2 : h.status === "possession" ? 3 : h.status === "society" ? 4 : 5;
+          if (filter === "ready" && !ready) return null;
+          if (filter === "waiting" && ready) return null;
           return (
             <Card key={h.id} className="p-5">
               <div className="mb-3 flex flex-wrap gap-1 text-[10px] uppercase tracking-[0.12em]">
@@ -82,12 +111,15 @@ function Handover() {
                   <p className="font-display text-2xl">{h.unit}</p>
                   <p className="text-sm text-muted">
                     {current === 0
-                      ? "Stopped: buyer papers still missing"
+                      ? "Stopped: waiting for government permission to live in the building"
                       : current === 1
-                        ? "Stopped: waiting for government permission to live in the building"
+                        ? `${open.length} defects still open`
                         : current === 2
-                          ? `${open.length} defects still open`
-                          : steps[current]?.label}
+                          ? "Stopped: buyer papers still missing"
+                          : ready
+                            ? "Ready for keys"
+                            : steps[current]?.label}
+                    {book && book.status === "active" && !ready ? " · booked, not possession-ready" : ""}
                   </p>
                 </div>
                 <Status value={h.status} />
@@ -123,7 +155,7 @@ function Handover() {
           );
         })}
       </div>
-      <h2 className="mb-3 mt-8 font-display text-2xl">Step 1 · Buyer papers</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">Buyer papers (after permission to live and defects)</h2>
       <div className="space-y-3">
         {liveBooks.map((b) => {
           const docs = bookingDocs.filter((d) => d.bookingId === b.id);

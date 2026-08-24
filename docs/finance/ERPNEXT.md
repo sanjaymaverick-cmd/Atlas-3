@@ -49,7 +49,31 @@ Template: `scripts/erpnext/.env.example`. Copy to `scripts/erpnext/.env` (gitign
 ## Phases
 
 **Phase 1 (this cutover)** — read / reconcile / health / “Atlas posted nothing”.  
-**Phase 2 (later)** — controlled Journal Entry post, only when `ERPNEXT_POSTING_ENABLED=true`. Post helpers exist and **refuse** while the flag is false.
+**Phase 2 (controlled post)** — Finance desk only. Typed `AtlasJournalPost` (`src/lib/erpnext/journal-post.ts`). Default **off**.
+
+### Controlled Journal Entry (Finance button)
+
+Atlas never auto-posts from land, booking, PO, or CEO. Posting is an explicit Finance action.
+
+Payload (`AtlasJournalPost`):
+
+| Field | Rule |
+|-------|------|
+| `sourceId` | Required. Idempotency key. Title becomes `ATLAS-OPS {sourceId}`. |
+| `company` | Allowlist: MOCK ATLAS3 LLP, SATYAM BUILDCOM, SATYAM CONSTRUCTION, MGB PRIME ESTATES LLP |
+| `postingDate` | `YYYY-MM-DD` |
+| `lines` | ≥2. Each line amount > 0. Debit XOR credit. Totals balanced. Rounded to 2 decimals (INR). Posted as `debit_in_account_currency` / `credit_in_account_currency`. |
+
+`Check journal` → `action: validate` (works even when posting is off).  
+`Post to ERPNext` → `action: post`. Refuses while `ERPNEXT_POSTING_ENABLED` is false. When the flag is on and ERPNext is down, Atlas returns a **mock** `MOCK-JE-{sourceId}` so the path can be proven without a live desk. Same `sourceId` returns the existing JE name.
+
+ERPNext: leaf accounts, cost centre on P&L, party on AR/AP, open fiscal period. Atlas **submits** the JE (`frappe.client.submit`) so GL posts. A draft alone is not the ledger.
+
+```
+POST /api/books
+{ "action": "post", "sourceId": "ops-1", "company": "SATYAM BUILDCOM", "postingDate": "2026-08-24",
+  "lines": [ { "account": "Construction Expenses - SBC", "debit": 1000 }, { "account": "Cash - SBC", "credit": 1000 } ] }
+```
 
 ## Verify from Atlas
 
