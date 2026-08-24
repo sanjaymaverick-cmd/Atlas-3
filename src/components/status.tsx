@@ -1,20 +1,21 @@
+import { Hint } from "@/components/hint";
 import { Badge } from "@/components/ui/badge";
+import { getTerm } from "@/lib/glossary";
 
 const MAP: Record<string, { tone: "ok" | "warn" | "danger" | "default" | "ink" | "muted"; label?: string }> = {
   active: { tone: "ok" },
   executed: { tone: "ok" },
   issued: { tone: "ok" },
   approved: { tone: "ok" },
-  pass: { tone: "ok" },
+  pass: { tone: "ok", label: "Passed" },
   reconciled: { tone: "ok" },
   recorded: { tone: "ok" },
   possession: { tone: "ok" },
   construction: { tone: "ok" },
-  pending: { tone: "warn" },
-  review: { tone: "warn" },
-  submitted: { tone: "warn" },
-  routed: { tone: "warn" },
-  kyc: { tone: "warn" },
+  pending: { tone: "warn", label: "Waiting" },
+  review: { tone: "warn", label: "Under check" },
+  submitted: { tone: "warn", label: "Sent" },
+  kyc: { tone: "warn", label: "Identity check" },
   verified: { tone: "warn" },
   bank: { tone: "warn" },
   compliance: { tone: "warn" },
@@ -23,23 +24,23 @@ const MAP: Record<string, { tone: "ok" | "warn" | "danger" | "default" | "ink" |
   draft: { tone: "muted" },
   planning: { tone: "muted" },
   open: { tone: "warn" },
-  fail: { tone: "danger" },
-  failed: { tone: "danger" },
+  fail: { tone: "danger", label: "Failed" },
+  failed: { tone: "danger", label: "Failed" },
   rejected: { tone: "danger" },
   critical: { tone: "danger" },
   high: { tone: "danger" },
-  quarantine: { tone: "danger" },
+  quarantine: { tone: "danger", label: "Virus scan" },
   acquired: { tone: "ok" },
   clear: { tone: "ok" },
   filed: { tone: "ok" },
   paid: { tone: "ok" },
   closed: { tone: "ok" },
   exception: { tone: "warn" },
-  variance: { tone: "warn" },
+  variance: { tone: "warn", label: "Numbers do not match" },
   provisional: { tone: "muted" },
   identified: { tone: "muted" },
-  diligence: { tone: "warn" },
-  overdue: { tone: "danger" },
+  diligence: { tone: "warn", label: "Land checks" },
+  overdue: { tone: "danger", label: "Late" },
   flagged: { tone: "danger" },
   used: { tone: "muted" },
   granted: { tone: "ok" },
@@ -48,7 +49,7 @@ const MAP: Record<string, { tone: "ok" | "warn" | "danger" | "default" | "ink" |
   negotiation: { tone: "warn" },
   won: { tone: "ok" },
   lost: { tone: "muted" },
-  accrued: { tone: "warn" },
+  accrued: { tone: "warn", label: "Earned, not paid" },
   named: { tone: "warn" },
   ready: { tone: "ok" },
   awarded: { tone: "ok" },
@@ -61,14 +62,14 @@ const MAP: Record<string, { tone: "ok" | "warn" | "danger" | "default" | "ink" |
   warm: { tone: "warn" },
   cold: { tone: "muted" },
   available: { tone: "ok" },
-  held: { tone: "warn" },
-  booked: { tone: "ink" },
+  held: { tone: "warn", label: "On hold" },
+  booked: { tone: "ink", label: "Booked" },
   sold: { tone: "ok" },
   dispute: { tone: "danger" },
   documentation: { tone: "warn" },
-  snagging: { tone: "warn" },
-  society: { tone: "ok" },
-  defect: { tone: "warn" },
+  snagging: { tone: "warn", label: "Fixing defects" },
+  society: { tone: "ok", label: "With society" },
+  defect: { tone: "warn", label: "Defect period" },
   scheduled: { tone: "warn" },
   done: { tone: "ok" },
   received: { tone: "ok" },
@@ -83,11 +84,19 @@ const MAP: Record<string, { tone: "ok" | "warn" | "danger" | "default" | "ink" |
   utility: { tone: "ok" },
   marketing: { tone: "warn" },
   paused: { tone: "danger" },
+  rfi: { tone: "warn", label: "Question to design" },
+  ncr: { tone: "danger", label: "Failed work" },
+  change: { tone: "warn", label: "Paid extra work" },
+  routed: { tone: "warn", label: "Sent to design" },
+  corrective: { tone: "warn", label: "Must be fixed" },
 };
 
 export function Status({ value }: { value: string }) {
   const m = MAP[value] ?? { tone: "default" as const };
-  return <Badge tone={m.tone}>{m.label ?? value.replaceAll("_", " ")}</Badge>;
+  const g = getTerm(value);
+  const label = m.label ?? g?.name ?? value.replaceAll("_", " ");
+  const chip = <Badge tone={m.tone}>{label}</Badge>;
+  return g ? <Hint term={value}>{chip}</Hint> : chip;
 }
 
 export const StatusChip = Status;

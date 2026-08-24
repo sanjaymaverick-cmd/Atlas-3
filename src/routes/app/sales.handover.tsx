@@ -1,5 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Hint } from "@/components/hint";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
@@ -30,14 +31,20 @@ function Handover() {
 
   if (isThirdParty(user?.role)) return <Navigate to="/app/sales/channel" />;
 
-  const steps = ["Docs", "OC", "Snags", "Possession", "Society", "DLP"] as const;
+  const steps = [
+    { key: "docs", label: "Papers" },
+    { key: "oc", label: "Permission to live" },
+    { key: "snags", label: "Defects" },
+    { key: "possession", label: "Keys" },
+    { key: "society", label: "Society" },
+    { key: "dlp", label: "Defect period" },
+  ] as const;
 
   return (
     <div>
       <PageHeader
-        kicker="Handover"
-        title="OC, snags, possession, society"
-        description="Blocking stage first. Possession waits on OC/CC and closed snags. Local only."
+        title="Give keys"
+        description="First finish papers, then government permission to live in the building, then close defects. Keys come after that. Hover a dotted word if you need the meaning."
       />
       <div className="space-y-3">
         {rows.map((h) => {
@@ -51,7 +58,7 @@ function Handover() {
               <div className="mb-3 flex flex-wrap gap-1 text-[10px] uppercase tracking-[0.12em]">
                 {steps.map((s, i) => (
                   <span
-                    key={s}
+                    key={s.key}
                     className={
                       i === current
                         ? "rounded-full bg-primary px-2 py-1 text-primary-fg"
@@ -60,24 +67,27 @@ function Handover() {
                           : "rounded-full bg-chip px-2 py-1 text-muted"
                     }
                   >
-                    {s}
+                    <Hint term={s.key} captureClick={false}>
+                      {s.label}
+                    </Hint>
                   </span>
                 ))}
               </div>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
-                    {h.unit} · OC {h.oc}
+                    {h.unit} ·{" "}
+                    <Hint term="oc">Permission to live</Hint> {h.oc === "received" ? "received" : "waiting"}
                   </p>
                   <p className="font-display text-2xl">{h.unit}</p>
                   <p className="text-sm text-muted">
                     {current === 0
-                      ? "Blocking: booking documents"
+                      ? "Stopped: buyer papers still missing"
                       : current === 1
-                        ? "Blocking: OC/CC"
+                        ? "Stopped: waiting for government permission to live in the building"
                         : current === 2
-                          ? `${open.length} open snags`
-                          : h.status}
+                          ? `${open.length} defects still open`
+                          : steps[current]?.label}
                   </p>
                 </div>
                 <Status value={h.status} />
@@ -87,15 +97,15 @@ function Handover() {
                   <li key={s.id} className="flex items-center justify-between gap-2">
                     <span>{s.title}</span>
                     <Button size="sm" variant="outline" onClick={() => closeSnag(s.id)}>
-                      Close snag
+                      Close defect
                     </Button>
                   </li>
                 ))}
               </ul>
               <div className="mt-4 flex flex-wrap gap-2">
                 {h.oc !== "received" ? (
-                  <Button className="h-11" variant="outline" onClick={() => toast(setHandoverOc(h.id) ?? "OC/CC recorded.")}>
-                    Record OC/CC
+                  <Button className="h-11" variant="outline" onClick={() => toast(setHandoverOc(h.id) ?? "Permission to live recorded.")}>
+                    Record permission to live
                   </Button>
                 ) : null}
                 <Button
@@ -113,7 +123,7 @@ function Handover() {
           );
         })}
       </div>
-      <h2 className="mb-3 mt-8 font-display text-2xl">Stage 0 · Booking documents</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">Step 1 · Buyer papers</h2>
       <div className="space-y-3">
         {liveBooks.map((b) => {
           const docs = bookingDocs.filter((d) => d.bookingId === b.id);

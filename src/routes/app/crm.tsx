@@ -41,9 +41,8 @@ function Crm() {
   return (
     <div>
       <PageHeader
-        kicker="CRM · inside Atlas"
-        title="Partners & commission"
-        description="Partner KYC and commission send-for-approval. Advance, book and score live on Pipeline. Tally remains the books."
+        title="Sales partners"
+        description="Outside agencies and their commission. Identity check lives here. Follow buyers on Buyer leads. Accounts stay in Tally."
       />
       <GateBanner>
         Scoring, inventory lock, daily reports and the channel portal live on{" "}

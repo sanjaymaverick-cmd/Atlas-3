@@ -135,7 +135,7 @@ function Customers() {
                   <li key={s.id} className="flex items-center justify-between gap-2">
                     <span>{s.title}</span>
                     {s.status === "open" ? (
-                      <Button size="sm" variant="outline" onClick={() => closeSnag(s.id)}>Close snag</Button>
+                      <Button size="sm" variant="outline" onClick={() => closeSnag(s.id)}>Close defect</Button>
                     ) : (
                       <span className="text-muted">closed</span>
                     )}

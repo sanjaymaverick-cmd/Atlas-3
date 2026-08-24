@@ -52,12 +52,11 @@ function Quotations() {
   return (
     <div>
       <PageHeader
-        kicker="Commercial"
-        title="Quotations"
-        description="RFQ → compare → select → PO. Selection does not pay. The PO still waits in Approvals."
+        title="Price quotes"
+        description="Ask vendors for prices, compare them, pick one, then raise a purchase order. Picking a price does not pay anyone. The order still waits for a yes."
       />
       <GateBanner>
-        Cannot select a quote from a vendor that is not Active. Create PO only after Select. Atlas does not pay from this screen.
+        You can only pick a price from an Active vendor. Raise the purchase order only after you pick. Atlas does not pay from this screen.
       </GateBanner>
 
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
@@ -94,16 +93,16 @@ function Quotations() {
                 due,
                 required: true,
               });
-              toast("RFQ raised.");
+              toast("Price request sent.");
               setTitle("");
             }}
           >
-            Raise RFQ
+            Ask for prices
           </Button>
         </div>
       </Card>
 
-      <h2 className="mb-3 font-display text-2xl">RFQs</h2>
+      <h2 className="mb-3 font-display text-2xl">Price requests</h2>
       <div className="mb-6 space-y-2">
         {scopedRfqs.map((r) => {
           const n = quotes.filter((q) => q.rfqId === r.id).length;

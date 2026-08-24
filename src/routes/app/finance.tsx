@@ -19,8 +19,8 @@ function Finance() {
   if (!canSeeTally(user?.role)) {
     return (
       <div>
-        <PageHeader title="Tally" description="This desk does not post books. Local only." />
-        <p className="text-sm text-muted">View only is not offered to site seats. Tally stays with Finance / MD.</p>
+        <PageHeader title="Company accounts" description="This login cannot touch the books. Local only." />
+        <p className="text-sm text-muted">Site seats do not see accounts. Books stay with Finance and the Managing Director.</p>
       </div>
     );
   }
@@ -29,8 +29,8 @@ function Finance() {
     <div>
       <PageHeader
         kicker="Phase 9"
-        title="Tally reconciliation"
-        description="Tally is the statutory book of record. Atlas never posts or amends vouchers."
+        title="Match with company accounts"
+        description="Tally is the official book. Atlas never writes or changes a voucher. We only match or flag a mismatch."
       />
       <GateBanner>
         Reconcile or accept an exception here. Books stay in Tally. Local only — not live.

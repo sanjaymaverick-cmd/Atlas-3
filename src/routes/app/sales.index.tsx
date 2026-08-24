@@ -38,7 +38,7 @@ function SalesCommand() {
       <PageHeader
         kicker="Sales command"
         title={channel ? (firm ?? "Channel desk") : "Third-party now, in-house next"}
-        description="Inventory is the lock. Holds and bookings cannot double-allocate a unit. Commission accrues only. Atlas never posts Tally. Local only."
+        description="A unit can be free, on hold, or booked — never two at once. Commission is counted, never paid by itself. Atlas never writes to company accounts."
       />
       <GateBanner>
         Portal connectors (99acres, MagicBricks, Housing, ads) and a trained GBDT lab are owner TODOs. This host scores with

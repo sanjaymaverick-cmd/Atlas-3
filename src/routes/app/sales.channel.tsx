@@ -68,9 +68,8 @@ function ChannelDesk() {
   return (
     <div>
       <PageHeader
-        kicker="Third-party portal"
-        title="Daily report, then hold, then book"
-        description={`${firm}. Channel companies cannot see another firm’s desk. A hold locks the unit. Commission accrues on booking — Atlas does not pay. Local only.`}
+        title="Today’s work, then hold, then book"
+        description={`${firm}. You cannot see another company’s desk. A hold locks the unit for a few days. Commission is counted on booking — Atlas does not pay it.`}
       />
       {reportedToday ? null : (
         <GateBanner>Mandatory daily activity report — hold is refused until today’s report is filed.</GateBanner>

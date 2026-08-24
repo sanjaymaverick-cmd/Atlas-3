@@ -2,6 +2,7 @@ import { Link, Navigate, Outlet, useNavigate, useRouterState } from "@tanstack/r
 import { Menu, Shield } from "lucide-react";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { CommandPalette } from "@/components/command-palette";
+import { Hint } from "@/components/hint";
 import { BOTTOM_NAV, GROUP_ORDER, NAV, NAV_GROUP_LABEL, rolesForPath, type NavGroup } from "@/components/layout/nav";
 import { homeForRole } from "@/lib/roles";
 import { isThirdParty, myCompanyId } from "@/lib/sales-scope";
@@ -74,8 +75,12 @@ export function AppShell() {
                     : "text-sidebar-muted hover:bg-white/10 hover:text-sidebar-fg",
                 )}
               >
-                <Icon className="size-4" />
-                <span className="flex-1">{item.label}</span>
+                <Icon className="size-4 shrink-0" />
+                <span className="flex-1">
+                  <Hint term={item.label} captureClick={false}>
+                    {item.label}
+                  </Hint>
+                </span>
                 {item.to === "/app/approvals" && pending > 0 ? (
                   <span className="rounded-full bg-primary-fg/15 px-1.5 text-[10px] tabular-nums">{pending}</span>
                 ) : null}
@@ -119,8 +124,12 @@ export function AppShell() {
                             : "text-sidebar-muted hover:bg-white/10 hover:text-sidebar-fg",
                         )}
                       >
-                        <Icon className="size-4" />
-                        <span className="flex-1">{item.label}</span>
+                        <Icon className="size-4 shrink-0" />
+                        <span className="flex-1">
+                          <Hint term={item.label} captureClick={false}>
+                            {item.label}
+                          </Hint>
+                        </span>
                         {item.to === "/app/approvals" && pending > 0 ? (
                           <span className="rounded-full bg-primary-fg/15 px-1.5 text-[10px] tabular-nums">{pending}</span>
                         ) : null}

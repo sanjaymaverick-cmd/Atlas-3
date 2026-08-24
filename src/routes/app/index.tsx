@@ -126,14 +126,14 @@ function Command() {
         : siteDesk
           ? [
               { to: "/app/site", label: "Failed inspections", count: failed.length },
-              { to: "/app/changes", label: "Open NCRs", count: openNcr.length },
+              { to: "/app/changes", label: "Failed work still open", count: openNcr.length },
               { to: "/app/site", label: "Today’s diary", count: "Seal" },
             ]
           : legalDesk
             ? [
-                { to: "/app/land", label: "Statutory open", count: overdueObs.length },
-                { to: "/app/land", label: "Open diligence", count: openDiligence.length },
-                { to: "/app/land", label: "EMI due (ops)", count: emiDue.length },
+                { to: "/app/land", label: "Filings still open", count: overdueObs.length },
+                { to: "/app/land", label: "Land checks open", count: openDiligence.length },
+                { to: "/app/land", label: "Loan instalment due", count: emiDue.length },
               ]
             : docsDesk
               ? [
@@ -142,35 +142,35 @@ function Command() {
                 ]
               : commercialDesk
                 ? [
-                    { to: "/app/commercial", label: "POs in review", count: poReview.length },
-                    { to: "/app/quotations", label: "Open RFQs", count: openRfq.length },
+                    { to: "/app/commercial", label: "Orders under check", count: poReview.length },
+                    { to: "/app/quotations", label: "Price requests open", count: openRfq.length },
                   ]
                 : [
-                    { to: "/app/approvals", label: "Approvals waiting", count: pending.length },
+                    { to: "/app/approvals", label: "Waiting for a yes", count: pending.length },
                     { to: "/app/site", label: "Failed inspections", count: failed.length },
-                    { to: "/app/changes", label: "Open NCRs", count: openNcr.length },
+                    { to: "/app/changes", label: "Failed work still open", count: openNcr.length },
                     ...(canSeeTally(role)
-                      ? [{ to: "/app/finance", label: "Tally cases", count: openTally.length }]
+                      ? [{ to: "/app/finance", label: "Account mismatches", count: openTally.length }]
                       : overdueObs.length
-                        ? [{ to: "/app/land", label: "Statutory overdue", count: overdueObs.filter((o) => o.status === "overdue").length }]
+                        ? [{ to: "/app/land", label: "Late government filings", count: overdueObs.filter((o) => o.status === "overdue").length }]
                         : [{ to: "/app/customers", label: "Receivable", count: inr(receivable, true) }]),
                   ];
 
   const exceptionLinks: Array<{ to: string; label: string }> = [];
   if (!channelDesk && !storesDesk && !legalDesk && !docsDesk && !commercialDesk) {
     if (failed.length) exceptionLinks.push({ to: "/app/site", label: `${failed.length} failed inspection${failed.length === 1 ? "" : "s"}` });
-    if (openNcr.length) exceptionLinks.push({ to: "/app/changes", label: `${openNcr.length} NCR still open` });
-    if (pending.length) exceptionLinks.push({ to: "/app/approvals", label: `${pending.length} approvals · oldest ${oldest}d` });
-    if (canSeeTally(role) && openTally.length) exceptionLinks.push({ to: "/app/finance", label: `${openTally.length} Tally cases` });
+    if (openNcr.length) exceptionLinks.push({ to: "/app/changes", label: `${openNcr.length} failed work still open` });
+    if (pending.length) exceptionLinks.push({ to: "/app/approvals", label: `${pending.length} waiting for a yes · oldest ${oldest}d` });
+    if (canSeeTally(role) && openTally.length) exceptionLinks.push({ to: "/app/finance", label: `${openTally.length} account mismatches` });
     if (role !== "engineer" && role !== "supervisor" && overdueObs.some((o) => o.status === "overdue")) {
-      exceptionLinks.push({ to: "/app/land", label: `${overdueObs.filter((o) => o.status === "overdue").length} statutory overdue` });
+      exceptionLinks.push({ to: "/app/land", label: `${overdueObs.filter((o) => o.status === "overdue").length} late government filings` });
     }
     if (salesDesk && receivable > 0) exceptionLinks.push({ to: "/app/customers", label: `Collections still open ${inr(receivable, true)}` });
   }
   if (legalDesk && overdueObs.filter((o) => o.status === "overdue").length) {
     exceptionLinks.push({
       to: "/app/land",
-      label: `${overdueObs.filter((o) => o.status === "overdue").length} statutory overdue`,
+      label: `${overdueObs.filter((o) => o.status === "overdue").length} late government filings`,
     });
   }
 
@@ -181,8 +181,8 @@ function Command() {
     <div>
       <PageHeader
         kicker="Command"
-        title="Are we on track, and what needs a decision?"
-        description="Five seconds: status, cash vs plan, what needs a human. Local only."
+        title="Are we on track, and what needs a yes today?"
+        description="In five seconds: status, cash vs plan, what a person must do. Local only."
       />
 
       <QueueStrip items={queue} />

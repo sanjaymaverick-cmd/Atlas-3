@@ -67,9 +67,8 @@ function Pipeline() {
   return (
     <div>
       <PageHeader
-        kicker="In-house pipeline"
-        title="New → visit → book"
-        description="New, contacted, qualified, site visit, negotiation, booked / lost / nurture. Assign an active agent. Convert locks inventory and opens handover. Local only."
+        title="New lead → site visit → book"
+        description="New → called → serious buyer → site visit → price talk → booked. Give the lead to an agent. Booking locks the unit."
       />
       <details className="mb-6">
         <summary className="cursor-pointer text-sm text-muted">Scoring model (CatBoost / hybrid)</summary>

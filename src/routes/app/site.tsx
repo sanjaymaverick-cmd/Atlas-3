@@ -115,9 +115,9 @@ function Site() {
           }}>Schedule</Button>
         </div>
       </Card>
-      <h2 className="mb-3 mt-8 font-display text-2xl">Open snags</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">Open defects</h2>
       <div className="mb-8 space-y-3">
-        {openSnags.length === 0 ? <p className="text-sm text-muted">No open snags on this scope.</p> : null}
+        {openSnags.length === 0 ? <p className="text-sm text-muted">No open defects on this project.</p> : null}
         {openSnags.map((s) => (
           <Card key={s.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
             <div>
@@ -135,7 +135,7 @@ function Site() {
                   toast("Snag closed.");
                 }}
               >
-                Close snag
+                Close defect
               </Button>
             )}
           </Card>
@@ -157,7 +157,7 @@ function Site() {
                 <Button className="h-12" variant="outline" onClick={() => { completeInspection(i.id, "pass"); toast("Passed."); }}>
                   Pass
                 </Button>
-                <Button className="h-12" variant="outline" onClick={() => { completeInspection(i.id, "fail"); toast("Failed — NCR raised."); }}>
+                <Button className="h-12" variant="outline" onClick={() => { completeInspection(i.id, "fail"); toast("Failed — a failed work report was raised."); }}>
                   Fail
                 </Button>
               </div>

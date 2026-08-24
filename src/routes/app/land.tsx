@@ -56,8 +56,8 @@ function Land() {
     <div>
       <PageHeader
         kicker="Phase 3"
-        title="Land & legal"
-        description="Acquisition is blocked until due diligence is clear. EMI here is an operations reference — Tally remains the books."
+        title="Land papers"
+        description="You cannot buy the land until checks are clear. Loan instalments here are only a reminder — the real accounts stay in Tally."
       />
 
       <div className="mb-6">
@@ -186,7 +186,7 @@ function Land() {
                   {loanEmis.map((e) => (
                     <li key={e.id} className="flex items-center justify-between gap-2">
                       <span>
-                        EMI {e.due} · {inr(e.amount, true)}
+                        Loan instalment {e.due} · {inr(e.amount, true)}
                       </span>
                       {e.status === "due" ? (
                         <Button

@@ -25,9 +25,8 @@ function Approvals() {
   return (
     <div>
       <PageHeader
-        kicker="Workflow"
-        title="Approvals"
-        description="Material actions stay human. Step-up would be required in production."
+        title="Waiting for a yes"
+        description="A person must say yes or no before money is spent or a paper is released. Production would ask for a second step."
       />
       {pending.length === 0 ? (
         <Empty
