@@ -103,10 +103,10 @@ function CeoDesk() {
       ) : null}
       {scope === "group" ? (
         <p className="mb-6 text-sm text-muted">
-          Each card is that LLP’s ops. Adding them does not eliminate due-from/due-to. Group books after elim live in
-          Finance’s period-end pack —{" "}
+          Each card is that LLP’s ops. Adding them does not eliminate due-from/due-to. Statutory books live in ERPNext
+          Desk (DUKIA Books) — not this screen. Group pack after elim is a worksheet, not these three cards.{" "}
           <Link to="/app/finance" className="underline-offset-4 hover:underline">
-            Company accounts
+            Company accounts (ops hint)
           </Link>
           .
         </p>
@@ -201,19 +201,49 @@ function CeoDesk() {
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <Card className="p-5">
           <h2 className="font-display text-xl">Funnel</h2>
-          <ul className="mt-3 space-y-1 text-sm">
-            {report.funnel.map((f) => (
-              <li key={f.stage} className="flex justify-between gap-2">
-                <span>{f.stage}</span>
-                <span className="tabular-nums">{f.count}</span>
-              </li>
-            ))}
+          <p className="text-xs text-muted">Available → held → booked → possessed. Ops inventory, not books after elim.</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {report.funnel.map((f) => {
+              const max = Math.max(1, ...report.funnel.map((x) => x.count));
+              const label = f.stage === "available" ? "Available" : f.stage === "held" ? "Held" : f.stage === "booked" ? "Booked" : "Possessed";
+              return (
+                <li key={f.stage}>
+                  <div className="flex justify-between gap-2">
+                    <span>{label}</span>
+                    <span className="tabular-nums">{f.count}</span>
+                  </div>
+                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-chip">
+                    <div className="h-full bg-primary" style={{ width: `${Math.round((f.count / max) * 100)}%` }} />
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </Card>
         <Card className="p-5">
-          <h2 className="font-display text-xl">In-house vs channel</h2>
-          <p className="mt-3 text-sm">In-house {report.channelMix.inHouse}</p>
-          <p className="text-sm">Channel {report.channelMix.channel}</p>
+          <h2 className="font-display text-xl">Velocity & collections</h2>
+          <p className="mt-3 text-sm tabular-nums">{report.weeklyVelocity} bookings / week (ops)</p>
+          <div className="mt-1 h-2 overflow-hidden rounded-full bg-chip">
+            <div
+              className="h-full bg-primary"
+              style={{ width: `${Math.min(100, Math.round(report.weeklyVelocity * 10))}%` }}
+            />
+          </div>
+          <p className="mt-3 text-sm tabular-nums">Collections this month {inr(k.collectionsMtd, true)}</p>
+          <div className="mt-1 h-2 overflow-hidden rounded-full bg-chip">
+            <div
+              className="h-full bg-primary"
+              style={{
+                width: `${Math.min(100, k.bookedInr ? Math.round((k.collectionsMtd / k.bookedInr) * 100) : 0)}%`,
+              }}
+            />
+          </div>
+          <p className="mt-3 text-sm tabular-nums">Aging 61–90d {k.overdue61} · 90d+ {k.overdue90}</p>
+          <div className="mt-1 flex h-2 overflow-hidden rounded-full bg-chip">
+            <div className="h-full bg-warn" style={{ width: `${Math.min(50, k.overdue61 * 8)}%` }} />
+            <div className="h-full bg-danger" style={{ width: `${Math.min(50, k.overdue90 * 8)}%` }} />
+          </div>
+          <p className="mt-2 text-xs text-muted">Not P&L after intercompany elimination. Books sit in ERPNext.</p>
         </Card>
         <Card className="p-5">
           <h2 className="font-display text-xl">Inventory by BHK</h2>

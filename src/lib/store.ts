@@ -126,6 +126,7 @@ import type {
   QuoteSource,
 } from "./types";
 import { STANDARD_DILIGENCE } from "./diligence-pack";
+import { PO_VENDOR_NOT_ACTIVE, CHALLAN_REQUIRED } from "./gates";
 import { pickNextUnit } from "./unit-pick";
 import { ensureVendorActivationCards, VENDOR_NEXT, vendorApprovalCard } from "./vendor-flow";
 import { addDaysIso, nowIso, registerClock, todayIso, uid } from "./utils";
@@ -826,7 +827,7 @@ export const useAtlas = create<AtlasState>()(
         if (entityErr) return entityErr;
         const vendor = get().vendors.find((v) => v.id === input.vendorId);
         if (!vendor || vendor.stage !== "active") {
-          return "Purchase orders cannot be issued until the vendor is Active.";
+          return PO_VENDOR_NOT_ACTIVE;
         }
         const po: PurchaseOrder = {
           id: uid("po"),
@@ -932,7 +933,7 @@ export const useAtlas = create<AtlasState>()(
         if (!rfq || rfq.status !== "open") return "RFQ is not open.";
         const vendor = get().vendors.find((v) => v.id === q.vendorId);
         if (!vendor || vendor.stage !== "active") {
-          return "Cannot select a quote from a vendor that is not Active.";
+          return PO_VENDOR_NOT_ACTIVE;
         }
         set({
           quotes: get().quotes.map((x) => {
@@ -1221,7 +1222,7 @@ export const useAtlas = create<AtlasState>()(
         const o = get().obligations.find((x) => x.id === id);
         if (!o) return "Obligation not found.";
         const ref = ack.trim();
-        if (!ref) return "Acknowledgement / challan number required.";
+        if (!ref) return CHALLAN_REQUIRED;
         set({
           obligations: get().obligations.map((x) =>
             x.id === id ? { ...x, status: "filed", filedRef: ref } : x,

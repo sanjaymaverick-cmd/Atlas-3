@@ -112,6 +112,21 @@ Finance has a **group worksheet**: enter due-from / due-to per pair. Matched amo
 [ ] Keep entity packs for statutory / partners per LLP
 ```
 
+## Forward IC policy (after run2)
+
+**Rule:** new sister loans use Kind = Inter Company Journal Entry + the other side. Run2 rows stay ordinary Journal Entry. Do not mix those patterns going forward.
+
+Run2 IC loans `ACC-JV-2026-00016`–`00021` stay **ordinary Journal Entry** pairs, linked only by `ATLAS-OPS` remarks. Do **not** rewrite them as Inter Company Journal Entry and do **not** fill `inter_company_journal_entry_reference` on history.
+
+**New** sister loans:
+
+1. Kind = **Inter Company Journal Entry**.
+2. Post both sides (lender Due from / borrower Due to).
+3. Fill **Linked voucher in the other LLP**.
+4. Both submitted. No elimination JE on SATYAM BUILDCOM, SATYAM CONSTRUCTION, or MGB PRIME ESTATES LLP.
+
+Group pack = Atlas elim worksheet or Excel. **Consolidated Financial Statement is a sum**, not P&L after elim. Do not use it as group truth.
+
 ## Bottom line
 
 Match IC due-from/due-to (and IC P&L) across sisters, then **eliminate** them on the **group** pack. ERPNext records both sides well; **automatic elimination is not fully built-in**. For DUKIA: clean IC accounts + monthly pair reconciliation. Full auto-elim is optional later — not a blocker for entity books or Atlas ops.

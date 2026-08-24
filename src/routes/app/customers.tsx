@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
@@ -7,33 +7,39 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
 import { useAtlas } from "@/lib/store";
+import { availableUnitsFor, unitConfig } from "@/lib/unit-pick";
 import { daysOverdue, inr } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/customers")({ component: Customers });
 
 function Customers() {
-  const { bookings, payments, snags, projects, entityId, projectId, addBooking, collect, markPossession, cancelBooking, closeSnag } = useAtlas();
+  const { bookings, payments, snags, projects, entityId, projectId, units, towers, addBooking, bookNextAvailable, collect, markPossession, cancelBooking, closeSnag } = useAtlas();
   const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
   const ids = scoped.map((p) => p.id);
   const rows = bookings.filter((b) => ids.includes(b.projectId));
   const [pid, setPid] = useState(ids[0] ?? "");
-  const [unit, setUnit] = useState("");
+  const [bhk, setBhk] = useState<"" | "2BHK" | "3BHK">("");
+  const free = useMemo(() => availableUnitsFor(units, towers, pid, { config: bhk || undefined }), [units, towers, pid, bhk]);
+  const [unit, setUnit] = useState(free[0]?.code ?? "");
   const [customer, setCustomer] = useState("");
-  const [value, setValue] = useState("6500000");
+  const selected = free.find((u) => u.code === unit) ?? free[0];
 
   return (
     <div>
       <PageHeader
         kicker="Phase 8"
         title="Customers"
-        description="One active booking per unit. Collections cannot over-allocate the plan."
+        description="Pick a free unit from the list. Do not type AVA- / SFA- / ACA- prefixes. One active booking per unit."
       />
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
           <select
             className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
             value={pid}
-            onChange={(e) => setPid(e.target.value)}
+            onChange={(e) => {
+              setPid(e.target.value);
+              setUnit("");
+            }}
           >
             {scoped.map((p) => (
               <option key={p.id} value={p.id}>
@@ -42,30 +48,70 @@ function Customers() {
             ))}
           </select>
         </Field>
-        <Field label="Unit">
-          <Input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="A-0802" />
+        <div>
+          <p className="mb-1.5 text-xs font-medium text-muted">BHK</p>
+          <div className="flex flex-wrap gap-2">
+            {(["", "2BHK", "3BHK"] as const).map((id) => (
+              <Button
+                key={id || "all"}
+                size="sm"
+                variant={bhk === id ? "default" : "outline"}
+                onClick={() => {
+                  setBhk(id);
+                  setUnit("");
+                }}
+              >
+                {id || "All free"}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <Field label="Free unit (tap a row)">
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={selected?.code ?? ""}
+            onChange={(e) => setUnit(e.target.value)}
+          >
+            {free.length === 0 ? <option value="">No free units in this list</option> : null}
+            {free.map((u) => (
+              <option key={u.id} value={u.code}>
+                {u.code} · {unitConfig(u, towers) || u.kind} · {inr(u.price, true)}
+              </option>
+            ))}
+          </select>
         </Field>
-        <Field label="Customer">
-          <Input value={customer} onChange={(e) => setCustomer(e.target.value)} />
+        <Field label="Customer name">
+          <Input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="Walk-in" />
         </Field>
-        <Field label="Agreement value (INR)">
-          <Input type="number" value={value} onChange={(e) => setValue(e.target.value)} />
-        </Field>
-        <div className="sm:col-span-2">
+        <div className="flex flex-wrap gap-2 sm:col-span-2">
           <Button
-            variant="outline"
+            className="h-12"
             onClick={() => {
+              if (!selected) return toast("No free unit in this list.");
               const err = addBooking({
                 projectId: pid,
-                unit: unit || "X-000",
-                customer: customer || "Walk-in",
-                value: Number(value) || 0,
+                unit: selected.code,
+                customer: customer || `Walk-in ${selected.code}`,
+                value: selected.price,
               });
               if (err) toast(err);
-              else toast("Booking created.");
+              else toast(`Booked ${selected.code}.`);
             }}
           >
-            Book unit
+            Book this unit
+          </Button>
+          <Button
+            variant="outline"
+            className="h-12"
+            onClick={() => {
+              const err = bookNextAvailable(pid, {
+                config: bhk || undefined,
+                customer: customer || undefined,
+              });
+              toast(err ?? "Booked the next free unit in this list.");
+            }}
+          >
+            Book next in this list
           </Button>
         </div>
       </Card>

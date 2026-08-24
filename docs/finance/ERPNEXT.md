@@ -69,6 +69,24 @@ DUKIA GROUP          ← Is Group = Yes (optional holding)
 
 Sisters can also sit as **parallel** companies with no parent; parent mainly helps consolidation and shared COA copy.
 
+### Nested chart of accounts (inheritance)
+
+When a trading company is created **with Parent Company = DUKIA GROUP**, ERPNext copies the parent chart onto the child. Children **cannot add a new account** until that account exists on **DUKIA GROUP**.
+
+Practical rule for DUKIA:
+
+1. Add **Due from {sister}** and **Due to {sister}** on **DUKIA GROUP** first.
+2. Child companies inherit leaves such as `Due from SATYAM CONSTRUCTION - SBC`.
+3. Self-dues (`Due from SATYAM BUILDCOM - SBC` on BUILDCOM) can appear from that copy. Do not pick Due from *this same* LLP. Do not delete those leaves this week.
+
+Atlas never invents CoA rows. Operator creates Due from / Due to on the group; children inherit.
+
+### Journal submit (timestamp)
+
+Insert the Journal Entry, **GET the draft by name**, then `frappe.client.submit` with the **full doc** (including `accounts`). Submitting `{ doctype, name }` only causes a timestamp mismatch and leaves an orphan draft. `sourceId` remains the idempotency key. Title / remark stay `ATLAS-OPS {sourceId}`.
+
+Drafts `ACC-JV-2026-00001`–`00009` from the first run2 attempt are retained. Do not delete them. List default is Submitted only.
+
 ### Create (operator — Atlas does not invent companies)
 
 Atlas **does not** create ERPNext companies at runtime. You create them **once** in the desk at `D:\ERPNext` (Accounting → Company → New). An optional operator helper (`npm run books:companies`) can do the same REST insert if the desk is slow; it is not an Atlas product path and it never posts a journal.
@@ -126,6 +144,15 @@ API user for Atlas (`ERPNEXT_API_KEY` / secret) needs permission to **read Compa
 | Project → company | Aerovista → SATYAM BUILDCOM, Sunflower → SATYAM CONSTRUCTION, Acropolis → MGB PRIME ESTATES LLP |
 | Finance | Pick company; leaf CoA + Main - ABBR from that company |
 | Health | Loops DUKIA sisters; reports present/missing |
+
+### Forward IC loans (do not mix patterns)
+
+| When | Kind | Link |
+|------|------|------|
+| Run2 already posted (`ACC-JV-2026-00016`–`00021`) | Ordinary **Journal Entry** | Remark only (`ATLAS-OPS`). Leave as-is. |
+| **New** sister loans from this week on | **Inter Company Journal Entry** | Fill **Linked voucher in the other LLP**. Both sides submitted. |
+
+Do **not** rewrite run2 rows. Do **not** post elim JEs on SATYAM BUILDCOM, SATYAM CONSTRUCTION, or MGB PRIME ESTATES LLP. Group pack is a worksheet — not Consolidated Financial Statement. Full process: [`CONSOLIDATION.md`](./CONSOLIDATION.md).
 
 ### Intercompany elimination (group pack)
 

@@ -1,0 +1,174 @@
+{
+  "baseline": {
+    "SATYAM BUILDCOM": 4,
+    "SATYAM CONSTRUCTION": 3,
+    "MGB PRIME ESTATES LLP": 2
+  },
+  "posted": [
+    {
+      "name": "ACC-JV-2026-00010",
+      "title": "ATLAS-OPS dukia-run2-capital-SBC",
+      "company": "SATYAM BUILDCOM",
+      "sourceId": "dukia-run2-capital-SBC",
+      "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM BUILDCOM | dukia-run2-capital-SBC | partner capital opening",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00011",
+      "title": "ATLAS-OPS dukia-run2-opex-SBC",
+      "company": "SATYAM BUILDCOM",
+      "sourceId": "dukia-run2-opex-SBC",
+      "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM BUILDCOM | dukia-run2-opex-SBC | site admin expenses",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00012",
+      "title": "ATLAS-OPS dukia-run2-capital-SCN",
+      "company": "SATYAM CONSTRUCTION",
+      "sourceId": "dukia-run2-capital-SCN",
+      "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM CONSTRUCTION | dukia-run2-capital-SCN | partner capital opening",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00013",
+      "title": "ATLAS-OPS dukia-run2-opex-SCN",
+      "company": "SATYAM CONSTRUCTION",
+      "sourceId": "dukia-run2-opex-SCN",
+      "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM CONSTRUCTION | dukia-run2-opex-SCN | site admin expenses",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00014",
+      "title": "ATLAS-OPS dukia-run2-capital-MGB",
+      "company": "MGB PRIME ESTATES LLP",
+      "sourceId": "dukia-run2-capital-MGB",
+      "remark": "ATLAS-OPS | DUKIA-RUN | MGB PRIME ESTATES LLP | dukia-run2-capital-MGB | partner capital opening",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00015",
+      "title": "ATLAS-OPS dukia-run2-opex-MGB",
+      "company": "MGB PRIME ESTATES LLP",
+      "sourceId": "dukia-run2-opex-MGB",
+      "remark": "ATLAS-OPS | DUKIA-RUN | MGB PRIME ESTATES LLP | dukia-run2-opex-MGB | site admin expenses",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00016",
+      "title": "ATLAS-OPS ic-loan-sbc-scn-lender",
+      "company": "SATYAM BUILDCOM",
+      "sourceId": "ic-loan-sbc-scn-lender",
+      "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM BUILDCOM | ic-loan-sbc-scn-lender | short-term unsecured IC loan to SATYAM CONSTRUCTION",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00017",
+      "title": "ATLAS-OPS ic-loan-sbc-scn-borrower",
+      "company": "SATYAM CONSTRUCTION",
+      "sourceId": "ic-loan-sbc-scn-borrower",
+      "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM CONSTRUCTION | ic-loan-sbc-scn-borrower | short-term unsecured IC loan from SATYAM BUILDCOM",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00018",
+      "title": "ATLAS-OPS ic-loan-sbc-mgb-lender",
+      "company": "SATYAM BUILDCOM",
+      "sourceId": "ic-loan-sbc-mgb-lender",
+      "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM BUILDCOM | ic-loan-sbc-mgb-lender | short-term unsecured IC loan to MGB PRIME ESTATES LLP",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00019",
+      "title": "ATLAS-OPS ic-loan-sbc-mgb-borrower",
+      "company": "MGB PRIME ESTATES LLP",
+      "sourceId": "ic-loan-sbc-mgb-borrower",
+      "remark": "ATLAS-OPS | DUKIA-RUN | MGB PRIME ESTATES LLP | ic-loan-sbc-mgb-borrower | short-term unsecured IC loan from SATYAM BUILDCOM",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00020",
+      "title": "ATLAS-OPS ic-loan-scn-mgb-lender",
+      "company": "SATYAM CONSTRUCTION",
+      "sourceId": "ic-loan-scn-mgb-lender",
+      "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM CONSTRUCTION | ic-loan-scn-mgb-lender | short-term unsecured IC loan to MGB PRIME ESTATES LLP",
+      "docstatus": 1
+    },
+    {
+      "name": "ACC-JV-2026-00021",
+      "title": "ATLAS-OPS ic-loan-scn-mgb-borrower",
+      "company": "MGB PRIME ESTATES LLP",
+      "sourceId": "ic-loan-scn-mgb-borrower",
+      "remark": "ATLAS-OPS | DUKIA-RUN | MGB PRIME ESTATES LLP | ic-loan-scn-mgb-borrower | short-term unsecured IC loan from SATYAM CONSTRUCTION",
+      "docstatus": 1
+    }
+  ],
+  "icLoans": [
+    {
+      "from": "SATYAM BUILDCOM",
+      "to": "SATYAM CONSTRUCTION",
+      "amount": 2500000,
+      "id": "ic-loan-sbc-scn",
+      "lenderJe": {
+        "name": "ACC-JV-2026-00016",
+        "title": "ATLAS-OPS ic-loan-sbc-scn-lender",
+        "company": "SATYAM BUILDCOM",
+        "sourceId": "ic-loan-sbc-scn-lender",
+        "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM BUILDCOM | ic-loan-sbc-scn-lender | short-term unsecured IC loan to SATYAM CONSTRUCTION",
+        "docstatus": 1
+      },
+      "borrowerJe": {
+        "name": "ACC-JV-2026-00017",
+        "title": "ATLAS-OPS ic-loan-sbc-scn-borrower",
+        "company": "SATYAM CONSTRUCTION",
+        "sourceId": "ic-loan-sbc-scn-borrower",
+        "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM CONSTRUCTION | ic-loan-sbc-scn-borrower | short-term unsecured IC loan from SATYAM BUILDCOM",
+        "docstatus": 1
+      }
+    },
+    {
+      "from": "SATYAM BUILDCOM",
+      "to": "MGB PRIME ESTATES LLP",
+      "amount": 4000000,
+      "id": "ic-loan-sbc-mgb",
+      "lenderJe": {
+        "name": "ACC-JV-2026-00018",
+        "title": "ATLAS-OPS ic-loan-sbc-mgb-lender",
+        "company": "SATYAM BUILDCOM",
+        "sourceId": "ic-loan-sbc-mgb-lender",
+        "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM BUILDCOM | ic-loan-sbc-mgb-lender | short-term unsecured IC loan to MGB PRIME ESTATES LLP",
+        "docstatus": 1
+      },
+      "borrowerJe": {
+        "name": "ACC-JV-2026-00019",
+        "title": "ATLAS-OPS ic-loan-sbc-mgb-borrower",
+        "company": "MGB PRIME ESTATES LLP",
+        "sourceId": "ic-loan-sbc-mgb-borrower",
+        "remark": "ATLAS-OPS | DUKIA-RUN | MGB PRIME ESTATES LLP | ic-loan-sbc-mgb-borrower | short-term unsecured IC loan from SATYAM BUILDCOM",
+        "docstatus": 1
+      }
+    },
+    {
+      "from": "SATYAM CONSTRUCTION",
+      "to": "MGB PRIME ESTATES LLP",
+      "amount": 1500000,
+      "id": "ic-loan-scn-mgb",
+      "lenderJe": {
+        "name": "ACC-JV-2026-00020",
+        "title": "ATLAS-OPS ic-loan-scn-mgb-lender",
+        "company": "SATYAM CONSTRUCTION",
+        "sourceId": "ic-loan-scn-mgb-lender",
+        "remark": "ATLAS-OPS | DUKIA-RUN | SATYAM CONSTRUCTION | ic-loan-scn-mgb-lender | short-term unsecured IC loan to MGB PRIME ESTATES LLP",
+        "docstatus": 1
+      },
+      "borrowerJe": {
+        "name": "ACC-JV-2026-00021",
+        "title": "ATLAS-OPS ic-loan-scn-mgb-borrower",
+        "company": "MGB PRIME ESTATES LLP",
+        "sourceId": "ic-loan-scn-mgb-borrower",
+        "remark": "ATLAS-OPS | DUKIA-RUN | MGB PRIME ESTATES LLP | ic-loan-scn-mgb-borrower | short-term unsecured IC loan from SATYAM CONSTRUCTION",
+        "docstatus": 1
+      }
+    }
+  ],
+  "errors": []
+}

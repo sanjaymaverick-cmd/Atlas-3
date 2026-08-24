@@ -19,6 +19,7 @@
     "scoring": "node scripts/scoring-serve.mjs",
     "books:ping": "node scripts/erpnext/smoke.mjs",
     "books:companies": "node scripts/erpnext/ensure-companies.mjs",
+    "books:desk": "node scripts/erpnext/desk-phase1.mjs",
     "tally:ping": "node scripts/tally-agent.mjs",
     "tally:fy": "node scripts/tally-fy-run.mjs",
     "lint": "eslint .",

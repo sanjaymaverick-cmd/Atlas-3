@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { companyAgentIds, isThirdParty, myAgent, myCompanyId, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
+import { unitConfig } from "@/lib/unit-pick";
 import { inr } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/app/sales/inventory")({ component: Invent
 
 function Inventory() {
   const navigate = useNavigate();
-  const { projects, entityId, projectId, units, towers, unitEvents, holds, agents, user, setUnitDispute } = useAtlas();
+  const { projects, entityId, projectId, units, towers, unitEvents, holds, agents, user, setUnitDispute, addBooking, bookNextAvailable } = useAtlas();
   const third = isThirdParty(user?.role);
   const companyId = myCompanyId(user, agents);
   const agentIds = companyAgentIds(agents, companyId);
@@ -25,13 +26,16 @@ function Inventory() {
   const rows = scopedUnits(units, ids, { thirdParty: third, ownHeld });
   const towerOpts = towers.filter((t) => rows.some((u) => u.towerId === t.id));
   const [towerId, setTowerId] = useState(towerOpts[0]?.id ?? "");
-  const [filter, setFilter] = useState<"all" | "available" | "held">("all");
+  const [filter, setFilter] = useState<"all" | "available" | "held">("available");
+  const [bhk, setBhk] = useState<"" | "2BHK" | "3BHK">("");
   const visible = rows.filter((u) => {
     if (towerId && u.towerId !== towerId) return false;
-    if (filter === "available") return u.status === "available";
-    if (filter === "held") return u.status === "held";
+    if (filter === "available" && u.status !== "available") return false;
+    if (filter === "held" && u.status !== "held") return false;
+    if (bhk && unitConfig(u, towers) !== bhk) return false;
     return true;
   });
+  const bookPid = rows[0]?.projectId ?? ids[0] ?? "";
   const floors = useMemo(() => {
     const set = new Set(visible.map((u) => u.floor));
     return Array.from(set);
@@ -65,6 +69,22 @@ function Inventory() {
         <Button size="sm" variant={filter === "held" ? "default" : "outline"} onClick={() => setFilter("held")}>
           Held
         </Button>
+        {(["", "2BHK", "3BHK"] as const).map((id) => (
+          <Button key={id || "bhk-all"} size="sm" variant={bhk === id ? "default" : "outline"} onClick={() => setBhk(id)}>
+            {id || "All BHK"}
+          </Button>
+        ))}
+        {!third ? (
+          <Button
+            size="sm"
+            onClick={() => {
+              const err = bookNextAvailable(bookPid, { towerId: towerId || undefined, config: bhk || undefined });
+              toast(err ?? "Booked the next free unit in this list.");
+            }}
+          >
+            Book next in this list
+          </Button>
+        ) : null}
       </div>
       <div className="space-y-4">
         {floors.map((floor) => (
@@ -85,12 +105,30 @@ function Inventory() {
                         <Button
                           size="sm"
                           className="h-11"
+                          variant={third ? "default" : "outline"}
                           onClick={() => {
                             if (self) sessionStorage.setItem("atlas-hold-unit", u.id);
                             navigate({ to: "/app/sales/channel" });
                           }}
                         >
                           Hold
+                        </Button>
+                      ) : null}
+                      {!third && u.status === "available" ? (
+                        <Button
+                          size="sm"
+                          className="h-11"
+                          onClick={() => {
+                            const err = addBooking({
+                              projectId: u.projectId,
+                              unit: u.code,
+                              customer: `Walk-in ${u.code}`,
+                              value: u.price,
+                            });
+                            toast(err ?? `Booked ${u.code}.`);
+                          }}
+                        >
+                          Book
                         </Button>
                       ) : null}
                       {!third ? (

@@ -118,3 +118,19 @@ export function mockJeName(sourceId: string): string {
 export function peekMockJe(sourceId: string): string | undefined {
   return mockPosted.get(sourceId.trim());
 }
+
+/**
+ * `frappe.client.submit` must receive the **full** draft doc (GET after insert).
+ * Sending `{ doctype, name }` only trips TimestampMismatchError and leaves orphan drafts.
+ */
+export function journalSubmitPayload(doc: Record<string, unknown> | null | undefined): {
+  doc: Record<string, unknown>;
+} {
+  if (!doc || typeof doc !== "object") {
+    throw new Error("GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.");
+  }
+  if (!doc.name || doc.doctype !== "Journal Entry" || !Array.isArray(doc.accounts)) {
+    throw new Error("GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.");
+  }
+  return { doc };
+}

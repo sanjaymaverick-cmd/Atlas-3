@@ -3,6 +3,7 @@ import { ERP_SLOW_TIMEOUT_MS, erpnextFetch, ErpnextHttpError } from "./client";
 import { readErpnextConfig } from "./config";
 import {
   atlasOpsTitle,
+  journalSubmitPayload,
   mockJeName,
   peekMockJe,
   toErpnextJournal,
@@ -193,9 +194,12 @@ export const erpnextBooks: BooksBackend = {
         });
       }
       try {
+        const fresh = await erpnextFetch(`/api/resource/Journal Entry/${encodeURIComponent(name)}`, {}, cfg);
+        const full = (fresh.json as { data?: Record<string, unknown> } | null)?.data;
+        const payload = journalSubmitPayload(full);
         await erpnextFetch("/api/method/frappe.client.submit", {
           method: "POST",
-          body: JSON.stringify({ doc: { doctype: "Journal Entry", name } }),
+          body: JSON.stringify(payload),
         }, cfg);
       } catch (submitErr) {
         return base(

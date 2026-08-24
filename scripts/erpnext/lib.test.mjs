@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { TRADING_COMPANIES, COMPANY_SPECS } from "./companies.mjs";
-import { health, readErpnextConfig, refusePost } from "./lib.mjs";
+import { health, journalSubmitPayload, readErpnextConfig, refusePost } from "./lib.mjs";
 
 test("unset env is not configured and does not throw", () => {
   const cfg = readErpnextConfig({});
@@ -31,6 +31,19 @@ test("refusePost never posts while the flag is off", async () => {
   assert.equal(r.ok, false);
   assert.deepEqual(r.posted, []);
   assert.match(r.detail, /Posting is off/);
+});
+
+test("journal submit rejects {doctype,name} only and accepts a full draft doc", () => {
+  assert.throws(
+    () => journalSubmitPayload({ doctype: "Journal Entry", name: "ACC-JV-2026-00001" }),
+    /full doc/,
+  );
+  const full = {
+    doctype: "Journal Entry",
+    name: "ACC-JV-2026-00010",
+    accounts: [{ account: "Cash - SBC", debit: 1 }],
+  };
+  assert.equal(journalSubmitPayload(full).doc, full);
 });
 
 test("DUKIA trading names match Atlas allowlist character-for-character", () => {

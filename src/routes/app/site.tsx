@@ -78,15 +78,33 @@ function Site() {
           <Field label="Labour on site (total)">
             <Input type="number" value={labour} onChange={(e) => setLabour(e.target.value)} />
           </Field>
-          <Field label="Civil">
-            <Input type="number" value={civil} onChange={(e) => setCivil(e.target.value)} placeholder="optional" />
-          </Field>
-          <Field label="MEP">
-            <Input type="number" value={mep} onChange={(e) => setMep(e.target.value)} placeholder="optional" />
-          </Field>
-          <Field label="Finishing">
-            <Input type="number" value={finish} onChange={(e) => setFinish(e.target.value)} placeholder="optional" />
-          </Field>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {(
+              [
+                ["civil", "Civil", "सिविल", civil, setCivil],
+                ["mep", "MEP", "एमईपी", mep, setMep],
+                ["finish", "Finishing", "फिनिशिंग", finish, setFinish],
+              ] as const
+            ).map(([key, en, hi, value, set]) => (
+              <label
+                key={key}
+                className="flex flex-col gap-1 rounded-xl border border-line bg-chip px-3 py-2"
+              >
+                <span>
+                  <span className="text-sm font-medium">{en}</span>
+                  <span className="ml-1 text-[11px] text-muted">{hi}</span>
+                </span>
+                <Input
+                  className="h-11"
+                  type="number"
+                  value={value}
+                  onChange={(e) => set(e.target.value)}
+                  placeholder="0"
+                  aria-label={`${en} labour`}
+                />
+              </label>
+            ))}
+          </div>
           <Field label="Weather">
             <Input value={weather} onChange={(e) => setWeather(e.target.value)} />
           </Field>

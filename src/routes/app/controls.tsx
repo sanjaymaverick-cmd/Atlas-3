@@ -73,6 +73,7 @@ function Controls() {
       </div>
 
       <h2 className="mb-3 mt-8 font-display text-2xl">Materials</h2>
+      <p className="mb-3 text-sm text-muted">Two buttons: Receive, then Issue. You cannot issue more than was received.</p>
       {mats.length === 0 ? (
         <p className="mb-6 text-sm text-muted">No material lines for this entity / project.</p>
       ) : null}

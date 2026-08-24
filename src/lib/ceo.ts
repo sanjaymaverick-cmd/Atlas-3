@@ -260,9 +260,12 @@ export function buildCeoReport(
     : 12;
   const weeklyVelocity = kpis.booked > 0 ? Math.round((kpis.booked / weeksElapsed) * 10) / 10 : 0;
   const weeksToSellout = weeklyVelocity > 0 ? Math.round((kpis.available / weeklyVelocity) * 10) / 10 : null;
-  const leads = (input.leads ?? []).filter((l) => ids.has(l.projectId));
-  const stages = ["inquiry", "contacted", "qualified", "visit", "negotiation", "won"] as const;
-  const funnel = stages.map((stage) => ({ stage, count: leads.filter((l) => l.stage === stage).length }));
+  const funnel = [
+    { stage: "available", count: kpis.available },
+    { stage: "held", count: kpis.held },
+    { stage: "booked", count: kpis.booked },
+    { stage: "possessed", count: kpis.possessed },
+  ];
   const channelMix = {
     inHouse: bookings.filter((b) => !b.partnerId).length,
     channel: bookings.filter((b) => Boolean(b.partnerId)).length,

@@ -1,0 +1,641 @@
+{
+  "artefacts": {
+    "pos": [
+      {
+        "projectId": "p_av",
+        "rfqErr": null,
+        "qErr": null,
+        "sel": null,
+        "poErr": null,
+        "po": {
+          "id": "po_cj4qijse",
+          "amount": 420000000,
+          "status": "submitted"
+        }
+      },
+      {
+        "projectId": "p_sf",
+        "rfqErr": null,
+        "qErr": null,
+        "sel": null,
+        "poErr": null,
+        "po": {
+          "id": "po_iijof7w0",
+          "amount": 95000000,
+          "status": "submitted"
+        }
+      },
+      {
+        "projectId": "p_ac",
+        "rfqErr": null,
+        "qErr": null,
+        "sel": null,
+        "poErr": null,
+        "po": {
+          "id": "po_1f5q7xh6",
+          "amount": 720000000,
+          "status": "submitted"
+        }
+      }
+    ],
+    "bookings": [
+      {
+        "seat": "smav",
+        "errs": [
+          "ok",
+          "ok"
+        ],
+        "booked": [
+          "AVA-0102",
+          "AVA-0101"
+        ]
+      },
+      {
+        "seat": "smsf",
+        "errs": [
+          "ok",
+          "ok"
+        ],
+        "booked": [
+          "SFA-0102",
+          "SFA-0101"
+        ]
+      },
+      {
+        "seat": "smac",
+        "errs": [
+          "ok",
+          "ok"
+        ],
+        "booked": [
+          "ACA-0102",
+          "ACA-0101"
+        ]
+      }
+    ],
+    "diaries": [
+      {
+        "seat": "svav",
+        "err": null,
+        "diaries": 1
+      },
+      {
+        "seat": "svac",
+        "err": null,
+        "diaries": 1
+      },
+      {
+        "seat": "svsf",
+        "err": null,
+        "diaries": 1
+      }
+    ],
+    "isolation": [
+      {
+        "companyId": "pt_ap",
+        "projectIds": [
+          "p_av"
+        ],
+        "hits": [],
+        "report": null
+      }
+    ],
+    "ceo": {
+      "heading": true,
+      "threeCards": true,
+      "notElim": true,
+      "snippet": "A\n\nAtlas\n\nPRIVATE ERP\n\nTODAY\n–\nHome\nCEO pulse\nApprovals\nOpen items\nSITE AND BUYING\n+\nSELLING\n+\nACCOUNTS\n–\nCompany money\nCompany accounts\nOwner choices\nMORE\n+\n\nR. Dukia\n\nManaging Director\n\nCTRL/⌘ K TO JUMP\n\nEnd session\nMGB PRIME ESTATES LLP\nSATYAM BUILDCOM\nSATYAM CONSTRUCTION\nAll projects\nAV-01 · Aerovista\nLOCAL ONLY · NOT LIVE\nEnd session\n\nCEO\n\nGroup pulse\n\nAs of 2026-08-25 (trial clock). Commissi"
+    },
+    "refusals": [],
+    "land": [
+      {
+        "pid": "p_av",
+        "acquire": null,
+        "status": "acquired",
+        "consideration": 126000000,
+        "deed": "SD/AV/2024/0412",
+        "rera": null,
+        "filed": null
+      },
+      {
+        "pid": "p_sf",
+        "acquire": null,
+        "status": "acquired",
+        "consideration": 38000000,
+        "deed": "SD/SF/2025/0088",
+        "rera": null,
+        "filed": null
+      },
+      {
+        "pid": "p_ac",
+        "acquire": null,
+        "status": "acquired",
+        "consideration": 184000000,
+        "deed": "SD/AC/2025/0312",
+        "rera": null,
+        "filed": null
+      }
+    ]
+  },
+  "scores": [
+    {
+      "date": "2026-08-25",
+      "seat": "md",
+      "task": "CEO pulse three LLP cards",
+      "score": 1,
+      "notes": "{\"threeCards\":true,\"notElim\":true}"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "ll",
+      "task": "Land deed + RERA QPR ×3",
+      "score": 2,
+      "notes": "[{\"pid\":\"p_av\",\"acquire\":null,\"status\":\"acquired\",\"consideration\":126000000,\"deed\":\"SD/AV/2024/0412\",\"rera\":null,\"filed\":null},{\"pid\":\"p_sf\",\"acquire\":null,\"status\":\"acquired\",\"consideration\":38000000,\"deed\":\"SD/SF/2025/0088\",\"rera\":null,\"filed\":null},{\"pid\":\"p_ac\",\"acquire\":null,\"status\":\"acquired\",\"consideration\":184000000,\"deed\":\"SD/AC/2025/0312\",\"rera\":null,\"filed\":null}]"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "md",
+      "task": "Vendor activation ×3",
+      "score": 1,
+      "notes": "[\"active\",\"active\",\"active\"]"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "cm",
+      "task": "RFQ → paper quote → PO ×3",
+      "score": 2,
+      "notes": "[\"po_cj4qijse\",\"po_iijof7w0\",\"po_1f5q7xh6\"]"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "md",
+      "task": "Approve POs",
+      "score": 1,
+      "notes": "3 cards"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "svav",
+      "task": "Monday diary labour-by-trade",
+      "score": 1,
+      "notes": "ok"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "svac",
+      "task": "Monday diary labour-by-trade",
+      "score": 1,
+      "notes": "ok"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "svsf",
+      "task": "Monday diary labour-by-trade",
+      "score": 1,
+      "notes": "ok"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "st",
+      "task": "Receive/issue materials",
+      "score": 1,
+      "notes": "{\"err\":null,\"received\":20,\"issued\":5}"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "st2",
+      "task": "Receive/issue materials",
+      "score": 1,
+      "notes": "{\"err\":null,\"received\":20,\"issued\":5}"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "smav",
+      "task": "Book-next 2 units",
+      "score": 2,
+      "notes": "{\"errs\":[\"ok\",\"ok\"],\"booked\":[\"AVA-0102\",\"AVA-0101\"]}"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "smsf",
+      "task": "Book-next 2 units",
+      "score": 2,
+      "notes": "{\"errs\":[\"ok\",\"ok\"],\"booked\":[\"SFA-0102\",\"SFA-0101\"]}"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "smac",
+      "task": "Book-next 2 units",
+      "score": 2,
+      "notes": "{\"errs\":[\"ok\",\"ok\"],\"booked\":[\"ACA-0102\",\"ACA-0101\"]}"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "agap1",
+      "task": "Channel isolation + daily report",
+      "score": 1,
+      "notes": "{\"companyId\":\"pt_ap\",\"projectIds\":[\"p_av\"],\"hits\":[],\"report\":null}"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "agsy1",
+      "task": "Daily report",
+      "score": 1,
+      "notes": "ok"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "agsbg1",
+      "task": "Daily report",
+      "score": 1,
+      "notes": "ok"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "dir1",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Director (group)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "dir2",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Director (group)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "fl",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Finance Lead"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "fl2",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Finance (group books)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "dc",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Document Controller"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "pdav",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Project Director (Aerovista)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "pdac",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Project Director (Acropolis)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "pdsf",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Project Director (Sunflower)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "seav",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Site Engineer (Aerovista)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "seac",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Site Engineer (Acropolis)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "sesf",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Site Engineer (Sunflower)"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "caap",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Aadhaar Prime — company admin"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "casy",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Square and Yard — company admin"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "casbg",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "SBG Sales Group — company admin"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "agap2",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Aadhaar Prime — agent 2"
+    },
+    {
+      "date": "2026-08-25",
+      "seat": "sm",
+      "task": "Signed in / must-do present",
+      "score": 1,
+      "notes": "Sales Manager (group)"
+    }
+  ],
+  "logs": [
+    {
+      "seat": "md",
+      "company": "group",
+      "work": [
+        "Opened CEO pulse",
+        "Confirmed group is ops not post-elim P&L"
+      ],
+      "erpnext": "none (ops)",
+      "friction": [],
+      "hire": "Y — MD desk is English and large type."
+    },
+    {
+      "seat": "ll",
+      "company": "all projects",
+      "work": [
+        "p_av acquire=ok rera=filed",
+        "p_sf acquire=ok rera=filed",
+        "p_ac acquire=ok rera=filed"
+      ],
+      "erpnext": "none",
+      "hire": "N — deed numbers and RERA challan need a literate clerk beside the lawyer."
+    },
+    {
+      "seat": "md",
+      "company": "group",
+      "work": [
+        "Activated vendors: active, active, active"
+      ],
+      "hire": "Y — Approvals is one big yes button."
+    },
+    {
+      "seat": "cm",
+      "company": "all",
+      "work": [
+        "p_av PO po_cj4qijse",
+        "p_sf PO po_iijof7w0",
+        "p_ac PO po_1f5q7xh6"
+      ],
+      "hire": "N — RFQ/quote/select/PO is too many screens for a first-week hire without a buddy."
+    },
+    {
+      "seat": "svav",
+      "company": "p_av",
+      "work": [
+        "Diary sealed"
+      ],
+      "hire": "Y — big date, weather, labour numbers. Hindi labels would help."
+    },
+    {
+      "seat": "svac",
+      "company": "p_ac",
+      "work": [
+        "Diary sealed"
+      ],
+      "hire": "Y — big date, weather, labour numbers. Hindi labels would help."
+    },
+    {
+      "seat": "svsf",
+      "company": "p_sf",
+      "work": [
+        "Diary sealed"
+      ],
+      "hire": "Y — big date, weather, labour numbers. Hindi labels would help."
+    },
+    {
+      "seat": "st",
+      "company": "le_sbc",
+      "work": [
+        "Receive 20 issue 5 → 5/20"
+      ],
+      "hire": "Y — two buttons."
+    },
+    {
+      "seat": "st2",
+      "company": "le_mgb",
+      "work": [
+        "Receive 20 issue 5 → 5/20"
+      ],
+      "hire": "Y — two buttons."
+    },
+    {
+      "seat": "smav",
+      "company": "p_av",
+      "work": [
+        "Booked AVA-0102, AVA-0101"
+      ],
+      "hire": "Y if the unit list is filtered; N if they must type prefixes."
+    },
+    {
+      "seat": "smsf",
+      "company": "p_sf",
+      "work": [
+        "Booked SFA-0102, SFA-0101"
+      ],
+      "hire": "Y if the unit list is filtered; N if they must type prefixes."
+    },
+    {
+      "seat": "smac",
+      "company": "p_ac",
+      "work": [
+        "Booked ACA-0102, ACA-0101"
+      ],
+      "hire": "Y if the unit list is filtered; N if they must type prefixes."
+    },
+    {
+      "seat": "agap1",
+      "company": "Aadhaar Prime",
+      "work": [
+        "Daily report",
+        "Scoped projects only"
+      ],
+      "hire": "Y — as long as they never see another firm’s name."
+    },
+    {
+      "seat": "agsy1",
+      "company": "pt_sy",
+      "work": [
+        "Daily report"
+      ],
+      "hire": "Y"
+    },
+    {
+      "seat": "agsbg1",
+      "company": "pt_sbg",
+      "work": [
+        "Daily report"
+      ],
+      "hire": "Y"
+    },
+    {
+      "seat": "dir1",
+      "company": "group",
+      "work": [
+        "Seat present: Director (group)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "dir2",
+      "company": "group",
+      "work": [
+        "Seat present: Director (group)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "fl",
+      "company": "group",
+      "work": [
+        "Seat present: Finance Lead"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "fl2",
+      "company": "group",
+      "work": [
+        "Seat present: Finance (group books)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "dc",
+      "company": "group",
+      "work": [
+        "Seat present: Document Controller"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "pdav",
+      "company": "group",
+      "work": [
+        "Seat present: Project Director (Aerovista)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "pdac",
+      "company": "group",
+      "work": [
+        "Seat present: Project Director (Acropolis)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "pdsf",
+      "company": "group",
+      "work": [
+        "Seat present: Project Director (Sunflower)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "seav",
+      "company": "group",
+      "work": [
+        "Seat present: Site Engineer (Aerovista)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "seac",
+      "company": "group",
+      "work": [
+        "Seat present: Site Engineer (Acropolis)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "sesf",
+      "company": "group",
+      "work": [
+        "Seat present: Site Engineer (Sunflower)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "caap",
+      "company": "group",
+      "work": [
+        "Seat present: Aadhaar Prime — company admin"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "casy",
+      "company": "group",
+      "work": [
+        "Seat present: Square and Yard — company admin"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "casbg",
+      "company": "group",
+      "work": [
+        "Seat present: SBG Sales Group — company admin"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "agap2",
+      "company": "group",
+      "work": [
+        "Seat present: Aadhaar Prime — agent 2"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    },
+    {
+      "seat": "sm",
+      "company": "group",
+      "work": [
+        "Seat present: Sales Manager (group)"
+      ],
+      "hire": "Y for login. Task depth depends on desk.",
+      "idle": false
+    }
+  ]
+}

@@ -113,6 +113,30 @@ export async function health(cfg = readErpnextConfig()) {
   }
 }
 
+/**
+ * `frappe.client.submit` must receive the **full** draft doc (GET after insert).
+ * Sending `{ doctype, name }` only trips TimestampMismatchError and leaves orphan drafts.
+ */
+export function journalSubmitPayload(doc) {
+  if (!doc || typeof doc !== "object") {
+    throw new Error("GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.");
+  }
+  if (!doc.name || doc.doctype !== "Journal Entry" || !Array.isArray(doc.accounts)) {
+    throw new Error("GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.");
+  }
+  return { doc };
+}
+
+export async function submitJournalEntry(cfg, name) {
+  const fresh = await erpnextFetch(cfg, `/api/resource/Journal Entry/${encodeURIComponent(name)}`);
+  const doc = fresh.json?.data;
+  const payload = journalSubmitPayload(doc);
+  return erpnextFetch(cfg, "/api/method/frappe.client.submit", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  }, ERP_CREATE_TIMEOUT_MS);
+}
+
 export async function refusePost(cfg = readErpnextConfig()) {
   if (!cfg.postingEnabled) {
     return {
