@@ -112,16 +112,16 @@ export const BOTTOM_NAV: Partial<Record<Role, Array<{ to: string; label: string 
   ],
   engineer: [
     { to: "/app/site", label: "Diary" },
-    { to: "/app/controls", label: "Store" },
+    { to: "/app/controls", label: "Stock" },
     { to: "/app/changes", label: "Quality" },
   ],
   supervisor: [
     { to: "/app/site", label: "Diary" },
-    { to: "/app/controls", label: "Store" },
+    { to: "/app/controls", label: "Stock" },
     { to: "/app/changes", label: "Quality" },
   ],
   stores: [
-    { to: "/app/controls", label: "Store" },
+    { to: "/app/controls", label: "Stock" },
     { to: "/app/site", label: "Site" },
   ],
 };
