@@ -5,18 +5,18 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
+  packages: read
+  statuses: write
+  pull-requests: write
 
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
-      statuses: write
-      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,33 +24,21 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # Super-Linter v7 forbids mixing VALIDATE_*=true with VALIDATE_*=false.
+      # Only enable the linters Atlas ships. ESLint stays in `npm run lint`
+      # (this image still bundles ESLint 8; the repo is ESLint 9).
       - name: Super-Linter
         uses: super-linter/super-linter@v7.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: main
-          # Atlas is TanStack Start + TS. Skip languages we do not ship.
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_ALL_CODEBASE: true
           VALIDATE_JAVASCRIPT_PRETTIER: true
-          VALIDATE_TYPESCRIPT_ES: true
           VALIDATE_TYPESCRIPT_PRETTIER: true
           VALIDATE_JSON: true
           VALIDATE_JSON_PRETTIER: true
           VALIDATE_YAML: true
           VALIDATE_YAML_PRETTIER: true
-          VALIDATE_MARKDOWN: true
-          VALIDATE_CSS: false
-          VALIDATE_HTML: false
-          VALIDATE_PYTHON: false
-          VALIDATE_PYTHON_BLACK: false
-          VALIDATE_PYTHON_FLAKE8: false
-          VALIDATE_PYTHON_ISORT: false
-          VALIDATE_PYTHON_MYPY: false
-          VALIDATE_PYTHON_PYLINT: false
-          VALIDATE_DOCKERFILE: false
-          VALIDATE_DOCKERFILE_HADOLINT: false
-          VALIDATE_SHELL_SHFMT: false
-          VALIDATE_BASH: false
-          VALIDATE_NATURAL_LANGUAGE: false
-          FILTER_REGEX_EXCLUDE: ".*(node_modules|\\.vercel|\\.nitro|dist|routeTree\\.gen\\.ts|package-lock\\.json).*"
+          VALIDATE_MARKDOWN_PRETTIER: true
+          VALIDATE_GITHUB_ACTIONS: true
+          FILTER_REGEX_EXCLUDE: ".*(node_modules|\\.vercel|\\.nitro|dist|routeTree\\.gen\\.ts|package-lock\\.json|screenshots|catboost_info).*"
