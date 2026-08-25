@@ -30,6 +30,7 @@ export const ROLE_HOME: Record<
     sales: "/app/sales",
     legal: "/app/land",
     docs: "/app/documents",
+    /** Optional. Site engineer already owns open stock on Site desk. */
     stores: "/app/controls",
     channel: "/app/sales/channel",
     channel_admin: "/app/sales/company",
@@ -45,7 +46,7 @@ export const ROLE_LABEL: Record<Role, string> = {
   sales: "Sales Manager",
   legal: "Land & Legal",
   docs: "Document Controller",
-  stores: "Stores / QS",
+  stores: "Stores / QS (optional)",
   channel: "Channel agent",
   channel_admin: "Channel company admin",
 };
