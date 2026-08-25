@@ -23,7 +23,8 @@
     "tally:ping": "node scripts/tally-agent.mjs",
     "tally:fy": "node scripts/tally-fy-run.mjs",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
