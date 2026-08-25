@@ -39,14 +39,15 @@ function Controls() {
   const lines = budgetLines.filter((b) => ids.includes(b.projectId));
   const mats = materials.filter((m) => ids.includes(m.projectId));
   const qty = quantities.filter((q) => ids.includes(q.projectId));
+  const [recvQty, setRecvQty] = useState<Record<string, string>>({});
   const [issueQty, setIssueQty] = useState<Record<string, string>>({});
 
   return (
     <div>
       <PageHeader
         kicker="Phase 6"
-        title="Project controls"
-        description="Cost codes, how much material came in, and how much went to site. You cannot issue more than was received. ERPNext warehouse names are labels only — Atlas never posts Stock Entry."
+        title="Materials"
+        description="How much came in, how much went to site, and what is still open. You cannot issue more than was received. Site engineers own this desk — a separate stores seat is optional. ERPNext warehouse names are labels only; Atlas never posts Stock Entry."
       />
       <GateBanner>Receipts here are quantities, not GRNs. No challan or vendor on this desk. Not ERPNext stock. Local only.</GateBanner>
 
@@ -72,52 +73,91 @@ function Controls() {
         })}
       </div>
 
-      <h2 className="mb-3 mt-8 font-display text-2xl">Materials</h2>
-      <p className="mb-3 text-sm text-muted">Two buttons: Receive, then Issue. You cannot issue more than was received.</p>
+      <h2 className="mb-3 mt-8 font-display text-2xl">Open stock</h2>
+      <p className="mb-3 text-sm text-muted">
+        Open stock = received − issued. Receive when the truck comes. Issue when material goes to the pour.
+      </p>
       {mats.length === 0 ? (
         <p className="mb-6 text-sm text-muted">No material lines for this entity / project.</p>
       ) : null}
       <div className="space-y-3">
-        {mats.map((m) => (
-          <Card key={m.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
-            <div>
-              <p className="font-medium">{m.name}</p>
-              <p className="text-xs tabular-nums text-muted">
-                Issued {m.issued} / received {m.received} {m.unit}
-              </p>
-              <p className="text-xs text-muted">
-                ERPNext {erpnextItemCode(m.name)} @ {erpnextWarehouse(projects.find((p) => p.id === m.projectId)?.entityId ?? entityId)} · not posted
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Input
-                className="h-11 w-24"
-                type="number"
-                min={1}
-                value={issueQty[m.id] ?? "10"}
-                onChange={(e) => setIssueQty((q) => ({ ...q, [m.id]: e.target.value }))}
-                aria-label={`Quantity for ${m.name}`}
-              />
-              <Button size="sm" variant="outline" className="h-11" onClick={() => receiveMaterial(m.id, Number(issueQty[m.id]) || 10)}>
-                Receive
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-11"
-                onClick={() => {
-                  const n = Number(issueQty[m.id]) || 0;
-                  const err = issueMaterial(m.id, n);
-                  if (err) return toast(err);
-                  const now = useAtlas.getState().materials.find((x) => x.id === m.id);
-                  toast(`Issued ${n} ${m.unit}. Now ${now?.issued ?? "—"} / ${now?.received ?? "—"} ${m.unit}.`);
-                }}
-              >
-                Issue
-              </Button>
-            </div>
-          </Card>
-        ))}
+        {mats.map((m) => {
+          const open = Math.max(0, m.received - m.issued);
+          return (
+            <Card key={m.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+              <div>
+                <p className="font-medium">{m.name}</p>
+                <p className="mt-1 text-base tabular-nums">
+                  Open stock{" "}
+                  <span className="font-semibold text-primary">
+                    {open} {m.unit}
+                  </span>
+                </p>
+                <p className="text-xs tabular-nums text-muted">
+                  Received {m.received} · issued {m.issued} {m.unit}
+                </p>
+                <p className="text-xs text-muted">
+                  ERPNext {erpnextItemCode(m.name)} @{" "}
+                  {erpnextWarehouse(projects.find((p) => p.id === m.projectId)?.entityId ?? entityId)} · not
+                  posted
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Input
+                  className="h-11 w-20"
+                  type="number"
+                  min={1}
+                  placeholder="In"
+                  value={recvQty[m.id] ?? ""}
+                  onChange={(e) => setRecvQty((q) => ({ ...q, [m.id]: e.target.value }))}
+                  aria-label={`Receive quantity for ${m.name}`}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-11"
+                  onClick={() => {
+                    const n = Number(recvQty[m.id]) || 0;
+                    if (n <= 0) return toast("Enter how many came in.");
+                    receiveMaterial(m.id, n);
+                    const now = useAtlas.getState().materials.find((x) => x.id === m.id);
+                    const left = Math.max(0, (now?.received ?? 0) - (now?.issued ?? 0));
+                    toast(`Received ${n} ${m.unit}. Open stock ${left} ${m.unit}.`);
+                    setRecvQty((q) => ({ ...q, [m.id]: "" }));
+                  }}
+                >
+                  Receive
+                </Button>
+                <Input
+                  className="h-11 w-20"
+                  type="number"
+                  min={1}
+                  placeholder="Out"
+                  value={issueQty[m.id] ?? ""}
+                  onChange={(e) => setIssueQty((q) => ({ ...q, [m.id]: e.target.value }))}
+                  aria-label={`Issue quantity for ${m.name}`}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-11"
+                  onClick={() => {
+                    const n = Number(issueQty[m.id]) || 0;
+                    if (n <= 0) return toast("Enter how many to send to site.");
+                    const err = issueMaterial(m.id, n);
+                    if (err) return toast(err);
+                    const now = useAtlas.getState().materials.find((x) => x.id === m.id);
+                    const left = Math.max(0, (now?.received ?? 0) - (now?.issued ?? 0));
+                    toast(`Issued ${n} ${m.unit}. Open stock ${left} ${m.unit}.`);
+                    setIssueQty((q) => ({ ...q, [m.id]: "" }));
+                  }}
+                >
+                  Issue
+                </Button>
+              </div>
+            </Card>
+          );
+        })}
       </div>
 
       <h2 className="mb-3 mt-8 font-display text-2xl">Quantity verification</h2>
