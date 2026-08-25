@@ -7,7 +7,15 @@ import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/input";
-import { companyAgentIds, myAgent, myCompanyId, scopedDailyReports, scopedHolds, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
+import {
+  companyAgentIds,
+  myAgent,
+  myCompanyId,
+  scopedDailyReports,
+  scopedHolds,
+  scopedProjectIds,
+  scopedUnits,
+} from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { holdExpiryLabel, todayIso } from "@/lib/utils";
 import { inr } from "@/lib/utils";
@@ -32,12 +40,16 @@ function ChannelDesk() {
   } = useAtlas();
   const companyId = myCompanyId(user, agents);
   const ids = scopedProjectIds(user, agents, projects, entityId, projectId);
-  const mine = companyId ? agents.filter((a) => a.companyId === companyId) : agents.filter((a) => !a.inHouse);
+  const mine = companyId
+    ? agents.filter((a) => a.companyId === companyId)
+    : agents.filter((a) => !a.inHouse);
   const agentIds = companyAgentIds(agents, companyId);
   const self = myAgent(user, agents);
   const [agentId, setAgentId] = useState(self?.id ?? mine[0]?.id ?? "");
   const fieldAgent = user?.role === "channel";
-  const free = scopedUnits(units, ids, { thirdParty: Boolean(companyId) }).filter((u) => u.status === "available");
+  const free = scopedUnits(units, ids, { thirdParty: Boolean(companyId) }).filter(
+    (u) => u.status === "available",
+  );
   const liveHolds = scopedHolds(holds, ids, agentIds);
   const reports = scopedDailyReports(dailyReports, agentIds);
   const reportedToday = reports.some((d) => d.agentId === agentId && d.date === todayIso());
@@ -71,77 +83,113 @@ function ChannelDesk() {
         description={`${firm}. You cannot see another company’s desk. A hold locks the unit for a few days. Commission is counted on booking — Atlas does not pay it.`}
       />
       {reportedToday ? null : (
-        <GateBanner>Mandatory daily activity report — hold is refused until today’s report is filed.</GateBanner>
+        <GateBanner>
+          Mandatory daily activity report — hold is refused until today’s report is filed.
+        </GateBanner>
       )}
 
       {reportedToday ? null : (
-      <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
-        <h2 className="font-display text-xl sm:col-span-2">1 · Today’s report</h2>
-        {fieldAgent ? null : (
-          <Field label="Agent">
-            <select
-              className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
-              value={agentId}
-              onChange={(e) => setAgentId(e.target.value)}
-            >
-              {mine.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
+        <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
+          <h2 className="font-display text-xl sm:col-span-2">1 · Today’s report</h2>
+          {fieldAgent ? null : (
+            <Field label="Agent">
+              <select
+                className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+                value={agentId}
+                onChange={(e) => setAgentId(e.target.value)}
+              >
+                {mine.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
+          <Field label="Calls">
+            <Input
+              type="number"
+              inputMode="numeric"
+              value={calls}
+              onChange={(e) => setCalls(e.target.value)}
+            />
           </Field>
-        )}
-        <Field label="Calls">
-          <Input type="number" inputMode="numeric" value={calls} onChange={(e) => setCalls(e.target.value)} />
-        </Field>
-        <Field label="Site visits">
-          <Input type="number" inputMode="numeric" value={visits} onChange={(e) => setVisits(e.target.value)} />
-        </Field>
-        <Field label="Notes">
-          <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
-        </Field>
-        {moreFields ? (
-          <>
-            <Field label="Leads worked">
-              <Input type="number" inputMode="numeric" value={leadsN} onChange={(e) => setLeadsN(e.target.value)} />
-            </Field>
-            <Field label="Holds">
-              <Input type="number" inputMode="numeric" value={holdsN} onChange={(e) => setHoldsN(e.target.value)} />
-            </Field>
-            <Field label="Bookings">
-              <Input type="number" inputMode="numeric" value={booksN} onChange={(e) => setBooksN(e.target.value)} />
-            </Field>
-            <Field label="Cancellations">
-              <Input type="number" inputMode="numeric" value={cancN} onChange={(e) => setCancN(e.target.value)} />
-            </Field>
-          </>
-        ) : (
-          <button type="button" className="text-left text-sm text-muted underline-offset-4 hover:underline" onClick={() => setMoreFields(true)}>
-            More fields
-          </button>
-        )}
-        <div className="sm:col-span-2">
-          <Button
-            className="h-12 w-full"
-            onClick={() => {
-              const err = fileDailyReport({
-                agentId,
-                calls: Number(calls) || 0,
-                visits: Number(visits) || 0,
-                leads: Number(leadsN) || 0,
-                holds: Number(holdsN) || 0,
-                bookings: Number(booksN) || 0,
-                cancellations: Number(cancN) || 0,
-                notes,
-              });
-              toast(err ?? "Daily report filed.");
-            }}
-          >
-            File daily report
-          </Button>
-        </div>
-      </Card>
+          <Field label="Site visits">
+            <Input
+              type="number"
+              inputMode="numeric"
+              value={visits}
+              onChange={(e) => setVisits(e.target.value)}
+            />
+          </Field>
+          <Field label="Notes">
+            <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </Field>
+          {moreFields ? (
+            <>
+              <Field label="Leads worked">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  value={leadsN}
+                  onChange={(e) => setLeadsN(e.target.value)}
+                />
+              </Field>
+              <Field label="Holds">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  value={holdsN}
+                  onChange={(e) => setHoldsN(e.target.value)}
+                />
+              </Field>
+              <Field label="Bookings">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  value={booksN}
+                  onChange={(e) => setBooksN(e.target.value)}
+                />
+              </Field>
+              <Field label="Cancellations">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  value={cancN}
+                  onChange={(e) => setCancN(e.target.value)}
+                />
+              </Field>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="text-left text-sm text-muted underline-offset-4 hover:underline"
+              onClick={() => setMoreFields(true)}
+            >
+              More fields
+            </button>
+          )}
+          <div className="sm:col-span-2">
+            <Button
+              className="h-12 w-full"
+              onClick={() => {
+                const err = fileDailyReport({
+                  agentId,
+                  calls: Number(calls) || 0,
+                  visits: Number(visits) || 0,
+                  leads: Number(leadsN) || 0,
+                  holds: Number(holdsN) || 0,
+                  bookings: Number(booksN) || 0,
+                  cancellations: Number(cancN) || 0,
+                  notes,
+                });
+                toast(err ?? "Daily report filed.");
+              }}
+            >
+              File daily report
+            </Button>
+          </div>
+        </Card>
       )}
 
       <h2 className="mb-3 font-display text-2xl">2 · Hold a unit</h2>
@@ -196,7 +244,8 @@ function ChannelDesk() {
                   {u?.code} · {h.customer}
                 </p>
                 <p className="text-xs text-muted">
-                  {ag?.name} · {holdExpiryLabel(h.until)} · {partners.find((p) => p.id === ag?.companyId)?.name}
+                  {ag?.name} · {holdExpiryLabel(h.until)} ·{" "}
+                  {partners.find((p) => p.id === ag?.companyId)?.name}
                   {partners.find((p) => p.id === ag?.companyId)?.rate != null
                     ? ` · commission ${partners.find((p) => p.id === (companyId ?? ag?.companyId))?.rate}% (accrued, not paid)`
                     : ""}
@@ -226,22 +275,29 @@ function ChannelDesk() {
                 >
                   {h.bookingRequested ? "Waiting in Approvals" : "Request booking"}
                 </Button>
-                <Button size="sm" variant="outline" className="h-11" onClick={() => toast(releaseHold(h.id) ?? "Released.")}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-11"
+                  onClick={() => toast(releaseHold(h.id) ?? "Released.")}
+                >
                   Release
                 </Button>
               </div>
             </Card>
           );
         })}
-        {liveHolds.length === 0 ? <p className="text-sm text-muted">No live holds for this firm.</p> : null}
+        {liveHolds.length === 0 ? (
+          <p className="text-sm text-muted">No live holds for this firm.</p>
+        ) : null}
       </div>
 
       <h2 className="mb-3 mt-8 font-display text-2xl">Recent daily reports</h2>
       <ul className="space-y-2 text-sm">
         {reports.slice(0, 8).map((d) => (
           <li key={d.id} className="rounded-md border border-line px-4 py-3">
-            {d.date} · {agents.find((a) => a.id === d.agentId)?.name} · {d.calls} calls · {d.visits} visits · {d.leads}{" "}
-            leads
+            {d.date} · {agents.find((a) => a.id === d.agentId)?.name} · {d.calls} calls · {d.visits}{" "}
+            visits · {d.leads} leads
           </li>
         ))}
       </ul>

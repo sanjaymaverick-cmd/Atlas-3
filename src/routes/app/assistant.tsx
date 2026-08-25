@@ -13,7 +13,9 @@ function Assistant() {
   const { decisions, notes, draftAdvice } = useAtlas();
   const hosting = decisions.find((d) => d.id === "ai_hosting");
   const closed = hosting?.status !== "recorded";
-  const [prompt, setPrompt] = useState("Draft a site instruction for the Tower B raft quantity variance.");
+  const [prompt, setPrompt] = useState(
+    "Draft a site instruction for the Tower B raft quantity variance.",
+  );
 
   return (
     <div>
@@ -26,8 +28,8 @@ function Assistant() {
         <Card className="p-5">
           <h2 className="font-display text-2xl">Fail-closed</h2>
           <p className="mt-2 max-w-xl text-sm text-muted">
-            No inference provider is wired. Record the AI hosting decision under Owner decisions if you want
-            Level-2 drafts in this demo. Until then, every request is refused.
+            No inference provider is wired. Record the AI hosting decision under Owner decisions if
+            you want Level-2 drafts in this demo. Until then, every request is refused.
           </p>
         </Card>
       ) : (

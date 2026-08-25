@@ -7,11 +7,11 @@
 
 ## Position at Q2 close
 
-| Project | Status | Progress | Spent |
-|---------|--------|----------|-------|
-| KPR-01 Kanakpura | construction | 42% | ₹21.40 Cr |
-| MSE-03 Mansarovar | handover | 78% | ₹29.80 Cr |
-| BGH-02 Baggad | planning | 18% | ₹8.10 Cr |
+| Project           | Status       | Progress | Spent     |
+| ----------------- | ------------ | -------- | --------- |
+| KPR-01 Kanakpura  | construction | 42%      | ₹21.40 Cr |
+| MSE-03 Mansarovar | handover     | 78%      | ₹29.80 Cr |
+| BGH-02 Baggad     | planning     | 18%      | ₹8.10 Cr  |
 
 **Funnel:** inquiry 4 · visit 1 · documentation 1 · lost 1
 **Bookings:** 5 · **collected ₹1.78 Cr** · **Commissions:** 2, both `accrued`, none paid
@@ -76,7 +76,7 @@ score=47 band=warm model=hybrid reasons=[Budget declared +6, Source 99acres +3, 
 
 `model=hybrid`, not native. The scoring service on `127.0.0.1:8091` is **down**,
 so Atlas fell back exactly as documented. The fallback behaved correctly, but the
-stated invariant — *CatBoost uses native `cat_features` only* — is **untested**.
+stated invariant — _CatBoost uses native `cat_features` only_ — is **untested**.
 Start it with `npm run scoring` before the October sales push if that invariant
 matters to the run.
 
@@ -84,11 +84,11 @@ matters to the run.
 
 ## Gates that held this month
 
-| Gate | Evidence |
-|------|----------|
-| **OC/CC before possession** | A-0802 (`oc=pending`) → "OC/CC must be received before possession." |
+| Gate                                | Evidence                                                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **OC/CC before possession**         | A-0802 (`oc=pending`) → "OC/CC must be received before possession."                                     |
 | **Statutory filing needs evidence** | Empty ack → "Acknowledgement / challan number required." then accepted `RERA/JPR/QPR/2026-Q2/ACK-88214` |
-| **Commission accrues only** | Both commissions still `accrued` at quarter end |
+| **Commission accrues only**         | Both commissions still `accrued` at quarter end                                                         |
 
 The RERA evidence gate is worth calling out — it was item 14 on the last review's
 list and it is implemented and working.
@@ -107,8 +107,8 @@ described in the run brief are in `Atlas Mock LLP` (3 Journal vouchers), not in
 nothing in Tally to match against.
 
 This does not weaken the closing attestation — an empty baseline is the strongest
-possible starting point. If the voucher count is still **0** on 31 Mar 2027, *Atlas
-never posted* is proven arithmetically.
+possible starting point. If the voucher count is still **0** on 31 Mar 2027, _Atlas
+never posted_ is proven arithmetically.
 
 If you want Finance to do real reconciliation work, MOCK ATLAS3 LLP needs masters
 and opening balances loaded. Atlas must not create them — that would be Atlas

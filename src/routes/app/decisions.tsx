@@ -70,7 +70,12 @@ function Decisions() {
               </div>
             ) : null}
             {owner && d.status === "recorded" ? (
-              <Button className="mt-3" size="sm" variant="ghost" onClick={() => reopenDecision(d.id as DecisionId)}>
+              <Button
+                className="mt-3"
+                size="sm"
+                variant="ghost"
+                onClick={() => reopenDecision(d.id as DecisionId)}
+              >
                 Reopen
               </Button>
             ) : null}

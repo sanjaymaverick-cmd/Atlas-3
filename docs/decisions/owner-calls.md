@@ -3,12 +3,12 @@
 **Status:** accepted 2026-08-25 (owner ticked the recommended column).  
 **Local only.** Flags not flipped.
 
-| Decision | Locked | Flip when |
-|----------|--------|-----------|
-| MD on Desk | **Read-only** (`md@dukia.local` = Auditor, no JE Submit) | MD actually posts vouchers himself |
-| Four-eyes | **Keep MD bypass** for this local trial | Before any live / broker-facing deploy (`VITE_MD_BYPASS_FOUR_EYES=false`, update `four-eyes.md` the same day) |
-| L14 | **Selectors now;** full dataset still in the client store | First external channel company on a real host — auth-scoped APIs, not a selector tweak |
-| Posting | **`ERPNEXT_POSTING_ENABLED` stays false** | Named operator session only; Finance button; ATLAS-OPS + `sourceId`; never auto from land/PO/booking/CEO. Not default-on in this repo. |
+| Decision   | Locked                                                    | Flip when                                                                                                                              |
+| ---------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| MD on Desk | **Read-only** (`md@dukia.local` = Auditor, no JE Submit)  | MD actually posts vouchers himself                                                                                                     |
+| Four-eyes  | **Keep MD bypass** for this local trial                   | Before any live / broker-facing deploy (`VITE_MD_BYPASS_FOUR_EYES=false`, update `four-eyes.md` the same day)                          |
+| L14        | **Selectors now;** full dataset still in the client store | First external channel company on a real host — auth-scoped APIs, not a selector tweak                                                 |
+| Posting    | **`ERPNEXT_POSTING_ENABLED` stays false**                 | Named operator session only; Finance button; ATLAS-OPS + `sourceId`; never auto from land/PO/booking/CEO. Not default-on in this repo. |
 
 ---
 

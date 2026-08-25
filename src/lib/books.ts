@@ -6,7 +6,10 @@ export type { BooksResult };
  * Browser → Atlas `/api/books` → ERPNext REST.
  * Secrets never leave the server. Unset ERPNext env returns "not configured".
  */
-export async function booksAgent(action = "health", extra: Record<string, unknown> = {}): Promise<BooksResult> {
+export async function booksAgent(
+  action = "health",
+  extra: Record<string, unknown> = {},
+): Promise<BooksResult> {
   try {
     const res = await fetch("/api/books", {
       method: "POST",

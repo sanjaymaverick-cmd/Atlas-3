@@ -61,10 +61,13 @@ function DocumentsPage() {
         kicker="Phase 2"
         title="Documents"
         description="Immutable revisions. Preview is session-bound and watermarked. Originals need four-eyes export."
-        actions={<Button onClick={() => setOpen((v) => !v)}>{open ? "Close" : "Register file"}</Button>}
+        actions={
+          <Button onClick={() => setOpen((v) => !v)}>{open ? "Close" : "Register file"}</Button>
+        }
       />
       <GateBanner>
-        New files start in virus scan — a file-safety hold, not a legal hold. Local demo: Atlas stores a hash and metadata, not the binary.
+        New files start in virus scan — a file-safety hold, not a legal hold. Local demo: Atlas
+        stores a hash and metadata, not the binary.
       </GateBanner>
 
       {open ? (
@@ -102,10 +105,7 @@ function DocumentsPage() {
             <Input value={sheet} onChange={(e) => setSheet(e.target.value)} />
           </Field>
           <Field label="File (hash only)">
-            <Input
-              type="file"
-              onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
-            />
+            <Input type="file" onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")} />
           </Field>
           <Field label="Classification">
             <select
@@ -130,7 +130,11 @@ function DocumentsPage() {
                   sheet,
                   fileName: fileName || undefined,
                 });
-                toast(fileName ? `Quarantine · hashed ${fileName} (not stored).` : "Held in malware quarantine — no file attached.");
+                toast(
+                  fileName
+                    ? `Quarantine · hashed ${fileName} (not stored).`
+                    : "Held in malware quarantine — no file attached.",
+                );
                 setTitle("");
                 setOpen(false);
               }}
@@ -172,7 +176,9 @@ function DocumentsPage() {
                   </p>
                   {d.status === "quarantine" ? (
                     <p className="mt-2 text-sm text-warn">
-                      Hold: {d.revisions.at(-1)?.notes || "Malware scan. Not usable on site until cleared."}
+                      Hold:{" "}
+                      {d.revisions.at(-1)?.notes ||
+                        "Malware scan. Not usable on site until cleared."}
                     </p>
                   ) : null}
                 </div>
@@ -259,7 +265,9 @@ function DocumentsPage() {
                     variant="secondary"
                     onClick={() => {
                       const err = addRevision(d.id, revNotes[d.id] ?? "");
-                      toast(err ?? "New revision registered. Previous revision remains in history.");
+                      toast(
+                        err ?? "New revision registered. Previous revision remains in history.",
+                      );
                     }}
                   >
                     New revision

@@ -33,7 +33,17 @@ Optional: `Idempotency-Key: <your lead id>` so retries do not double-create.
 ## What we return
 
 ```json
-{ "ok": true, "queued": true, "eventId": "wh_…", "ingest": { "projectId": "p_kanak", "name": "R. Sharma", "phone": "9876543210", "source": "99acres" } }
+{
+  "ok": true,
+  "queued": true,
+  "eventId": "wh_…",
+  "ingest": {
+    "projectId": "p_kanak",
+    "name": "R. Sharma",
+    "phone": "9876543210",
+    "source": "99acres"
+  }
+}
 ```
 
 Same lead retried (same `lead_id` or idempotency key) returns `{ "ok": true, "duplicate": true }` with HTTP 200.

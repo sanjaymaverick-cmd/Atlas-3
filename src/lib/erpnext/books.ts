@@ -1,4 +1,11 @@
-import { capitalAccount, cashAccount, COMPANY_SPECS, expenseAccount, mainCostCenter, TRADING_COMPANIES } from "./companies";
+import {
+  capitalAccount,
+  cashAccount,
+  COMPANY_SPECS,
+  expenseAccount,
+  mainCostCenter,
+  TRADING_COMPANIES,
+} from "./companies";
 import { ERP_SLOW_TIMEOUT_MS, erpnextFetch, ErpnextHttpError } from "./client";
 import { readErpnextConfig } from "./config";
 import {
@@ -31,7 +38,9 @@ function base(detail: string, extra: Partial<BooksResult> = {}): BooksResult {
 }
 
 function notConfigured(): BooksResult {
-  return base("books backend not configured — set ERPNEXT_URL, ERPNEXT_API_KEY, ERPNEXT_API_SECRET");
+  return base(
+    "books backend not configured — set ERPNEXT_URL, ERPNEXT_API_KEY, ERPNEXT_API_SECRET",
+  );
 }
 
 function softFail(err: unknown): BooksResult {
@@ -55,7 +64,9 @@ export const erpnextBooks: BooksBackend = {
       await erpnextFetch("/api/method/frappe.ping", {}, cfg, ERP_SLOW_TIMEOUT_MS);
       const companies = await listCompanyStatus(cfg);
       const defaultRow = companies.find((c) => c.name === cfg.company);
-      const missingSisters = TRADING_COMPANIES.filter((n) => !companies.find((c) => c.name === n && c.present));
+      const missingSisters = TRADING_COMPANIES.filter(
+        (n) => !companies.find((c) => c.name === n && c.present),
+      );
       const dukiaReady = missingSisters.length === 0;
       const companyOk = Boolean(defaultRow?.present);
       const companyDetail = !companyOk
@@ -80,10 +91,14 @@ export const erpnextBooks: BooksBackend = {
     const cfg = readErpnextConfig();
     if (!cfg.configured) return notConfigured();
     try {
-      const r = await erpnextFetch("/api/method/frappe.client.get_count", {
-        method: "POST",
-        body: JSON.stringify({ doctype: "GL Entry", filters: { company: cfg.company } }),
-      }, cfg);
+      const r = await erpnextFetch(
+        "/api/method/frappe.client.get_count",
+        {
+          method: "POST",
+          body: JSON.stringify({ doctype: "GL Entry", filters: { company: cfg.company } }),
+        },
+        cfg,
+      );
       const n = Number((r.json as { message?: number } | null)?.message ?? 0);
       return base(`GL Entry count for ${cfg.company}: ${n}`, {
         ok: true,
@@ -103,18 +118,18 @@ export const erpnextBooks: BooksBackend = {
     try {
       const params = new URLSearchParams({
         fields: JSON.stringify(["name", "posting_date", "remark", "title"]),
-        filters: JSON.stringify([
-          ["company", "=", cfg.company],
-        ]),
+        filters: JSON.stringify([["company", "=", cfg.company]]),
         limit_page_length: String(limit),
         order_by: "posting_date desc",
       });
       const r = await erpnextFetch(`/api/resource/Journal Entry?${params}`, {}, cfg);
-      const rows = ((r.json as { data?: Array<Record<string, string>> } | null)?.data ?? []).map((row) => ({
-        name: row.name,
-        posting_date: row.posting_date,
-        remarks: row.remark ?? row.title,
-      }));
+      const rows = ((r.json as { data?: Array<Record<string, string>> } | null)?.data ?? []).map(
+        (row) => ({
+          name: row.name,
+          posting_date: row.posting_date,
+          remarks: row.remark ?? row.title,
+        }),
+      );
       const atlasPosted = rows.filter((row) => /ATLAS-OPS/i.test(row.remarks ?? ""));
       return base(`${rows.length} journal rows; ${atlasPosted.length} ATLAS-OPS`, {
         ok: true,
@@ -133,7 +148,9 @@ export const erpnextBooks: BooksBackend = {
   async postJournal(input) {
     const cfg = readErpnextConfig();
     const journal = parseJournalPayload(input);
-    const invalid = journal ? validateAtlasJournalPost(journal) : "Typed AtlasJournalPost required (sourceId, company, postingDate, lines).";
+    const invalid = journal
+      ? validateAtlasJournalPost(journal)
+      : "Typed AtlasJournalPost required (sourceId, company, postingDate, lines).";
     if (invalid) {
       return base(invalid, {
         action: "post",
@@ -144,26 +161,32 @@ export const erpnextBooks: BooksBackend = {
     }
     const post = journal as AtlasJournalPost;
     if (!cfg.postingEnabled) {
-      return base("Posting is off (ERPNEXT_POSTING_ENABLED=false). Atlas never posts uncontrolled vouchers.", {
-        configured: cfg.configured,
-        reachable: true,
-        action: "post",
-        ok: false,
-        posted: [],
-        postingEnabled: false,
-      });
+      return base(
+        "Posting is off (ERPNEXT_POSTING_ENABLED=false). Atlas never posts uncontrolled vouchers.",
+        {
+          configured: cfg.configured,
+          reachable: true,
+          action: "post",
+          ok: false,
+          posted: [],
+          postingEnabled: false,
+        },
+      );
     }
     const title = atlasOpsTitle(post.sourceId);
     if (!cfg.configured) {
       const name = mockJeName(post.sourceId);
-      return base(`Posting is on but ERPNext is not configured. Mock JE ${name} (not a live ledger).`, {
-        ok: true,
-        configured: false,
-        reachable: false,
-        action: "post",
-        postingEnabled: true,
-        posted: [{ name, title, mock: true, sourceId: post.sourceId }],
-      });
+      return base(
+        `Posting is on but ERPNext is not configured. Mock JE ${name} (not a live ledger).`,
+        {
+          ok: true,
+          configured: false,
+          reachable: false,
+          action: "post",
+          postingEnabled: true,
+          posted: [{ name, title, mock: true, sourceId: post.sourceId }],
+        },
+      );
     }
     try {
       const existing = await findJeByTitle(title, cfg);
@@ -178,11 +201,17 @@ export const erpnextBooks: BooksBackend = {
         });
       }
       const body = toErpnextJournal(post);
-      const r = await erpnextFetch("/api/resource/Journal Entry", {
-        method: "POST",
-        body: JSON.stringify({ data: body }),
-      }, cfg);
-      const data = (r.json as { data?: { name?: string } } | null)?.data ?? (r.json as { name?: string } | null);
+      const r = await erpnextFetch(
+        "/api/resource/Journal Entry",
+        {
+          method: "POST",
+          body: JSON.stringify({ data: body }),
+        },
+        cfg,
+      );
+      const data =
+        (r.json as { data?: { name?: string } } | null)?.data ??
+        (r.json as { name?: string } | null);
       const name = data?.name;
       if (!name) {
         return base("ERPNext accepted the insert but returned no Journal Entry name.", {
@@ -194,13 +223,21 @@ export const erpnextBooks: BooksBackend = {
         });
       }
       try {
-        const fresh = await erpnextFetch(`/api/resource/Journal Entry/${encodeURIComponent(name)}`, {}, cfg);
+        const fresh = await erpnextFetch(
+          `/api/resource/Journal Entry/${encodeURIComponent(name)}`,
+          {},
+          cfg,
+        );
         const full = (fresh.json as { data?: Record<string, unknown> } | null)?.data;
         const payload = journalSubmitPayload(full);
-        await erpnextFetch("/api/method/frappe.client.submit", {
-          method: "POST",
-          body: JSON.stringify(payload),
-        }, cfg);
+        await erpnextFetch(
+          "/api/method/frappe.client.submit",
+          {
+            method: "POST",
+            body: JSON.stringify(payload),
+          },
+          cfg,
+        );
       } catch (submitErr) {
         return base(
           `Journal Entry ${name} saved as draft. Submit/GL failed: ${submitErr instanceof Error ? submitErr.message : String(submitErr)}. Draft is not the ledger.`,
@@ -240,7 +277,9 @@ export const erpnextBooks: BooksBackend = {
 };
 
 function parseJournalPayload(input: Record<string, unknown>): AtlasJournalPost | null {
-  const raw = (input.journal && typeof input.journal === "object" ? input.journal : input) as Record<string, unknown>;
+  const raw = (
+    input.journal && typeof input.journal === "object" ? input.journal : input
+  ) as Record<string, unknown>;
   if (!raw.sourceId || !raw.company || !raw.postingDate || !Array.isArray(raw.lines)) return null;
   return {
     sourceId: String(raw.sourceId),
@@ -251,7 +290,9 @@ function parseJournalPayload(input: Record<string, unknown>): AtlasJournalPost |
   };
 }
 
-async function listCompanyStatus(cfg: ReturnType<typeof readErpnextConfig>): Promise<BooksCompanyStatus[]> {
+async function listCompanyStatus(
+  cfg: ReturnType<typeof readErpnextConfig>,
+): Promise<BooksCompanyStatus[]> {
   const params = new URLSearchParams({
     fields: JSON.stringify(["name", "abbr", "is_group", "parent_company"]),
     limit_page_length: "50",
@@ -295,7 +336,9 @@ async function listLeafAccounts(company: string, cfg: ReturnType<typeof readErpn
   });
   try {
     const r = await erpnextFetch(`/api/resource/Account?${params}`, {}, cfg, ERP_SLOW_TIMEOUT_MS);
-    const rows = ((r.json as { data?: Array<{ name: string; is_group?: number }> } | null)?.data ?? []).map((row) => ({
+    const rows = (
+      (r.json as { data?: Array<{ name: string; is_group?: number }> } | null)?.data ?? []
+    ).map((row) => ({
       name: row.name,
       isGroup: Boolean(row.is_group),
     }));
@@ -317,8 +360,15 @@ async function listLeafCostCenters(company: string, cfg: ReturnType<typeof readE
     order_by: "name asc",
   });
   try {
-    const r = await erpnextFetch(`/api/resource/Cost Center?${params}`, {}, cfg, ERP_SLOW_TIMEOUT_MS);
-    const rows = ((r.json as { data?: Array<{ name: string; company?: string }> } | null)?.data ?? []).map((row) => ({
+    const r = await erpnextFetch(
+      `/api/resource/Cost Center?${params}`,
+      {},
+      cfg,
+      ERP_SLOW_TIMEOUT_MS,
+    );
+    const rows = (
+      (r.json as { data?: Array<{ name: string; company?: string }> } | null)?.data ?? []
+    ).map((row) => ({
       name: row.name,
       company: row.company ?? company,
     }));
@@ -335,7 +385,9 @@ async function findJeByTitle(title: string, cfg: ReturnType<typeof readErpnextCo
     limit_page_length: "1",
   });
   const r = await erpnextFetch(`/api/resource/Journal Entry?${params}`, {}, cfg);
-  const row = (r.json as { data?: Array<{ name: string; docstatus?: number; title?: string }> } | null)?.data?.[0];
+  const row = (
+    r.json as { data?: Array<{ name: string; docstatus?: number; title?: string }> } | null
+  )?.data?.[0];
   return row ?? null;
 }
 
@@ -366,14 +418,17 @@ export async function handleBooksAction(payload: BooksActionPayload = {}): Promi
     return { ...health, action };
   }
   if (action === "baseline") return { ...(await erpnextBooks.baselineCount()), action };
-  if (action === "journal") return { ...(await erpnextBooks.journal(Number(payload.limit) || 20)), action };
+  if (action === "journal")
+    return { ...(await erpnextBooks.journal(Number(payload.limit) || 20)), action };
   if (action === "companies") {
     const cfg = readErpnextConfig();
     if (!cfg.configured) return { ...notConfigured(), action: "companies" };
     try {
       await erpnextFetch("/api/method/frappe.ping", {}, cfg, ERP_SLOW_TIMEOUT_MS);
       const companies = await listCompanyStatus(cfg);
-      const missingSisters = TRADING_COMPANIES.filter((n) => !companies.find((c) => c.name === n && c.present));
+      const missingSisters = TRADING_COMPANIES.filter(
+        (n) => !companies.find((c) => c.name === n && c.present),
+      );
       return base(
         missingSisters.length
           ? `Missing ${missingSisters.join(", ")}. Create in D:\\ERPNext desk — Atlas does not invent companies.`
@@ -393,7 +448,8 @@ export async function handleBooksAction(payload: BooksActionPayload = {}): Promi
   }
   if (action === "accounts") {
     const cfg = readErpnextConfig();
-    const company = typeof payload.company === "string" && payload.company ? payload.company : cfg.company;
+    const company =
+      typeof payload.company === "string" && payload.company ? payload.company : cfg.company;
     if (!cfg.configured) {
       return base(`Seeded leaf names for ${company}. ERPNext not configured.`, {
         action: "accounts",
@@ -419,7 +475,8 @@ export async function handleBooksAction(payload: BooksActionPayload = {}): Promi
   }
   if (action === "cost-centers" || action === "costCenters") {
     const cfg = readErpnextConfig();
-    const company = typeof payload.company === "string" && payload.company ? payload.company : cfg.company;
+    const company =
+      typeof payload.company === "string" && payload.company ? payload.company : cfg.company;
     if (!cfg.configured) {
       return base(`Seeded Main cost centre for ${company}.`, {
         action: "cost-centers",
@@ -439,21 +496,32 @@ export async function handleBooksAction(payload: BooksActionPayload = {}): Promi
         costCenters,
       });
     } catch (err) {
-      return { ...softFail(err), action: "cost-centers", costCenters: [{ name: mainCostCenter(company), company }] };
+      return {
+        ...softFail(err),
+        action: "cost-centers",
+        costCenters: [{ name: mainCostCenter(company), company }],
+      };
     }
   }
   if (action === "validate") {
     const cfg = readErpnextConfig();
     const journal = parseJournalPayload(payload as Record<string, unknown>);
-    const invalid = journal ? validateAtlasJournalPost(journal) : "Typed AtlasJournalPost required.";
-    return base(invalid ?? "Journal is balanced and ready. Posting is off until ERPNEXT_POSTING_ENABLED=true.", {
-      action: "validate",
-      ok: !invalid,
-      configured: cfg.configured,
-      postingEnabled: cfg.postingEnabled,
-      reachable: true,
-    });
+    const invalid = journal
+      ? validateAtlasJournalPost(journal)
+      : "Typed AtlasJournalPost required.";
+    return base(
+      invalid ??
+        "Journal is balanced and ready. Posting is off until ERPNEXT_POSTING_ENABLED=true.",
+      {
+        action: "validate",
+        ok: !invalid,
+        configured: cfg.configured,
+        postingEnabled: cfg.postingEnabled,
+        reachable: true,
+      },
+    );
   }
-  if (action === "post" || action === "voucher") return { ...(await erpnextBooks.postJournal(payload as Record<string, unknown>)), action };
+  if (action === "post" || action === "voucher")
+    return { ...(await erpnextBooks.postJournal(payload as Record<string, unknown>)), action };
   return base(`Unknown books action: ${action}`, { action });
 }

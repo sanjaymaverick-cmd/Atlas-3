@@ -12,8 +12,14 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     short: "Waiting for a yes",
     hint: "A boss must say yes or no before money is spent or a paper is released.",
   },
-  "owners hub": { name: "Open items", hint: "Things still waiting on this seat: yes/no, papers, failed work." },
-  capital: { name: "Company money", hint: "How much money is planned and already spent. Land that is only an idea is not counted as spent." },
+  "owners hub": {
+    name: "Open items",
+    hint: "Things still waiting on this seat: yes/no, papers, failed work.",
+  },
+  capital: {
+    name: "Company money",
+    hint: "How much money is planned and already spent. Land that is only an idea is not counted as spent.",
+  },
   "change control": {
     name: "Site questions and quality",
     short: "Change control",
@@ -54,8 +60,14 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     short: "DLP",
     hint: "Months after the buyer gets keys when you still fix defects for free.",
   },
-  snag: { name: "Defect to fix", hint: "A small fault in the flat (leak, paint, door) that must be closed before keys." },
-  snags: { name: "Defects to fix", hint: "Faults in the flat that must be closed before keys are given." },
+  snag: {
+    name: "Defect to fix",
+    hint: "A small fault in the flat (leak, paint, door) that must be closed before keys.",
+  },
+  snags: {
+    name: "Defects to fix",
+    hint: "Faults in the flat that must be closed before keys are given.",
+  },
   po: {
     name: "Purchase order",
     short: "PO",
@@ -101,7 +113,10 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     short: "BOCW",
     hint: "A government return and cess for construction workers. File it on time.",
   },
-  rera: { name: "RERA filing", hint: "Housing regulator filing. Buyers and the government can see project progress." },
+  rera: {
+    name: "RERA filing",
+    hint: "Housing regulator filing. Buyers and the government can see project progress.",
+  },
   identified: {
     name: "Not yet owned",
     short: "Identified",
@@ -122,23 +137,72 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     short: "CRM",
     hint: "Outside agencies and their commission. Buyer follow-up happens on Buyer leads.",
   },
-  wbs: { name: "Cost code", short: "WBS", hint: "A number that says which part of the building this money belongs to." },
-  bim: { name: "Drawing quantity", short: "BIM", hint: "How much material the drawings say you need, to compare with site measure." },
-  sla: { name: "Time limit to reply", short: "SLA", hint: "Hours left to answer. Demo clock only on this host." },
-  hold: { name: "Hold on a unit", hint: "The flat is locked for one buyer for a few days so nobody else can sell it." },
-  pipeline: { name: "Buyer leads", hint: "People who showed interest, from first call to booking." },
-  inbound: { name: "Incoming leads", hint: "Leads that arrived from portals or email. Not live websites yet." },
-  "customer 360": { name: "Buyer file", hint: "One place for the buyer’s phone, unit, visits and messages." },
-  controls: { name: "Materials and quantities", hint: "What came in, what went to site, and whether site measure matches the drawing." },
-  commercial: { name: "Vendors and orders", hint: "Invite vendors, compare prices, and raise a purchase order." },
-  quotations: { name: "Price quotes", hint: "Ask vendors for prices, compare, pick one, then make an order." },
-  handover: { name: "Give keys", hint: "Papers, government certificate, defects, then keys and society." },
+  wbs: {
+    name: "Cost code",
+    short: "WBS",
+    hint: "A number that says which part of the building this money belongs to.",
+  },
+  bim: {
+    name: "Drawing quantity",
+    short: "BIM",
+    hint: "How much material the drawings say you need, to compare with site measure.",
+  },
+  sla: {
+    name: "Time limit to reply",
+    short: "SLA",
+    hint: "Hours left to answer. Demo clock only on this host.",
+  },
+  hold: {
+    name: "Hold on a unit",
+    hint: "The flat is locked for one buyer for a few days so nobody else can sell it.",
+  },
+  pipeline: {
+    name: "Buyer leads",
+    hint: "People who showed interest, from first call to booking.",
+  },
+  inbound: {
+    name: "Incoming leads",
+    hint: "Leads that arrived from portals or email. Not live websites yet.",
+  },
+  "customer 360": {
+    name: "Buyer file",
+    hint: "One place for the buyer’s phone, unit, visits and messages.",
+  },
+  controls: {
+    name: "Materials and quantities",
+    hint: "What came in, what went to site, and whether site measure matches the drawing.",
+  },
+  commercial: {
+    name: "Vendors and orders",
+    hint: "Invite vendors, compare prices, and raise a purchase order.",
+  },
+  quotations: {
+    name: "Price quotes",
+    hint: "Ask vendors for prices, compare, pick one, then make an order.",
+  },
+  handover: {
+    name: "Give keys",
+    hint: "Papers, government certificate, defects, then keys and society.",
+  },
   inventory: { name: "Flats and shops", hint: "Which units are free, on hold, booked or sold." },
-  "channel desk": { name: "Agent daily work", hint: "Today’s calls and visits, then hold a unit, then ask to book." },
-  "channel firm": { name: "Agency office", hint: "This company’s agents, holds and commission. You cannot see another company." },
-  finance: { name: "Company accounts", short: "ERPNext", hint: "Match Atlas with ERPNext. Atlas never writes a voucher unless posting is on." },
+  "channel desk": {
+    name: "Agent daily work",
+    hint: "Today’s calls and visits, then hold a unit, then ask to book.",
+  },
+  "channel firm": {
+    name: "Agency office",
+    hint: "This company’s agents, holds and commission. You cannot see another company.",
+  },
+  finance: {
+    name: "Company accounts",
+    short: "ERPNext",
+    hint: "Match Atlas with ERPNext. Atlas never writes a voucher unless posting is on.",
+  },
   phases: { name: "All desks", hint: "Only the desks this login is allowed to open." },
-  org: { name: "People and companies", hint: "Who works here and which legal company owns the project." },
+  org: {
+    name: "People and companies",
+    hint: "Who works here and which legal company owns the project.",
+  },
   audit: { name: "What changed", hint: "A list of who did what. Rows are not deleted." },
   testing: { name: "Test checklist", hint: "Local tests for the owner. Not for site or sales." },
   decisions: { name: "Owner choices", hint: "Big choices the managing director must record." },
@@ -161,7 +225,11 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     short: "Land papers",
     hint: "Title checks, purchase, and RERA filings for the khasra. The real accounts stay in ERPNext.",
   },
-  ncrs: { name: "Failed work still open", short: "NCRs", hint: "Work that failed inspection and is not closed yet." },
+  ncrs: {
+    name: "Failed work still open",
+    short: "NCRs",
+    hint: "Work that failed inspection and is not closed yet.",
+  },
   pass: { name: "Passed", hint: "Inspection found the work is OK." },
   fail: { name: "Failed", hint: "Inspection found a problem. A failed work report is raised." },
   pending: { name: "Waiting", hint: "Someone still has to act." },
@@ -170,20 +238,33 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   booked: { name: "Booked", hint: "The buyer has booked this unit. Nobody else can take it." },
   snagging: { name: "Fixing defects", hint: "Defects in the flat are still open." },
   society: { name: "Handed to society", hint: "The building is with the residents’ society." },
-  defect: { name: "Defect period", short: "DLP", hint: "After keys, you still fix defects for a set time." },
+  defect: {
+    name: "Defect period",
+    short: "DLP",
+    hint: "After keys, you still fix defects for a set time.",
+  },
   quarantine: {
     name: "Virus scan",
     short: "Quarantine",
     hint: "A file-safety hold, not a legal hold. The document is unusable until the scan is cleared.",
   },
-  accrued: { name: "Earned, not paid", hint: "Commission is counted but Atlas does not pay it. A person must approve payment." },
+  accrued: {
+    name: "Earned, not paid",
+    hint: "Commission is counted but Atlas does not pay it. A person must approve payment.",
+  },
   hot: { name: "Hot lead", hint: "This buyer looks ready. Call them first." },
   warm: { name: "Warm lead", hint: "Some interest. Keep following up." },
   cold: { name: "Cold lead", hint: "Low chance right now." },
-  diligence: { name: "Land checks", hint: "Title, road, conversion and other checks before you buy the land." },
+  diligence: {
+    name: "Land checks",
+    hint: "Title, road, conversion and other checks before you buy the land.",
+  },
   overdue: { name: "Late", hint: "The due date has passed. File or pay it now." },
   executed: { name: "Work started", hint: "The contract is signed and work or supply can run." },
-  reconcil: { name: "Matched", hint: "Atlas and ERPNext now agree. ERPNext is still the official book." },
+  reconcil: {
+    name: "Matched",
+    hint: "Atlas and ERPNext now agree. ERPNext is still the official book.",
+  },
 };
 
 const ALIAS: Record<string, string> = {
@@ -296,7 +377,12 @@ const ALIAS: Record<string, string> = {
 };
 
 export function getTerm(raw: string): GlossaryEntry | undefined {
-  const key = raw.trim().toLowerCase().replace(/[_./]+/g, " ").replace(/\s+/g, " ").trim();
+  const key = raw
+    .trim()
+    .toLowerCase()
+    .replace(/[_./]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   const mapped = ALIAS[key] ?? key;
   return GLOSSARY[mapped] ?? GLOSSARY[key];
 }

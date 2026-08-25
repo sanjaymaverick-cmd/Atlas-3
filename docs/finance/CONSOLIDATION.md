@@ -6,10 +6,10 @@ Goal: show the **group** as one economic unit. Balances that only exist **betwee
 
 ## Why eliminate
 
-| In each sister’s books | If you only add them up |
-|------------------------|-------------------------|
-| A: Due from B = ₹10 L | Group assets +₹10 L |
-| B: Due to A = ₹10 L | Group liabilities +₹10 L |
+| In each sister’s books | If you only add them up  |
+| ---------------------- | ------------------------ |
+| A: Due from B = ₹10 L  | Group assets +₹10 L      |
+| B: Due to A = ₹10 L    | Group liabilities +₹10 L |
 
 That ₹10 L is **internal**. On a true group balance sheet, both should **net to zero**. Same idea for IC revenue vs IC expense, and IC loans.
 
@@ -17,25 +17,25 @@ Entity books **keep** the balances (legal reality). Consolidation **eliminates**
 
 ## What ERPNext does today
 
-| Capability | Status |
-|------------|--------|
-| Separate Company ledgers | Yes |
-| Inter Company JE / invoices (record both sides) | Yes |
-| Consolidated Financial Statement (aggregate by parent tree) | Yes — sums subsidiaries |
-| Automatic intercompany elimination | **Weak / largely manual** |
-| Full IAS-style auto-elim + NCI + multi-rate FX | Not complete core product |
+| Capability                                                  | Status                    |
+| ----------------------------------------------------------- | ------------------------- |
+| Separate Company ledgers                                    | Yes                       |
+| Inter Company JE / invoices (record both sides)             | Yes                       |
+| Consolidated Financial Statement (aggregate by parent tree) | Yes — sums subsidiaries   |
+| Automatic intercompany elimination                          | **Weak / largely manual** |
+| Full IAS-style auto-elim + NCI + multi-rate FX              | Not complete core product |
 
 ERPNext helps you **post and link** IC activity. **Group elimination** is still a finance process (worksheet, consolidation JE, or external tool).
 
 ## What to eliminate (DUKIA)
 
-| Type | Eliminate |
-|------|-----------|
-| IC receivables / payables | Due from X vs Due to X (must match) |
-| IC loans | Loan asset in one vs liability in other |
-| IC revenue / expense | Management fee income vs fee expense between sisters |
-| Unrealised profit in stock | Rare for these packages |
-| IC dividends | If used |
+| Type                       | Eliminate                                            |
+| -------------------------- | ---------------------------------------------------- |
+| IC receivables / payables  | Due from X vs Due to X (must match)                  |
+| IC loans                   | Loan asset in one vs liability in other              |
+| IC revenue / expense       | Management fee income vs fee expense between sisters |
+| Unrealised profit in stock | Rare for these packages                              |
+| IC dividends               | If used                                              |
 
 Partners still get **legal-entity** reports (no elim). MD / group pack gets **consolidated** view (with elim).
 
@@ -78,10 +78,10 @@ Elim schedule: pair, amount, period, who approved — audit trail for partners/M
 
 ### Worked mini-example
 
-| Entity | Account | Balance |
-|--------|---------|---------|
-| BUILDCOM | Due from CONSTRUCTION | Dr 5,00,000 |
-| CONSTRUCTION | Due to BUILDCOM | Cr 5,00,000 |
+| Entity       | Account               | Balance     |
+| ------------ | --------------------- | ----------- |
+| BUILDCOM     | Due from CONSTRUCTION | Dr 5,00,000 |
+| CONSTRUCTION | Due to BUILDCOM       | Cr 5,00,000 |
 
 **Standalone:** both correct.  
 **Sum without elim:** assets and liabilities each +5 L too high.  
@@ -89,11 +89,11 @@ Elim schedule: pair, amount, period, who approved — audit trail for partners/M
 
 ## Atlas role
 
-| Layer | Owns |
-|-------|------|
-| Ops (bookings, site, channel) | Atlas |
-| Entity GL (including IC JE pair) | ERPNext per Company |
-| Group consolidation + elim | Finance process on ERPNext reports / Excel / later tool — **not** Atlas CEO pulse |
+| Layer                            | Owns                                                                              |
+| -------------------------------- | --------------------------------------------------------------------------------- |
+| Ops (bookings, site, channel)    | Atlas                                                                             |
+| Entity GL (including IC JE pair) | ERPNext per Company                                                               |
+| Group consolidation + elim       | Finance process on ERPNext reports / Excel / later tool — **not** Atlas CEO pulse |
 
 CEO can show **three entity KPIs side by side**. A raw sum of Atlas tiles is **ops**, not group P&L after elim.
 

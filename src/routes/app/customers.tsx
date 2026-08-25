@@ -13,13 +13,33 @@ import { daysOverdue, inr } from "@/lib/utils";
 export const Route = createFileRoute("/app/customers")({ component: Customers });
 
 function Customers() {
-  const { bookings, payments, snags, projects, entityId, projectId, units, towers, addBooking, bookNextAvailable, collect, markPossession, cancelBooking, closeSnag } = useAtlas();
-  const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
+  const {
+    bookings,
+    payments,
+    snags,
+    projects,
+    entityId,
+    projectId,
+    units,
+    towers,
+    addBooking,
+    bookNextAvailable,
+    collect,
+    markPossession,
+    cancelBooking,
+    closeSnag,
+  } = useAtlas();
+  const scoped = projects.filter(
+    (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+  );
   const ids = scoped.map((p) => p.id);
   const rows = bookings.filter((b) => ids.includes(b.projectId));
   const [pid, setPid] = useState(ids[0] ?? "");
   const [bhk, setBhk] = useState<"" | "2BHK" | "3BHK">("");
-  const free = useMemo(() => availableUnitsFor(units, towers, pid, { config: bhk || undefined }), [units, towers, pid, bhk]);
+  const free = useMemo(
+    () => availableUnitsFor(units, towers, pid, { config: bhk || undefined }),
+    [units, towers, pid, bhk],
+  );
   const [unit, setUnit] = useState(free[0]?.code ?? "");
   const [customer, setCustomer] = useState("");
   const selected = free.find((u) => u.code === unit) ?? free[0];
@@ -81,7 +101,11 @@ function Customers() {
           </select>
         </Field>
         <Field label="Customer name">
-          <Input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="Walk-in" />
+          <Input
+            value={customer}
+            onChange={(e) => setCustomer(e.target.value)}
+            placeholder="Walk-in"
+          />
         </Field>
         <div className="flex flex-wrap gap-2 sm:col-span-2">
           <Button
@@ -153,28 +177,46 @@ function Customers() {
                 <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
               </div>
               <ul className="mt-3 space-y-1 text-xs">
-                {payments.filter((p) => p.bookingId === b.id).map((p) => {
-                  const unpaid = p.paid < p.amount;
-                  const isNext = unpaid && !payments.some((x) => x.bookingId === b.id && x.paid < x.amount && x.due < p.due);
-                  return (
-                  <li key={p.id} className={`flex justify-between gap-3 rounded-md px-2 py-1 ${isNext ? "bg-chip text-ink" : "text-muted"}`}>
-                    <span>{p.label} · {p.due}{isNext ? " · next unpaid" : ""}</span>
-                    <span className="tabular-nums">{inr(p.paid, true)} / {inr(p.amount, true)}</span>
-                  </li>
-                  );
-                })}
+                {payments
+                  .filter((p) => p.bookingId === b.id)
+                  .map((p) => {
+                    const unpaid = p.paid < p.amount;
+                    const isNext =
+                      unpaid &&
+                      !payments.some(
+                        (x) => x.bookingId === b.id && x.paid < x.amount && x.due < p.due,
+                      );
+                    return (
+                      <li
+                        key={p.id}
+                        className={`flex justify-between gap-3 rounded-md px-2 py-1 ${isNext ? "bg-chip text-ink" : "text-muted"}`}
+                      >
+                        <span>
+                          {p.label} · {p.due}
+                          {isNext ? " · next unpaid" : ""}
+                        </span>
+                        <span className="tabular-nums">
+                          {inr(p.paid, true)} / {inr(p.amount, true)}
+                        </span>
+                      </li>
+                    );
+                  })}
               </ul>
               <ul className="mt-2 space-y-1 text-xs">
-                {snags.filter((s) => s.unit === b.unit).map((s) => (
-                  <li key={s.id} className="flex items-center justify-between gap-2">
-                    <span>{s.title}</span>
-                    {s.status === "open" ? (
-                      <Button size="sm" variant="outline" onClick={() => closeSnag(s.id)}>Close defect</Button>
-                    ) : (
-                      <span className="text-muted">closed</span>
-                    )}
-                  </li>
-                ))}
+                {snags
+                  .filter((s) => s.unit === b.unit)
+                  .map((s) => (
+                    <li key={s.id} className="flex items-center justify-between gap-2">
+                      <span>{s.title}</span>
+                      {s.status === "open" ? (
+                        <Button size="sm" variant="outline" onClick={() => closeSnag(s.id)}>
+                          Close defect
+                        </Button>
+                      ) : (
+                        <span className="text-muted">closed</span>
+                      )}
+                    </li>
+                  ))}
               </ul>
               {b.status === "active" ? (
                 <Button
@@ -186,7 +228,8 @@ function Customers() {
                     const amt = next ? next.amount - next.paid : Math.round(b.value * 0.1);
                     const err = collect(b.id, amt);
                     if (err) toast(err);
-                    else toast(next ? `Collected next step: ${next.label}` : "Collection recorded.");
+                    else
+                      toast(next ? `Collected next step: ${next.label}` : "Collection recorded.");
                   }}
                 >
                   Collect next installment
@@ -206,10 +249,17 @@ function Customers() {
                 </Button>
               ) : null}
               {b.status === "active" ? (
-                <Button size="sm" className="mt-4 ml-2" variant="outline" onClick={() => {
-                  const err = cancelBooking(b.id);
-                  toast(err ?? "Booking cancelled. Unit is free.");
-                }}>Cancel booking</Button>
+                <Button
+                  size="sm"
+                  className="mt-4 ml-2"
+                  variant="outline"
+                  onClick={() => {
+                    const err = cancelBooking(b.id);
+                    toast(err ?? "Booking cancelled. Unit is free.");
+                  }}
+                >
+                  Cancel booking
+                </Button>
               ) : null}
             </Card>
           );

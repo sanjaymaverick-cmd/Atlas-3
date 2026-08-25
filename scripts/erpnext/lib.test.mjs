@@ -47,7 +47,11 @@ test("journal submit rejects {doctype,name} only and accepts a full draft doc", 
 });
 
 test("DUKIA trading names match Atlas allowlist character-for-character", () => {
-  assert.deepEqual(TRADING_COMPANIES, ["SATYAM BUILDCOM", "SATYAM CONSTRUCTION", "MGB PRIME ESTATES LLP"]);
+  assert.deepEqual(TRADING_COMPANIES, [
+    "SATYAM BUILDCOM",
+    "SATYAM CONSTRUCTION",
+    "MGB PRIME ESTATES LLP",
+  ]);
   assert.equal(COMPANY_SPECS.find((c) => c.name === "SATYAM BUILDCOM")?.abbr, "SBC");
   assert.equal(COMPANY_SPECS.find((c) => c.name === "SATYAM BUILDCOM")?.project, "Aerovista");
   assert.equal(COMPANY_SPECS.find((c) => c.name === "MOCK ATLAS3 LLP")?.abbr, "MA3");

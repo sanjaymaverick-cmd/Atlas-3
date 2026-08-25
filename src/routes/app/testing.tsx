@@ -27,9 +27,9 @@ function Testing() {
       <Card className="mb-6 p-5">
         <h2 className="font-display text-xl">Run the day</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted">
-          Twelve seats, including Pink City agent and company admin. Failures are the point: a refuse for the right
-          reason is a pass. ERPNext at D:\ERPNext stays MOCK ATLAS3 LLP — Atlas never posts. UI notes from each
-          desk are listed after the run.
+          Twelve seats, including Pink City agent and company admin. Failures are the point: a
+          refuse for the right reason is a pass. ERPNext at D:\ERPNext stays MOCK ATLAS3 LLP — Atlas
+          never posts. UI notes from each desk are listed after the run.
         </p>
         <Button
           className="mt-4 h-12"
@@ -54,12 +54,15 @@ function Testing() {
       {companyDay ? (
         <div className="mb-8 space-y-6">
           <p className="text-sm text-muted">
-            {new Date(companyDay.at).toLocaleString("en-IN")} · {companyDay.passed} passed · {companyDay.failed}{" "}
-            failed · local only
+            {new Date(companyDay.at).toLocaleString("en-IN")} · {companyDay.passed} passed ·{" "}
+            {companyDay.failed} failed · local only
           </p>
           <div className="space-y-2">
             {companyDay.steps.map((s) => (
-              <div key={s.id} className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm">
+              <div
+                key={s.id}
+                className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm"
+              >
                 <div className="min-w-0">
                   <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
                     {s.seat} · {ROLE_LABEL[s.role]}

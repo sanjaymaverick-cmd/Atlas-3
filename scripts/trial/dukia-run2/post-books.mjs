@@ -5,11 +5,25 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ERP_CREATE_TIMEOUT_MS, ERP_SLOW_TIMEOUT_MS, erpnextFetch, loadDotEnv, readErpnextConfig } from "../../erpnext/lib.mjs";
+import {
+  ERP_CREATE_TIMEOUT_MS,
+  ERP_SLOW_TIMEOUT_MS,
+  erpnextFetch,
+  loadDotEnv,
+  readErpnextConfig,
+} from "../../erpnext/lib.mjs";
 
 loadDotEnv();
 const cfg = readErpnextConfig();
-const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "docs", "trial", "dukia-run2");
+const OUT = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "..",
+  "docs",
+  "trial",
+  "dukia-run2",
+);
 mkdirSync(OUT, { recursive: true });
 
 const MAIN = {
@@ -117,7 +131,12 @@ for (const company of Object.keys(ABBR)) {
       ],
     });
   } catch (err) {
-    inventory.errors.push({ company, kind: "capital", error: err.message, body: err.body?.slice?.(0, 240) });
+    inventory.errors.push({
+      company,
+      kind: "capital",
+      error: err.message,
+      body: err.body?.slice?.(0, 240),
+    });
     console.log("FAIL capital", company, err.message, err.body?.slice?.(0, 200));
   }
   try {
@@ -131,15 +150,30 @@ for (const company of Object.keys(ABBR)) {
       ],
     });
   } catch (err) {
-    inventory.errors.push({ company, kind: "opex", error: err.message, body: err.body?.slice?.(0, 240) });
+    inventory.errors.push({
+      company,
+      kind: "opex",
+      error: err.message,
+      body: err.body?.slice?.(0, 240),
+    });
     console.log("FAIL opex", company, err.message, err.body?.slice?.(0, 200));
   }
 }
 
 const loans = [
   { from: "SATYAM BUILDCOM", to: "SATYAM CONSTRUCTION", amount: 25_00_000, id: "ic-loan-sbc-scn" },
-  { from: "SATYAM BUILDCOM", to: "MGB PRIME ESTATES LLP", amount: 40_00_000, id: "ic-loan-sbc-mgb" },
-  { from: "SATYAM CONSTRUCTION", to: "MGB PRIME ESTATES LLP", amount: 15_00_000, id: "ic-loan-scn-mgb" },
+  {
+    from: "SATYAM BUILDCOM",
+    to: "MGB PRIME ESTATES LLP",
+    amount: 40_00_000,
+    id: "ic-loan-sbc-mgb",
+  },
+  {
+    from: "SATYAM CONSTRUCTION",
+    to: "MGB PRIME ESTATES LLP",
+    amount: 15_00_000,
+    id: "ic-loan-scn-mgb",
+  },
 ];
 
 for (const loan of loans) {
@@ -166,7 +200,12 @@ for (const loan of loans) {
       ],
     });
   } catch (err) {
-    inventory.errors.push({ kind: "ic-loan", id: loan.id, error: err.message, body: err.body?.slice?.(0, 300) });
+    inventory.errors.push({
+      kind: "ic-loan",
+      id: loan.id,
+      error: err.message,
+      body: err.body?.slice?.(0, 300),
+    });
     console.log("FAIL ic", loan.id, err.message, err.body?.slice?.(0, 240));
   }
   inventory.icLoans.push(rec);

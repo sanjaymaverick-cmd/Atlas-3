@@ -2,7 +2,12 @@ import type { Booking, Commission, DailyReport, SalesAgent, UnitHold } from "@/l
 
 export function agentScorecard(
   agent: SalesAgent,
-  input: { dailyReports: DailyReport[]; holds: UnitHold[]; bookings: Booking[]; commissions: Commission[] },
+  input: {
+    dailyReports: DailyReport[];
+    holds: UnitHold[];
+    bookings: Booking[];
+    commissions: Commission[];
+  },
 ) {
   const reps = input.dailyReports.filter((d) => d.agentId === agent.id);
   const calls = reps.reduce((s, d) => s + d.calls, 0);

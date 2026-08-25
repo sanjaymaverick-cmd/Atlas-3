@@ -28,7 +28,9 @@ function Handover() {
     toggleBookingDoc,
   } = useAtlas();
   const [filter, setFilter] = useState<"all" | "ready" | "waiting">("all");
-  const ids = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id);
+  const ids = projects
+    .filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId))
+    .map((p) => p.id);
   const rows = handovers.filter((h) => ids.includes(h.projectId));
   const liveBooks = bookings.filter((b) => ids.includes(b.projectId) && b.status === "active");
 
@@ -57,7 +59,12 @@ function Handover() {
             ["waiting", "Booked, not ready"],
           ] as const
         ).map(([id, label]) => (
-          <Button key={id} size="sm" variant={filter === id ? "default" : "outline"} onClick={() => setFilter(id)}>
+          <Button
+            key={id}
+            size="sm"
+            variant={filter === id ? "default" : "outline"}
+            onClick={() => setFilter(id)}
+          >
             {label}
           </Button>
         ))}
@@ -65,7 +72,12 @@ function Handover() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => toast(setHandoverOcForProject(projectId) ?? "Permission to live recorded for this project.")}
+            onClick={() =>
+              toast(
+                setHandoverOcForProject(projectId) ??
+                  "Permission to live recorded for this project.",
+              )
+            }
           >
             Record permission to live for this project
           </Button>
@@ -79,7 +91,17 @@ function Handover() {
           const docsOpen = docs.some((d) => d.status === "open");
           const ready = h.oc === "received" && !open.length && !docsOpen;
           const current =
-            h.oc !== "received" ? 0 : open.length ? 1 : docsOpen ? 2 : h.status === "possession" ? 3 : h.status === "society" ? 4 : 5;
+            h.oc !== "received"
+              ? 0
+              : open.length
+                ? 1
+                : docsOpen
+                  ? 2
+                  : h.status === "possession"
+                    ? 3
+                    : h.status === "society"
+                      ? 4
+                      : 5;
           if (filter === "ready" && !ready) return null;
           if (filter === "waiting" && ready) return null;
           return (
@@ -105,8 +127,8 @@ function Handover() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
-                    {h.unit} ·{" "}
-                    <Hint term="oc">Permission to live</Hint> {h.oc === "received" ? "received" : "waiting"}
+                    {h.unit} · <Hint term="oc">Permission to live</Hint>{" "}
+                    {h.oc === "received" ? "received" : "waiting"}
                   </p>
                   <p className="font-display text-2xl">{h.unit}</p>
                   <p className="text-sm text-muted">
@@ -119,7 +141,9 @@ function Handover() {
                           : ready
                             ? "Ready for keys"
                             : steps[current]?.label}
-                    {book && book.status === "active" && !ready ? " · booked, not possession-ready" : ""}
+                    {book && book.status === "active" && !ready
+                      ? " · booked, not possession-ready"
+                      : ""}
                   </p>
                 </div>
                 <Status value={h.status} />
@@ -136,7 +160,11 @@ function Handover() {
               </ul>
               <div className="mt-4 flex flex-wrap gap-2">
                 {h.oc !== "received" ? (
-                  <Button className="h-11" variant="outline" onClick={() => toast(setHandoverOc(h.id) ?? "Permission to live recorded.")}>
+                  <Button
+                    className="h-11"
+                    variant="outline"
+                    onClick={() => toast(setHandoverOc(h.id) ?? "Permission to live recorded.")}
+                  >
                     Record permission to live
                   </Button>
                 ) : null}
@@ -155,7 +183,9 @@ function Handover() {
           );
         })}
       </div>
-      <h2 className="mb-3 mt-8 font-display text-2xl">Buyer papers (after permission to live and defects)</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">
+        Buyer papers (after permission to live and defects)
+      </h2>
       <div className="space-y-3">
         {liveBooks.map((b) => {
           const docs = bookingDocs.filter((d) => d.bookingId === b.id);

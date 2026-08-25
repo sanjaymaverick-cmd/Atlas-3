@@ -7,7 +7,16 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { openTrial, signIn, signOut, setTrialDate, closeTrial } from "../session.mjs";
 
-const AGENTS = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "docs", "trial", "dukia", "agents");
+const AGENTS = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "..",
+  "docs",
+  "trial",
+  "dukia",
+  "agents",
+);
 mkdirSync(AGENTS, { recursive: true });
 function appendLog(file, body) {
   const path = join(AGENTS, file);
@@ -34,7 +43,13 @@ try {
       advocateName: "M. Iyer",
     });
     const parcel = window.__atlasStore.getState().parcels.find((p) => p.id === "lp_av");
-    return { blockedMid, open: open.length, acquire: err, parcel: parcel?.status, person: after.user?.name };
+    return {
+      blockedMid,
+      open: open.length,
+      acquire: err,
+      parcel: parcel?.status,
+      person: after.user?.name,
+    };
   });
   console.log("LL", ll);
   appendLog(
@@ -119,7 +134,9 @@ try {
       fileName: "partner-capital-land-av-2024-06-17.pdf",
       sheet: "FIN-AV-02",
     });
-    const docs = window.__atlasStore.getState().documents.filter((d) => /Partner capital/i.test(d.title));
+    const docs = window.__atlasStore
+      .getState()
+      .documents.filter((d) => /Partner capital/i.test(d.title));
     return { docs: docs.map((d) => `${d.id}:${d.title}:${d.status}`) };
   });
   appendLog(

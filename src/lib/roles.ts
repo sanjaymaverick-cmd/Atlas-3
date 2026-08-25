@@ -19,22 +19,21 @@ export const ROLE_HOME: Record<
   | "/app/sales/channel"
   | "/app/sales/company"
   | "/app/ceo"
-> =
-  {
-    owner: "/app/ceo",
-    pm: "/app",
-    engineer: "/app/site",
-    supervisor: "/app/site",
-    accountant: "/app/finance",
-    commercial: "/app/commercial",
-    sales: "/app/sales",
-    legal: "/app/land",
-    docs: "/app/documents",
-    /** Optional. Site engineer already owns open stock on Site desk. */
-    stores: "/app/controls",
-    channel: "/app/sales/channel",
-    channel_admin: "/app/sales/company",
-  };
+> = {
+  owner: "/app/ceo",
+  pm: "/app",
+  engineer: "/app/site",
+  supervisor: "/app/site",
+  accountant: "/app/finance",
+  commercial: "/app/commercial",
+  sales: "/app/sales",
+  legal: "/app/land",
+  docs: "/app/documents",
+  /** Optional. Site engineer already owns open stock on Site desk. */
+  stores: "/app/controls",
+  channel: "/app/sales/channel",
+  channel_admin: "/app/sales/company",
+};
 
 export const ROLE_LABEL: Record<Role, string> = {
   owner: "Managing Director",
@@ -134,7 +133,8 @@ export const WAITING_ON_ROLES: Record<WaitingOn, Role[]> = {
  */
 function readMdBypass(): boolean {
   try {
-    const v = (import.meta as { env?: { VITE_MD_BYPASS_FOUR_EYES?: string } }).env?.VITE_MD_BYPASS_FOUR_EYES;
+    const v = (import.meta as { env?: { VITE_MD_BYPASS_FOUR_EYES?: string } }).env
+      ?.VITE_MD_BYPASS_FOUR_EYES;
     if (v === "false" || v === "0") return false;
   } catch {
     /* node tests */

@@ -24,7 +24,9 @@ function applyDotEnv(env: Record<string, string | undefined>) {
  * Server-only. Do not import from a client route — secrets are not VITE_.
  * Unset env means Atlas boots with books "not configured".
  */
-export function readErpnextConfig(env: Record<string, string | undefined> = process.env): ErpnextConfig {
+export function readErpnextConfig(
+  env: Record<string, string | undefined> = process.env,
+): ErpnextConfig {
   applyDotEnv(env);
   const url = (env.ERPNEXT_URL ?? "").trim().replace(/\/$/, "");
   const apiKey = (env.ERPNEXT_API_KEY ?? "").trim();

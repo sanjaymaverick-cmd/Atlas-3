@@ -14,9 +14,24 @@ import { inr } from "@/lib/utils";
 export const Route = createFileRoute("/app/commercial")({ component: Commercial });
 
 function Commercial() {
-  const { vendors, pos, contracts, documents, projects, entityId, projectId, advanceVendor, executeContract, inviteVendor, setVendorGstin } = useAtlas();
+  const {
+    vendors,
+    pos,
+    contracts,
+    documents,
+    projects,
+    entityId,
+    projectId,
+    advanceVendor,
+    executeContract,
+    inviteVendor,
+    setVendorGstin,
+  } = useAtlas();
   const projectIds = useMemo(
-    () => projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id),
+    () =>
+      projects
+        .filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId))
+        .map((p) => p.id),
     [projects, entityId, projectId],
   );
   const scopedPos = pos.filter((p) => projectIds.includes(p.projectId));
@@ -28,7 +43,15 @@ function Commercial() {
   const [vendorFilter, setVendorFilter] = useState<"all" | "pending" | "active">("all");
   const pendingActivation = vendors.filter((v) => v.stage === "approval");
   const shownVendors = vendors.filter((v) => {
-    if (vendorFilter === "pending") return v.stage === "approval" || v.stage === "invited" || v.stage === "kyc" || v.stage === "verified" || v.stage === "bank" || v.stage === "compliance";
+    if (vendorFilter === "pending")
+      return (
+        v.stage === "approval" ||
+        v.stage === "invited" ||
+        v.stage === "kyc" ||
+        v.stage === "verified" ||
+        v.stage === "bank" ||
+        v.stage === "compliance"
+      );
     if (vendorFilter === "active") return v.stage === "active";
     return true;
   });
@@ -53,23 +76,39 @@ function Commercial() {
       </p>
 
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
-        <Field label="Vendor name"><Input value={vname} onChange={(e) => setVname(e.target.value)} /></Field>
-        <Field label="Trade"><Input value={vtrade} onChange={(e) => setVtrade(e.target.value)} /></Field>
-        <Field label="City"><Input value={vcity} onChange={(e) => setVcity(e.target.value)} /></Field>
-        <Field label="GST number (tax ID)"><Input value={vgstin} onChange={(e) => setVgstin(e.target.value)} placeholder="Needed before the vendor can be fully approved" /></Field>
+        <Field label="Vendor name">
+          <Input value={vname} onChange={(e) => setVname(e.target.value)} />
+        </Field>
+        <Field label="Trade">
+          <Input value={vtrade} onChange={(e) => setVtrade(e.target.value)} />
+        </Field>
+        <Field label="City">
+          <Input value={vcity} onChange={(e) => setVcity(e.target.value)} />
+        </Field>
+        <Field label="GST number (tax ID)">
+          <Input
+            value={vgstin}
+            onChange={(e) => setVgstin(e.target.value)}
+            placeholder="Needed before the vendor can be fully approved"
+          />
+        </Field>
         <div className="sm:col-span-2">
-          <Button onClick={() => {
-            if (!vname) return toast("Name required.");
-            inviteVendor({ name: vname, trade: vtrade, city: vcity, gstin: vgstin });
-            toast("Vendor invited.");
-            setVname("");
-          }}>Invite vendor</Button>
+          <Button
+            onClick={() => {
+              if (!vname) return toast("Name required.");
+              inviteVendor({ name: vname, trade: vtrade, city: vcity, gstin: vgstin });
+              toast("Vendor invited.");
+              setVname("");
+            }}
+          >
+            Invite vendor
+          </Button>
         </div>
       </Card>
       {pendingActivation.length ? (
         <GateBanner>
-          {pendingActivation.length} vendor{pendingActivation.length === 1 ? "" : "s"} waiting for Managing Director
-          activation.{" "}
+          {pendingActivation.length} vendor{pendingActivation.length === 1 ? "" : "s"} waiting for
+          Managing Director activation.{" "}
           <Link to="/app/approvals" className="underline-offset-4 hover:underline">
             Open Approvals
           </Link>
@@ -85,7 +124,12 @@ function Commercial() {
             ["active", "Active"],
           ] as const
         ).map(([id, label]) => (
-          <Button key={id} size="sm" variant={vendorFilter === id ? "default" : "outline"} onClick={() => setVendorFilter(id)}>
+          <Button
+            key={id}
+            size="sm"
+            variant={vendorFilter === id ? "default" : "outline"}
+            onClick={() => setVendorFilter(id)}
+          >
             {label}
           </Button>
         ))}
@@ -101,20 +145,39 @@ function Commercial() {
             </div>
             <div className="flex items-center gap-2">
               <Status value={v.stage} />
-              {(!v.gstin || v.gstin === "—") ? (
-                <Button size="sm" variant="outline" onClick={() => {
-                  const gst = window.prompt("GSTIN");
-                  if (!gst) return;
-                  const err = setVendorGstin(v.id, gst);
-                  toast(err ?? "GSTIN saved.");
-                }}>GSTIN</Button>
+              {!v.gstin || v.gstin === "—" ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const gst = window.prompt("GSTIN");
+                    if (!gst) return;
+                    const err = setVendorGstin(v.id, gst);
+                    toast(err ?? "GSTIN saved.");
+                  }}
+                >
+                  GSTIN
+                </Button>
               ) : null}
               {v.stage !== "active" && v.stage !== "suspended" ? (
-                <Button size="sm" variant="outline" onClick={() => {
-                  const err = advanceVendor(v.id);
-                  toast(err ?? (v.stage === "compliance" || v.stage === "approval" ? `Sent ${v.name} to Approvals.` : `Moved ${v.name}.`));
-                }}>
-                  {v.stage === "approval" ? "Send to MD" : v.stage === "compliance" ? "Send for activation" : "Advance"}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const err = advanceVendor(v.id);
+                    toast(
+                      err ??
+                        (v.stage === "compliance" || v.stage === "approval"
+                          ? `Sent ${v.name} to Approvals.`
+                          : `Moved ${v.name}.`),
+                    );
+                  }}
+                >
+                  {v.stage === "approval"
+                    ? "Send to MD"
+                    : v.stage === "compliance"
+                      ? "Send for activation"
+                      : "Advance"}
                 </Button>
               ) : null}
             </div>
@@ -157,7 +220,9 @@ function Commercial() {
                       className="ml-2"
                       variant="outline"
                       onClick={() => {
-                        const evidence = documents.find((d) => d.projectId === c.projectId && d.status === "issued")?.id;
+                        const evidence = documents.find(
+                          (d) => d.projectId === c.projectId && d.status === "issued",
+                        )?.id;
                         const err = executeContract(c.id, evidence ?? "");
                         toast(err ?? "Executed with document evidence.");
                       }}

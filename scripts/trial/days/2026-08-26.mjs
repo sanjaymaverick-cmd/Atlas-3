@@ -18,8 +18,11 @@ export default {
             deviceKey: "eng-a1-2026-08-26",
           }),
         );
-        api.note("ux", "Diary has no field for a near-miss",
-          "Supervisor put it in the safety free-text; it will not surface as an exception anywhere");
+        api.note(
+          "ux",
+          "Diary has no field for a near-miss",
+          "Supervisor put it in the safety free-text; it will not surface as an exception anywhere",
+        );
       },
     },
     {
@@ -30,7 +33,11 @@ export default {
           const s = window.__atlasStore.getState();
           const l = s.leads.find((x) => x.name === "A. Sethi");
           if (!l) return "lead not found";
-          return s.scheduleVisit({ leadId: l.id, scheduled: "2026-08-28", note: "Family visit, west stack L12" });
+          return s.scheduleVisit({
+            leadId: l.id,
+            scheduled: "2026-08-28",
+            note: "Family visit, west stack L12",
+          });
         });
 
         await api.act("Advance R. Yadav from negotiation", () => {
@@ -48,7 +55,10 @@ export default {
           const s = window.__atlasStore.getState();
           const c = s.changes.find((x) => x.kind === "rfi" && x.status !== "closed");
           if (!c) return "no open rfi";
-          return s.respondChange(c.id, "Shift beam CL 75mm south; consultant confirms cover retained.");
+          return s.respondChange(
+            c.id,
+            "Shift beam CL 75mm south; consultant confirms cover retained.",
+          );
         });
       },
     },

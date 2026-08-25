@@ -20,7 +20,9 @@ export function availableUnitsFor(
   if (opts?.towerId) pool = pool.filter((u) => u.towerId === opts.towerId);
   if (opts?.config) {
     const want = opts.config.replace(/\s+/g, "").toUpperCase();
-    const matched = pool.filter((u) => unitConfig(u, towers).replace(/\s+/g, "").toUpperCase() === want);
+    const matched = pool.filter(
+      (u) => unitConfig(u, towers).replace(/\s+/g, "").toUpperCase() === want,
+    );
     if (matched.length) pool = matched;
   }
   return pool;

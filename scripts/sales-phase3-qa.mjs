@@ -53,7 +53,8 @@ async function main() {
     await pay.click();
     await page.waitForTimeout(400);
     const afterPay = await page.locator("body").innerText();
-    if (!/Waiting in Approvals/i.test(afterPay)) errors.push("Commission did not move to Approvals");
+    if (!/Waiting in Approvals/i.test(afterPay))
+      errors.push("Commission did not move to Approvals");
   } else errors.push("Send for approval missing on accrued commission");
   await page.screenshot({ path: join(OUT, "analytics-monitor.png"), fullPage: true });
 
@@ -73,7 +74,8 @@ async function main() {
   await page.goto(`${BASE}/app/sales/whatsapp`, { waitUntil: "domcontentloaded" });
   await page.getByText("Templates, thread, automation").waitFor({ timeout: 10000 });
   const wa = await page.locator("body").innerText();
-  if (!/site_visit_confirm/i.test(wa) || !/new_launch/i.test(wa)) errors.push("WhatsApp templates missing");
+  if (!/site_visit_confirm/i.test(wa) || !/new_launch/i.test(wa))
+    errors.push("WhatsApp templates missing");
   await page.screenshot({ path: join(OUT, "whatsapp.png"), fullPage: true });
 
   await page.goto(`${BASE}/app/sales/people`, { waitUntil: "domcontentloaded" });

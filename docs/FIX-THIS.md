@@ -3,7 +3,7 @@
 Running list. Blockers are things that stop a build, a run, or a go-live decision.
 Add to it as the company run turns up more.
 
-**Thirteen fixed** (B1–B13 except the two product *decisions* that stay
+**Thirteen fixed** (B1–B13 except the two product _decisions_ that stay
 recorded rather than flipped). **B3, B5, B11 fixed in the ERPNext books
 cutover.** **B4 recorded** in `docs/decisions/four-eyes.md` — default
 behaviour unchanged.
@@ -223,22 +223,22 @@ harness bug, and will waste a day of the trial.
 
 ## Lower priority — carried from review, not blockers
 
-| # | Item | Where |
-|---|------|-------|
-| L1 | `eslint .` OOMs on the 226 KB of untracked `_review-*.mjs` scratch scripts | `scripts/` |
-| L2 | Dead state: `obsOpen`, `setConvertValue` | `index.tsx:67`, `sales.pipeline.tsx:61` |
-| L3 | Multiple jade primaries on Inventory and Pipeline; none at all on Land | `sales.inventory.tsx`, `sales.pipeline.tsx`, `land.tsx` |
-| L4 | Mobile header does not wrap at 390px — both selects collapse to slivers | `app-shell.tsx` |
-| L5 | Command lost the Open gates / Quality / Timeline risk KPIs the UX spec requires | `index.tsx` |
-| L6 | Books deny page — `NAV_ROLES.finance` equals `canSeeBooks` | `finance.tsx` |
-| L7 | Cross-screen handoff via bare `sessionStorage["atlas-hold-unit"]` | `sales.inventory.tsx` ↔ `sales.channel.tsx` |
-| L8 | `to={x as "/app"}` casts defeat the typed router's dead-link check | `index.tsx`, `phases.tsx` |
-| L9 | Role branching repeated at five sites; `BOTTOM_NAV` already shows the fix | `index.tsx`, `app-shell.tsx` |
-| L10 | Shared qty input between Receive and Issue on the stores desk | `controls.tsx` |
-| L11 | `sha256demo` is a 32-bit FNV mix, not SHA-256 — name invites a wrong assumption | `hash.ts:1` |
-| L12 | Ingest `config` / `journal` / `ack` routes skip `verifyIngestAuth` | `portal-http.ts:94, 112, 116` |
-| L13 | Hardcoded `DEFAULT_INGEST_SECRET` fallback | `portal-secret.ts:4` |
-| L14 | Channel isolation is presentational — full dataset sits in every client store | `sales-scope.ts:13` |
+| #   | Item                                                                            | Where                                                   |
+| --- | ------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| L1  | `eslint .` OOMs on the 226 KB of untracked `_review-*.mjs` scratch scripts      | `scripts/`                                              |
+| L2  | Dead state: `obsOpen`, `setConvertValue`                                        | `index.tsx:67`, `sales.pipeline.tsx:61`                 |
+| L3  | Multiple jade primaries on Inventory and Pipeline; none at all on Land          | `sales.inventory.tsx`, `sales.pipeline.tsx`, `land.tsx` |
+| L4  | Mobile header does not wrap at 390px — both selects collapse to slivers         | `app-shell.tsx`                                         |
+| L5  | Command lost the Open gates / Quality / Timeline risk KPIs the UX spec requires | `index.tsx`                                             |
+| L6  | Books deny page — `NAV_ROLES.finance` equals `canSeeBooks`                      | `finance.tsx`                                           |
+| L7  | Cross-screen handoff via bare `sessionStorage["atlas-hold-unit"]`               | `sales.inventory.tsx` ↔ `sales.channel.tsx`             |
+| L8  | `to={x as "/app"}` casts defeat the typed router's dead-link check              | `index.tsx`, `phases.tsx`                               |
+| L9  | Role branching repeated at five sites; `BOTTOM_NAV` already shows the fix       | `index.tsx`, `app-shell.tsx`                            |
+| L10 | Shared qty input between Receive and Issue on the stores desk                   | `controls.tsx`                                          |
+| L11 | `sha256demo` is a 32-bit FNV mix, not SHA-256 — name invites a wrong assumption | `hash.ts:1`                                             |
+| L12 | Ingest `config` / `journal` / `ack` routes skip `verifyIngestAuth`              | `portal-http.ts:94, 112, 116`                           |
+| L13 | Hardcoded `DEFAULT_INGEST_SECRET` fallback                                      | `portal-secret.ts:4`                                    |
+| L14 | Channel isolation is presentational — full dataset sits in every client store   | `sales-scope.ts:13`                                     |
 
 ---
 
@@ -281,19 +281,19 @@ dies. Any long-lived browser profile under the repo will do this.
 
 ## This pass (dukia/company-run) — closed
 
-| Item | Status |
-|------|--------|
-| Vendor activation card → Active → quote → PO | FIXED — probe `scripts/trial/probes/sprint-a.mjs` |
-| Land consideration ₹ + sale deed | FIXED |
-| Book-next by BHK / prefix fallback | FIXED |
-| Directors ≠ MD | FIXED |
-| Funding / loan sanction master (SBI/AU 60/40, dates) | FIXED — seed `DUKIA_FUNDING`; Finance CRUD |
-| Entity persist + wrong-company block on acquire/RFQ/booking/PO | FIXED |
-| Channel selectors scoped (leads, units, holds, diaries/reports) | FIXED — `scripts/trial/probes/isolation-selectors.mjs` |
-| CEO pulse `/app/ceo` (KPIs, risk, five-bullet brief) | FIXED |
-| Paper quotation on RFQ (source + file metadata) | FIXED |
-| Drawing register `/app/drawings` (PDF v1, hidden from channel) | FIXED |
-| P2 UX batch (project card, RERA target vs filed, handover OC, launch lock, pack-complete, virus-scan wording, Approvals / Land & acquisition nav) | FIXED |
+| Item                                                                                                                                              | Status                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Vendor activation card → Active → quote → PO                                                                                                      | FIXED — probe `scripts/trial/probes/sprint-a.mjs`      |
+| Land consideration ₹ + sale deed                                                                                                                  | FIXED                                                  |
+| Book-next by BHK / prefix fallback                                                                                                                | FIXED                                                  |
+| Directors ≠ MD                                                                                                                                    | FIXED                                                  |
+| Funding / loan sanction master (SBI/AU 60/40, dates)                                                                                              | FIXED — seed `DUKIA_FUNDING`; Finance CRUD             |
+| Entity persist + wrong-company block on acquire/RFQ/booking/PO                                                                                    | FIXED                                                  |
+| Channel selectors scoped (leads, units, holds, diaries/reports)                                                                                   | FIXED — `scripts/trial/probes/isolation-selectors.mjs` |
+| CEO pulse `/app/ceo` (KPIs, risk, five-bullet brief)                                                                                              | FIXED                                                  |
+| Paper quotation on RFQ (source + file metadata)                                                                                                   | FIXED                                                  |
+| Drawing register `/app/drawings` (PDF v1, hidden from channel)                                                                                    | FIXED                                                  |
+| P2 UX batch (project card, RERA target vs filed, handover OC, launch lock, pack-complete, virus-scan wording, Approvals / Land & acquisition nav) | FIXED                                                  |
 
 **Still recorded, not flipped:** ERPNext posting default off. Commission accrues only. Full dataset still sits in the client store (L14 architecture); selectors and exclusive-channel lock are the operational filter. L14 is mitigated, not deleted.
 
@@ -301,9 +301,9 @@ dies. Any long-lived browser profile under the repo will do this.
 
 ## Follow-on (CEO + controlled JE)
 
-| Item | Status |
-|------|--------|
-| CEO analytics (funnel, in-house vs channel, BHK), weeks-to-sellout, MD strip, risk severity + entity risk | FIXED |
-| Channel blocked from `/app/ceo` | FIXED |
-| Typed `AtlasJournalPost` + Finance explicit post; flag default off; mock when ERPNext down | FIXED |
-| Paper quote + drawing register | FIXED earlier on this branch |
+| Item                                                                                                      | Status                       |
+| --------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| CEO analytics (funnel, in-house vs channel, BHK), weeks-to-sellout, MD strip, risk severity + entity risk | FIXED                        |
+| Channel blocked from `/app/ceo`                                                                           | FIXED                        |
+| Typed `AtlasJournalPost` + Finance explicit post; flag default off; mock when ERPNext down                | FIXED                        |
+| Paper quote + drawing register                                                                            | FIXED earlier on this branch |

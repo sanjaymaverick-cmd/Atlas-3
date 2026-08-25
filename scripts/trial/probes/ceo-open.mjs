@@ -16,11 +16,15 @@ try {
   await signIn(page, "md");
   await go(page, "/app/ceo");
   const heading = page.getByRole("heading", { name: /group pulse/i });
-  const seen = await heading.waitFor({ timeout: 15000 }).then(() => true).catch(() => false);
+  const seen = await heading
+    .waitFor({ timeout: 15000 })
+    .then(() => true)
+    .catch(() => false);
   const md = await page.evaluate(() => {
     const path = location.pathname;
     const text = (document.body?.innerText ?? "").slice(0, 1500);
-    const err = document.querySelector("[data-error], pre, .error")?.textContent?.slice(0, 400) ?? "";
+    const err =
+      document.querySelector("[data-error], pre, .error")?.textContent?.slice(0, 400) ?? "";
     return {
       path,
       title: /Group pulse/i.test(text),

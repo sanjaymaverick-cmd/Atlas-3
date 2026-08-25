@@ -7,9 +7,17 @@ export function refuseHold(unit: InventoryUnit | undefined): string | null {
   return null;
 }
 
-export function refuseBook(unit: InventoryUnit | undefined, bookings: Booking[], projectId: string, code: string) {
+export function refuseBook(
+  unit: InventoryUnit | undefined,
+  bookings: Booking[],
+  projectId: string,
+  code: string,
+) {
   const clash = bookings.find(
-    (x) => x.projectId === projectId && x.unit === code && (x.status === "active" || x.status === "possession"),
+    (x) =>
+      x.projectId === projectId &&
+      x.unit === code &&
+      (x.status === "active" || x.status === "possession"),
   );
   if (clash) return `Unit ${code} already has an active booking.`;
   if (unit && unit.status !== "available" && unit.status !== "held") {

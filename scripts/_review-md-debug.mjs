@@ -1,7 +1,9 @@
 import { chromium } from "playwright";
 const BASE = "http://127.0.0.1:8080";
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newContext({ viewport: { width: 1280, height: 800 } }).then((c) => c.newPage());
+const page = await browser
+  .newContext({ viewport: { width: 1280, height: 800 } })
+  .then((c) => c.newPage());
 page.on("pageerror", (e) => console.log("PAGEERROR", e.message));
 page.on("console", (m) => {
   if (m.type() === "error") console.log("CONSOLE", m.text());

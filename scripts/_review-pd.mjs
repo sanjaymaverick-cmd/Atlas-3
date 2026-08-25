@@ -152,11 +152,18 @@ async function navLabels(page, mobile) {
     if (await open.isVisible()) await open.click();
     await page.waitForTimeout(250);
     const labels = await page.locator(".fixed.inset-0 a, .fixed.inset-0 button").allTextContents();
-    await page.locator(".fixed.inset-0").first().click({ position: { x: 280, y: 20 } }).catch(() => {});
+    await page
+      .locator(".fixed.inset-0")
+      .first()
+      .click({ position: { x: 280, y: 20 } })
+      .catch(() => {});
     await page.keyboard.press("Escape").catch(() => {});
     return labels.map((t) => t.trim()).filter(Boolean);
   }
-  return page.locator("aside nav a").allTextContents().then((xs) => xs.map((t) => t.trim()).filter(Boolean));
+  return page
+    .locator("aside nav a")
+    .allTextContents()
+    .then((xs) => xs.map((t) => t.trim()).filter(Boolean));
 }
 
 async function gotoPath(page, path) {
@@ -178,7 +185,14 @@ async function walkScreens(page, prefix, viewport) {
     if (!meta.h1) logUx(`${prefix}:${slug}`, "p3", "No visible h1.");
     if (findMs > 10000) logUx(`${prefix}:${slug}`, "p1", `Took ${findMs}ms to load.`);
     await shot(page, `${prefix}-${slug}`);
-    if (slug === "command" || slug === "phases" || slug === "controls" || slug === "changes" || slug === "site" || slug === "approvals") {
+    if (
+      slug === "command" ||
+      slug === "phases" ||
+      slug === "controls" ||
+      slug === "changes" ||
+      slug === "site" ||
+      slug === "approvals"
+    ) {
       await firstViewportShot(page, `${prefix}-${slug}-fold`);
     }
     rows.push(meta);
@@ -236,8 +250,14 @@ async function realActions(page) {
 
   // Raise NCR — header also has <select>, so scope to the form labels.
   await gotoPath(page, "/app/changes");
-  const typeSelect = page.locator("label").filter({ hasText: /^Type$/ }).locator("select");
-  const titleInput = page.locator("label").filter({ hasText: /^Title$/ }).locator("input");
+  const typeSelect = page
+    .locator("label")
+    .filter({ hasText: /^Type$/ })
+    .locator("select");
+  const titleInput = page
+    .locator("label")
+    .filter({ hasText: /^Title$/ })
+    .locator("input");
   await typeSelect.selectOption("ncr");
   await titleInput.fill("PD review — podium waterproofing NCR (Tower A)");
   await page.getByRole("button", { name: /^Raise$/i }).click();
@@ -272,7 +292,11 @@ async function realActions(page) {
     waitingOnMd: /Managing Director/i.test(appr),
   });
   await shot(page, "desk-approvals-queue");
-  const voCard = page.locator("div").filter({ hasText: /VO-PD-01 Extra raft steel/i }).filter({ has: page.getByRole("button", { name: /^Approve$/i }) }).first();
+  const voCard = page
+    .locator("div")
+    .filter({ hasText: /VO-PD-01 Extra raft steel/i })
+    .filter({ has: page.getByRole("button", { name: /^Approve$/i }) })
+    .first();
   if (await voCard.count()) {
     await voCard.getByRole("button", { name: /^Approve$/i }).click();
     await page.waitForTimeout(400);
@@ -310,7 +334,9 @@ async function realActions(page) {
       name: "pd-seal-diary",
       ok: true,
       blocked: /already exists/i.test(siteText),
-      sealed: /Diary sealed/i.test(siteText) || /R\. Sharma/i.test(await page.locator("main").innerText()),
+      sealed:
+        /Diary sealed/i.test(siteText) ||
+        /R\. Sharma/i.test(await page.locator("main").innerText()),
     });
   }
   await shot(page, "desk-site-diary");
@@ -394,7 +420,9 @@ async function commandFiveSecond(page) {
 }
 
 async function main() {
-  const ping = await fetch(BASE, { signal: AbortSignal.timeout(4000) }).then((r) => r.ok).catch(() => false);
+  const ping = await fetch(BASE, { signal: AbortSignal.timeout(4000) })
+    .then((r) => r.ok)
+    .catch(() => false);
   if (!ping) {
     console.error(JSON.stringify({ ok: false, error: `Atlas not running at ${BASE}` }));
     process.exit(2);
@@ -448,7 +476,10 @@ async function main() {
       await page.waitForTimeout(250);
       await firstViewportShot(page, "mob-nav");
       await page.keyboard.press("Escape").catch(() => {});
-      await page.locator("body").click({ position: { x: 360, y: 20 } }).catch(() => {});
+      await page
+        .locator("body")
+        .click({ position: { x: 360, y: 20 } })
+        .catch(() => {});
     }
 
     const mobileFocus = [
@@ -475,30 +506,44 @@ async function main() {
 
     // project detail on phone
     await gotoPath(page, "/app/projects");
-    const link = page.getByRole("link", { name: /Kanakpura Residences|Mansarovar|Baggad/i }).first();
+    const link = page
+      .getByRole("link", { name: /Kanakpura Residences|Mansarovar|Baggad/i })
+      .first();
     if (await link.count()) {
       await link.click();
       await page.waitForTimeout(400);
       const meta = await collectPage(page, "mob-project-detail");
-      if (meta.overflow) logUx("mob:project-detail", "p2", "Horizontal overflow on project detail.");
+      if (meta.overflow)
+        logUx("mob:project-detail", "p2", "Horizontal overflow on project detail.");
       await shot(page, "mob-project-detail");
     }
     await context.close();
   }
 
   writeFileSync(join(OUT, "report.json"), JSON.stringify(report, null, 2));
-  console.log(JSON.stringify({
-    ok: true,
-    home: report.home,
-    navCount: report.nav.desktop.length,
-    leaks: report.leaks,
-    isolation: report.isolation,
-    actions: report.actions.map((a) => ({ name: a.name, ok: a.ok, ...a })),
-    ux: report.ux,
-    pageErrors: report.pageErrors,
-    console: report.console.slice(0, 20),
-    screens: report.screens.map((s) => ({ path: s.path, h1: s.h1, overflow: s.overflow, findMs: s.findMs })),
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        ok: true,
+        home: report.home,
+        navCount: report.nav.desktop.length,
+        leaks: report.leaks,
+        isolation: report.isolation,
+        actions: report.actions.map((a) => ({ name: a.name, ok: a.ok, ...a })),
+        ux: report.ux,
+        pageErrors: report.pageErrors,
+        console: report.console.slice(0, 20),
+        screens: report.screens.map((s) => ({
+          path: s.path,
+          h1: s.h1,
+          overflow: s.overflow,
+          findMs: s.findMs,
+        })),
+      },
+      null,
+      2,
+    ),
+  );
   await browser.close();
 }
 

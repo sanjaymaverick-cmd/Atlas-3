@@ -31,7 +31,17 @@ import { inr, todayIso } from "@/lib/utils";
 export const Route = createFileRoute("/app/finance")({ component: Finance });
 
 function Finance() {
-  const { tally, entities, entityId, audit, settleTally, user, projects, fundingSanctions, addFundingSanction } = useAtlas();
+  const {
+    tally,
+    entities,
+    entityId,
+    audit,
+    settleTally,
+    user,
+    projects,
+    fundingSanctions,
+    addFundingSanction,
+  } = useAtlas();
   const [bank, setBank] = useState("SBI");
   const [sanctionNo, setSanctionNo] = useState("");
   const [loanPct, setLoanPct] = useState("60");
@@ -40,13 +50,21 @@ function Finance() {
   const [sanctionedAt, setSanctionedAt] = useState("");
   const [validUntil, setValidUntil] = useState("");
   const [jeSource, setJeSource] = useState("ops-manual-1");
-  const [jeCompany, setJeCompany] = useState<string>(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM");
+  const [jeCompany, setJeCompany] = useState<string>(
+    ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM",
+  );
   const [jeDate, setJeDate] = useState(todayIso());
-  const [jeDebitAcc, setJeDebitAcc] = useState(expenseAccount(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"));
-  const [jeCreditAcc, setJeCreditAcc] = useState(cashAccount(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"));
+  const [jeDebitAcc, setJeDebitAcc] = useState(
+    expenseAccount(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"),
+  );
+  const [jeCreditAcc, setJeCreditAcc] = useState(
+    cashAccount(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"),
+  );
   const [jeAmt, setJeAmt] = useState("1000");
   const [jeRemark, setJeRemark] = useState("Manual Finance post");
-  const [jeCost, setJeCost] = useState(mainCostCenter(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"));
+  const [jeCost, setJeCost] = useState(
+    mainCostCenter(ENTITY_TO_COMPANY[entityId] ?? "SATYAM BUILDCOM"),
+  );
   const rows = tally.filter((t) => t.entityId === entityId);
   const entity = entities.find((e) => e.id === entityId);
   const [books, setBooks] = useState<BooksResult | null>(null);
@@ -56,7 +74,12 @@ function Finance() {
   const [icBals, setIcBals] = useState<IcPairBalances[]>(
     DUKIA_IC_PAIRS.map((_, i) =>
       i === 0
-        ? { dueFromA: ELIM_EXAMPLE.amountInr, dueToB: ELIM_EXAMPLE.amountInr, dueFromB: 0, dueToA: 0 }
+        ? {
+            dueFromA: ELIM_EXAMPLE.amountInr,
+            dueToB: ELIM_EXAMPLE.amountInr,
+            dueFromB: 0,
+            dueToA: 0,
+          }
         : { dueFromA: 0, dueToB: 0, dueFromB: 0, dueToA: 0 },
     ),
   );
@@ -79,7 +102,9 @@ function Finance() {
     void booksAgent("accounts", { company: jeCompany }).then((r) => {
       setCoa(r);
       const names = (r.accounts ?? []).map((a) => a.name).filter((n) => !looksLikeStockAccount(n));
-      const expense = names.find((n) => /administrative expenses/i.test(n)) ?? names.find((n) => looksLikePnlAccount(n));
+      const expense =
+        names.find((n) => /administrative expenses/i.test(n)) ??
+        names.find((n) => looksLikePnlAccount(n));
       const cash = names.find((n) => /^cash -/i.test(n));
       if (expense) setJeDebitAcc(expense);
       if (cash) setJeCreditAcc(cash);
@@ -94,8 +119,13 @@ function Finance() {
   if (!canSeeBooks(user?.role)) {
     return (
       <div>
-        <PageHeader title="Company accounts" description="This login cannot touch the books. Local only." />
-        <p className="text-sm text-muted">Site seats do not see accounts. Books stay with Finance and the Managing Director.</p>
+        <PageHeader
+          title="Company accounts"
+          description="This login cannot touch the books. Local only."
+        />
+        <p className="text-sm text-muted">
+          Site seats do not see accounts. Books stay with Finance and the Managing Director.
+        </p>
       </div>
     );
   }
@@ -107,12 +137,17 @@ function Finance() {
       : !books.reachable
         ? `ERPNext unreachable (${books.detail}). Atlas still runs. Posting is off.`
         : `${books.company ?? "MOCK ATLAS3 LLP"} · ERPNext answered · posting ${books.postingEnabled ? "ON" : "off"}${
-            books.dukiaReady === false ? " · DUKIA sisters missing" : books.dukiaReady ? " · DUKIA sisters present" : ""
+            books.dukiaReady === false
+              ? " · DUKIA sisters missing"
+              : books.dukiaReady
+                ? " · DUKIA sisters present"
+                : ""
           }`;
 
-  const accountOptions = (coa?.accounts?.length
-    ? coa.accounts.map((a) => a.name)
-    : [expenseAccount(jeCompany), cashAccount(jeCompany)]
+  const accountOptions = (
+    coa?.accounts?.length
+      ? coa.accounts.map((a) => a.name)
+      : [expenseAccount(jeCompany), cashAccount(jeCompany)]
   ).filter((n) => n && !looksLikeStockAccount(n));
   const centreOptions = centres?.costCenters?.length
     ? centres.costCenters.map((c) => c.name)
@@ -141,7 +176,8 @@ function Finance() {
         description="ERPNext at D:\ERPNext is the official book. Atlas never writes a voucher unless posting is explicitly turned on. We only match or flag a mismatch."
       />
       <GateBanner>
-        Reconcile or accept an exception here. Books stay in ERPNext. Posting is off by default. Local only — not live.
+        Reconcile or accept an exception here. Books stay in ERPNext. Posting is off by default.
+        Local only — not live.
       </GateBanner>
       <Card className="mb-6 p-5">
         <p className="text-sm text-muted">Legal entity</p>
@@ -154,7 +190,13 @@ function Finance() {
               <li key={c.name} className="flex flex-wrap justify-between gap-2">
                 <span>
                   {c.name}
-                  {c.project ? ` · ${c.project}` : c.role === "group" ? " · group" : c.role === "mock" ? " · smoke" : ""}
+                  {c.project
+                    ? ` · ${c.project}`
+                    : c.role === "group"
+                      ? " · group"
+                      : c.role === "mock"
+                        ? " · smoke"
+                        : ""}
                 </span>
                 <span className="tabular-nums text-muted">
                   {c.present ? `in ERPNext · ${c.abbr}` : "missing in ERPNext"}
@@ -167,14 +209,15 @@ function Finance() {
 
       <h2 className="mb-3 font-display text-2xl">Intercompany (group pack, not entity books)</h2>
       <p className="mb-3 text-sm text-muted">
-        Each LLP keeps due-from / due-to. Adding the three trial balances overstates assets and liabilities. Elimination
-        is a period-end worksheet for MD / silent partners — Atlas does not reverse IC JEs on the sisters. See
-        docs/finance/CONSOLIDATION.md.
+        Each LLP keeps due-from / due-to. Adding the three trial balances overstates assets and
+        liabilities. Elimination is a period-end worksheet for MD / silent partners — Atlas does not
+        reverse IC JEs on the sisters. See docs/finance/CONSOLIDATION.md.
       </p>
       <Card className="mb-6 p-5">
         <p className="text-sm">
-          Example: {ELIM_EXAMPLE.a} Dr {ELIM_EXAMPLE.amountInr.toLocaleString("en-IN")} due from {ELIM_EXAMPLE.b}; the
-          other Cr the same. Standalone both correct. Group elim nets to zero. {ELIM_EXAMPLE.note}
+          Example: {ELIM_EXAMPLE.a} Dr {ELIM_EXAMPLE.amountInr.toLocaleString("en-IN")} due from{" "}
+          {ELIM_EXAMPLE.b}; the other Cr the same. Standalone both correct. Group elim nets to zero.{" "}
+          {ELIM_EXAMPLE.note}
         </p>
         <ul className="mt-4 space-y-3 text-sm">
           {DUKIA_IC_PAIRS.map((p, i) => (
@@ -188,7 +231,11 @@ function Finance() {
                     type="number"
                     value={String(icBals[i]?.dueFromA ?? 0)}
                     onChange={(e) =>
-                      setIcBals((rows) => rows.map((r, j) => (j === i ? { ...r, dueFromA: Number(e.target.value) || 0 } : r)))
+                      setIcBals((rows) =>
+                        rows.map((r, j) =>
+                          j === i ? { ...r, dueFromA: Number(e.target.value) || 0 } : r,
+                        ),
+                      )
                     }
                   />
                 </Field>
@@ -197,15 +244,23 @@ function Finance() {
                     type="number"
                     value={String(icBals[i]?.dueToB ?? 0)}
                     onChange={(e) =>
-                      setIcBals((rows) => rows.map((r, j) => (j === i ? { ...r, dueToB: Number(e.target.value) || 0 } : r)))
+                      setIcBals((rows) =>
+                        rows.map((r, j) =>
+                          j === i ? { ...r, dueToB: Number(e.target.value) || 0 } : r,
+                        ),
+                      )
                     }
                   />
                 </Field>
               </div>
               {worksheet.results[i]?.issues.length ? (
-                <p className="mt-2 text-xs text-danger">{worksheet.results[i].issues.join(" · ")}</p>
+                <p className="mt-2 text-xs text-danger">
+                  {worksheet.results[i].issues.join(" · ")}
+                </p>
               ) : worksheet.results[i]?.lines.length ? (
-                <p className="mt-2 text-xs text-muted">Matched — group elim nets this pair to zero.</p>
+                <p className="mt-2 text-xs text-muted">
+                  Matched — group elim nets this pair to zero.
+                </p>
               ) : null}
             </li>
           ))}
@@ -213,7 +268,8 @@ function Finance() {
         {worksheet.lines.length ? (
           <div className="mt-4 overflow-x-auto">
             <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
-              Group worksheet · {inr(worksheet.overstatedAssets, true)} assets/liabilities removed · not posted
+              Group worksheet · {inr(worksheet.overstatedAssets, true)} assets/liabilities removed ·
+              not posted
             </p>
             <table className="mt-2 w-full min-w-[520px] text-left text-sm">
               <thead className="text-[11px] uppercase tracking-[0.12em] text-muted">
@@ -243,14 +299,18 @@ function Finance() {
                   .map((ln) => `${ln.account}\t${ln.debit}\t${ln.credit}\t${ln.note}`)
                   .join("\n");
                 await navigator.clipboard.writeText(text);
-                toast("Worksheet copied. Do not post this onto SATYAM BUILDCOM / CONSTRUCTION / MGB.");
+                toast(
+                  "Worksheet copied. Do not post this onto SATYAM BUILDCOM / CONSTRUCTION / MGB.",
+                );
               }}
             >
               Copy worksheet
             </Button>
           </div>
         ) : null}
-        <p className="mt-4 text-[11px] uppercase tracking-[0.14em] text-muted">Close checklist (this browser only)</p>
+        <p className="mt-4 text-[11px] uppercase tracking-[0.14em] text-muted">
+          Close checklist (this browser only)
+        </p>
         <ul className="mt-2 space-y-2 text-sm">
           {IC_CLOSE_STEPS.map((step) => (
             <li key={step} className="flex items-start gap-2">
@@ -267,7 +327,10 @@ function Finance() {
       </Card>
 
       <h2 className="mb-3 font-display text-2xl">Construction finance (ops master)</h2>
-      <p className="mb-3 text-sm text-muted">Bank, sanction number, and 60/40 split live here — not in a PDF title. This is not an ERPNext voucher.</p>
+      <p className="mb-3 text-sm text-muted">
+        Bank, sanction number, and 60/40 split live here — not in a PDF title. This is not an
+        ERPNext voucher.
+      </p>
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
           <select
@@ -285,7 +348,11 @@ function Finance() {
           </select>
         </Field>
         <Field label="Bank">
-          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={bank} onChange={(e) => setBank(e.target.value)}>
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={bank}
+            onChange={(e) => setBank(e.target.value)}
+          >
             <option>SBI</option>
             <option>AU Small Finance Bank</option>
             <option>HDFC</option>
@@ -293,7 +360,11 @@ function Finance() {
           </select>
         </Field>
         <Field label="Sanction number">
-          <Input value={sanctionNo} onChange={(e) => setSanctionNo(e.target.value)} placeholder="SBI/JPR/2024/…" />
+          <Input
+            value={sanctionNo}
+            onChange={(e) => setSanctionNo(e.target.value)}
+            placeholder="SBI/JPR/2024/…"
+          />
         </Field>
         <Field label="Loan % (rest is partners + advances)">
           <Input type="number" value={loanPct} onChange={(e) => setLoanPct(e.target.value)} />
@@ -302,7 +373,11 @@ function Finance() {
           <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </Field>
         <Field label="Sanction date">
-          <Input type="date" value={sanctionedAt} onChange={(e) => setSanctionedAt(e.target.value)} />
+          <Input
+            type="date"
+            value={sanctionedAt}
+            onChange={(e) => setSanctionedAt(e.target.value)}
+          />
         </Field>
         <Field label="Valid until (optional)">
           <Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
@@ -373,7 +448,13 @@ function Finance() {
                   >
                     Reconcile
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => settleTally(t.id, "exception")}>Accept exception</Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => settleTally(t.id, "exception")}
+                  >
+                    Accept exception
+                  </Button>
                 </>
               ) : null}
             </div>
@@ -382,16 +463,20 @@ function Finance() {
       </div>
       <h2 className="mb-3 mt-8 font-display text-2xl">Post a journal to ERPNext</h2>
       <p className="mb-3 text-sm text-muted">
-        Leaf accounts from <em>this</em> company’s CoA. P&amp;L lines use cost centre Main - ABBR. Submit posts GL; a
-        draft is not the ledger. Posting stays off unless ERPNEXT_POSTING_ENABLED is true. Land, bookings, POs and CEO
-        never post. Atlas does not create ERPNext companies.
+        Leaf accounts from <em>this</em> company’s CoA. P&amp;L lines use cost centre Main - ABBR.
+        Submit posts GL; a draft is not the ledger. Posting stays off unless ERPNEXT_POSTING_ENABLED
+        is true. Land, bookings, POs and CEO never post. Atlas does not create ERPNext companies.
       </p>
       <Card className="mb-8 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="sourceId (idempotency)">
           <Input value={jeSource} onChange={(e) => setJeSource(e.target.value)} />
         </Field>
         <Field label="Company (must exist in ERPNext)">
-          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeCompany} onChange={(e) => setJeCompany(e.target.value)}>
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={jeCompany}
+            onChange={(e) => setJeCompany(e.target.value)}
+          >
             {COMPANY_ALLOWLIST.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -403,10 +488,19 @@ function Finance() {
           <Input type="date" value={jeDate} onChange={(e) => setJeDate(e.target.value)} />
         </Field>
         <Field label="Amount (₹, 2 decimals)">
-          <Input type="number" step="0.01" value={jeAmt} onChange={(e) => setJeAmt(e.target.value)} />
+          <Input
+            type="number"
+            step="0.01"
+            value={jeAmt}
+            onChange={(e) => setJeAmt(e.target.value)}
+          />
         </Field>
         <Field label="Debit (leaf)">
-          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeDebitAcc} onChange={(e) => setJeDebitAcc(e.target.value)}>
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={jeDebitAcc}
+            onChange={(e) => setJeDebitAcc(e.target.value)}
+          >
             {accountOptions.map((a) => (
               <option key={`d-${a}`} value={a}>
                 {a}
@@ -415,7 +509,11 @@ function Finance() {
           </select>
         </Field>
         <Field label="Credit (leaf)">
-          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeCreditAcc} onChange={(e) => setJeCreditAcc(e.target.value)}>
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={jeCreditAcc}
+            onChange={(e) => setJeCreditAcc(e.target.value)}
+          >
             {accountOptions.map((a) => (
               <option key={`c-${a}`} value={a}>
                 {a}
@@ -424,7 +522,11 @@ function Finance() {
           </select>
         </Field>
         <Field label="Cost centre (P&L → Main - ABBR)">
-          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={jeCost} onChange={(e) => setJeCost(e.target.value)}>
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={jeCost}
+            onChange={(e) => setJeCost(e.target.value)}
+          >
             {centreOptions.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -436,8 +538,8 @@ function Finance() {
           <Input value={jeRemark} onChange={(e) => setJeRemark(e.target.value)} />
         </Field>
         <p className="sm:col-span-2 text-xs text-muted">
-          {coa?.detail ?? "CoA"} · {centres?.detail ?? "cost centres"}. Group company DUKIA GROUP is not on the post
-          allowlist.
+          {coa?.detail ?? "CoA"} · {centres?.detail ?? "cost centres"}. Group company DUKIA GROUP is
+          not on the post allowlist.
         </p>
         <div className="flex flex-wrap items-end gap-2">
           <Button

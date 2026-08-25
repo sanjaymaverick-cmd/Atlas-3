@@ -8,11 +8,11 @@ Operating group: DUKIA GROUP · Sisters: MGB PRIME ESTATES LLP · SATYAM BUILDCO
 
 ## Project agents (parallel modules, single company file)
 
-| Agent | Company | Project | Land | Bookings (from run) |
-|-------|---------|---------|------|---------------------|
-| Aerovista | SATYAM BUILDCOM | AV-01 | `lp_av` acquired | 26 possessed + extra 3BHK in close |
-| Sunflower | SATYAM CONSTRUCTION | SF-01 | `lp_sf` acquired | 22 possessed + extra |
-| Acropolis | MGB PRIME ESTATES LLP | AC-01 | `lp_ac` acquired | 52 possessed + extra |
+| Agent     | Company               | Project | Land             | Bookings (from run)                |
+| --------- | --------------------- | ------- | ---------------- | ---------------------------------- |
+| Aerovista | SATYAM BUILDCOM       | AV-01   | `lp_av` acquired | 26 possessed + extra 3BHK in close |
+| Sunflower | SATYAM CONSTRUCTION   | SF-01   | `lp_sf` acquired | 22 possessed + extra               |
+| Acropolis | MGB PRIME ESTATES LLP | AC-01   | `lp_ac` acquired | 52 possessed + extra               |
 
 Close snapshot (`close-2028.json`): **160 bookings** · **100 possessed** · **60 booked** · **196 still available** of 356.
 
@@ -20,7 +20,7 @@ Close snapshot (`close-2028.json`): **160 bookings** · **100 possessed** · **6
 
 - **RFQs (3, still open):** Aerovista / Sunflower / Acropolis structure-civil
 - **Quotes (3, submitted, not selected):** `q_0ipiqe9t` `q_jy7mjffa` `q_hpbniuqf` from Shakti Earthworks
-- **POs:** none — **correct gate**: vendor still `approval`, not Active. MD “activate vendor” job saw no pending card (`none pending`). Quote select refused: *Cannot select a quote from a vendor that is not Active.*
+- **POs:** none — **correct gate**: vendor still `approval`, not Active. MD “activate vendor” job saw no pending card (`none pending`). Quote select refused: _Cannot select a quote from a vendor that is not Active._
 - **RERA obligations:** 49 filed with challan refs through QPR 2028-09 for RAJ/P/2024/2144, RAJ/P/2025/0088, RAJ/P/2025/0312
 - **Diaries:** 292 (Mondays in each construction window)
 - **ERPNext:** posting off; Atlas posted **0** vouchers. Sister companies in the desk still operator-side if Docker is down.

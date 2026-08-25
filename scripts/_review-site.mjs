@@ -10,8 +10,26 @@ const BASE = process.env.ATLAS_URL || "http://127.0.0.1:8080";
 const OUT = join(process.cwd(), "screenshots", "review", "site");
 mkdirSync(OUT, { recursive: true });
 
-const FORBIDDEN_NAV = ["Tally", "Sales", "Capital", "Owner decisions", "Handover", "Inventory", "Pipeline", "Channel desk"];
-const SITE_NAV = ["Command", "All phases", "Projects", "Site & quality", "Controls", "Change control", "Audit", "Assistant"];
+const FORBIDDEN_NAV = [
+  "Tally",
+  "Sales",
+  "Capital",
+  "Owner decisions",
+  "Handover",
+  "Inventory",
+  "Pipeline",
+  "Channel desk",
+];
+const SITE_NAV = [
+  "Command",
+  "All phases",
+  "Projects",
+  "Site & quality",
+  "Controls",
+  "Change control",
+  "Audit",
+  "Assistant",
+];
 
 const SEATS = [
   {
@@ -65,15 +83,27 @@ async function shot(page, name, full = true) {
 async function metrics(page) {
   return page.evaluate(() => {
     const overflow = document.documentElement.scrollWidth > window.innerWidth + 8;
-    const buttons = [...document.querySelectorAll("main button, main [role='button']")].map((el) => {
-      const r = el.getBoundingClientRect();
-      return { text: (el.innerText || "").replace(/\s+/g, " ").trim().slice(0, 56), h: Math.round(r.height), w: Math.round(r.width) };
-    });
-    const fields = [...document.querySelectorAll("main input, main textarea, main select")].map((el) => {
-      const r = el.getBoundingClientRect();
-      const label = el.closest("label")?.querySelector("span")?.textContent || el.getAttribute("aria-label") || el.id || el.type;
-      return { label, tag: el.tagName, h: Math.round(r.height), type: el.type };
-    });
+    const buttons = [...document.querySelectorAll("main button, main [role='button']")].map(
+      (el) => {
+        const r = el.getBoundingClientRect();
+        return {
+          text: (el.innerText || "").replace(/\s+/g, " ").trim().slice(0, 56),
+          h: Math.round(r.height),
+          w: Math.round(r.width),
+        };
+      },
+    );
+    const fields = [...document.querySelectorAll("main input, main textarea, main select")].map(
+      (el) => {
+        const r = el.getBoundingClientRect();
+        const label =
+          el.closest("label")?.querySelector("span")?.textContent ||
+          el.getAttribute("aria-label") ||
+          el.id ||
+          el.type;
+        return { label, tag: el.tagName, h: Math.round(r.height), type: el.type };
+      },
+    );
     return {
       overflow,
       innerW: window.innerWidth,
@@ -86,7 +116,10 @@ async function metrics(page) {
 }
 
 function navItems(text) {
-  return text.split("\n").map((s) => s.trim()).filter(Boolean);
+  return text
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 async function collectNav(page, mobile) {
@@ -95,14 +128,25 @@ async function collectNav(page, mobile) {
     if (await menu.isVisible()) {
       await menu.click();
       await page.waitForTimeout(250);
-      const text = await page.locator("div.fixed.inset-0").innerText().catch(() => "");
+      const text = await page
+        .locator("div.fixed.inset-0")
+        .innerText()
+        .catch(() => "");
       await page.keyboard.press("Escape").catch(() => {});
-      await page.locator("div.fixed.inset-0").click({ position: { x: 360, y: 24 } }).catch(() => {});
+      await page
+        .locator("div.fixed.inset-0")
+        .click({ position: { x: 360, y: 24 } })
+        .catch(() => {});
       await page.waitForTimeout(150);
       return navItems(text);
     }
   }
-  return navItems(await page.locator("aside nav").innerText().catch(() => ""));
+  return navItems(
+    await page
+      .locator("aside nav")
+      .innerText()
+      .catch(() => ""),
+  );
 }
 
 async function bodyText(page) {
@@ -141,11 +185,13 @@ async function runDesktop(page, seat, rec) {
 
   rec.homePath = new URL(page.url()).pathname;
   rec.homeOk = rec.homePath === "/app/site";
-  if (!rec.homeOk) note("p1", seat.title, rec.homePath, `Home was ${rec.homePath}, expected /app/site.`);
+  if (!rec.homeOk)
+    note("p1", seat.title, rec.homePath, `Home was ${rec.homePath}, expected /app/site.`);
 
   const identity = await page.locator("aside").innerText();
   rec.identity = identity.includes(seat.name) && identity.includes(seat.title);
-  if (!rec.identity) note("p1", seat.title, "/app/site", `Sidebar missing ${seat.name} / ${seat.title}.`);
+  if (!rec.identity)
+    note("p1", seat.title, "/app/site", `Sidebar missing ${seat.name} / ${seat.title}.`);
 
   const t0 = Date.now();
   await page.getByRole("button", { name: /seal diary/i }).waitFor({ timeout: 8000 });
@@ -157,9 +203,12 @@ async function runDesktop(page, seat, rec) {
   rec.forbiddenNav = FORBIDDEN_NAV.filter((n) => rec.nav.some((x) => x === n || x.startsWith(n)));
   rec.missingSiteNav = SITE_NAV.filter((n) => !rec.nav.some((x) => x === n || x.startsWith(n)));
   rec.tallyInNav = /\bTally\b/i.test(rec.nav.join("\n"));
-  if (seat.expectDocuments && !rec.documentsInNav) note("p2", seat.title, "nav", "Documents missing from engineer nav.");
-  if (!seat.expectDocuments && rec.documentsInNav) note("p1", seat.title, "nav", "Documents visible to supervisor.");
-  for (const leak of rec.forbiddenNav) note("p1", seat.title, "nav", `Forbidden nav item visible: ${leak}`);
+  if (seat.expectDocuments && !rec.documentsInNav)
+    note("p2", seat.title, "nav", "Documents missing from engineer nav.");
+  if (!seat.expectDocuments && rec.documentsInNav)
+    note("p1", seat.title, "nav", "Documents visible to supervisor.");
+  for (const leak of rec.forbiddenNav)
+    note("p1", seat.title, "nav", `Forbidden nav item visible: ${leak}`);
   if (rec.tallyInNav) note("p0", seat.title, "nav", "Tally on a site seat nav.");
 
   await shot(page, `${prefix}-site-home`);
@@ -249,12 +298,21 @@ async function runDesktop(page, seat, rec) {
     rec.sawSeedNcr = /Hollow tiles/i.test(before);
     rec.sawFailNcr = /NCR from RCC pour/i.test(before);
     await page.locator("main").getByLabel("Type").selectOption("ncr");
-    await page.locator("main").getByLabel("Title").fill(`${seat.key.toUpperCase()} NCR — honeycombing at L13 soffit`);
+    await page
+      .locator("main")
+      .getByLabel("Title")
+      .fill(`${seat.key.toUpperCase()} NCR — honeycombing at L13 soffit`);
     await page.getByRole("button", { name: /^Raise$/i }).click();
     await page.waitForTimeout(400);
     rec.ncrRaised = /honeycombing at L13/i.test(await bodyText(page));
-    rec.canCloseNcr = await page.getByRole("button", { name: /close after re-inspection/i }).first().isVisible();
-    rec.canRespondRfi = await page.getByRole("button", { name: /^Respond$/i }).first().isVisible();
+    rec.canCloseNcr = await page
+      .getByRole("button", { name: /close after re-inspection/i })
+      .first()
+      .isVisible();
+    rec.canRespondRfi = await page
+      .getByRole("button", { name: /^Respond$/i })
+      .first()
+      .isVisible();
     await shot(page, `${prefix}-changes-ncr`);
     await shot(page, `${prefix}-changes-ncr-view`, false);
   });
@@ -285,7 +343,12 @@ async function runDesktop(page, seat, rec) {
     rec.documentsRendered = /Register file|Architectural GA/i.test(rec.documentsText);
     await shot(page, `${prefix}-documents-deeplink`);
     if (!seat.expectDocuments && rec.documentsRendered) {
-      note("p2", seat.title, "/app/documents", "Supervisor can deep-link Documents though nav hides it.");
+      note(
+        "p2",
+        seat.title,
+        "/app/documents",
+        "Supervisor can deep-link Documents though nav hides it.",
+      );
     }
   });
 
@@ -311,7 +374,8 @@ async function runDesktop(page, seat, rec) {
       land: /Land & legal/i.test(rec.phasesText),
       commercial: /Commercial/i.test(rec.phasesText),
     };
-    if (rec.phasesLinks.tally) note("p1", seat.title, "/app/phases", "All phases lists Tally for a site seat.");
+    if (rec.phasesLinks.tally)
+      note("p1", seat.title, "/app/phases", "All phases lists Tally for a site seat.");
     await shot(page, `${prefix}-phases`);
   });
 
@@ -343,7 +407,8 @@ async function runDesktop(page, seat, rec) {
         title: (await page.locator("h1").first().textContent()) || "",
         snippet: text.replace(/\s+/g, " ").slice(0, 420),
         denied: /does not post books|view only is not offered|not offered to site/i.test(text),
-        salesCommand: /Third-party now|Inventory is the lock|Available units|Hot \(your firm\)/i.test(text),
+        salesCommand:
+          /Third-party now|Inventory is the lock|Available units|Hot \(your firm\)/i.test(text),
         snags: /open snags|Close snag|Paint touch-up/i.test(text),
         capital: /Plan vs reality|JTD spent/i.test(text),
         decisions: /Owner decisions|Open TODOs/i.test(text),
@@ -354,12 +419,23 @@ async function runDesktop(page, seat, rec) {
     });
   }
   rec.leaks = leaks;
-  if (leaks.finance?.tallyActions) note("p0", seat.title, "/app/finance", "Site seat can Reconcile Tally via deep-link.");
-  else if (leaks.finance?.denied) note("info", seat.title, "/app/finance", "Finance deep-link refuses Tally actions.");
-  if (leaks.sales?.salesCommand) note("p0", seat.title, "/app/sales", "Sales command internals leak via deep-link.");
-  if (leaks.handover?.snags) note("p1", seat.title, "/app/sales/handover", "Handover/snag queue reachable by URL, absent from site nav.");
-  if (leaks.capital?.capital) note("p1", seat.title, "/app/capital", "Capital planning leaks via deep-link.");
-  if (leaks.decisions?.decisions) note("p1", seat.title, "/app/decisions", "Owner decisions leak via deep-link.");
+  if (leaks.finance?.tallyActions)
+    note("p0", seat.title, "/app/finance", "Site seat can Reconcile Tally via deep-link.");
+  else if (leaks.finance?.denied)
+    note("info", seat.title, "/app/finance", "Finance deep-link refuses Tally actions.");
+  if (leaks.sales?.salesCommand)
+    note("p0", seat.title, "/app/sales", "Sales command internals leak via deep-link.");
+  if (leaks.handover?.snags)
+    note(
+      "p1",
+      seat.title,
+      "/app/sales/handover",
+      "Handover/snag queue reachable by URL, absent from site nav.",
+    );
+  if (leaks.capital?.capital)
+    note("p1", seat.title, "/app/capital", "Capital planning leaks via deep-link.");
+  if (leaks.decisions?.decisions)
+    note("p1", seat.title, "/app/decisions", "Owner decisions leak via deep-link.");
 
   await step(rec, "entity-switch", async () => {
     await gotoApp(page, "/app/site");
@@ -370,10 +446,20 @@ async function runDesktop(page, seat, rec) {
     const aravalliText = await bodyText(page);
     rec.aravalliRows = /Snag close-out Tower C|Door & hardware/i.test(aravalliText);
     rec.aravalliStillKanak = /Tower A L12 slab shuttering/i.test(aravalliText);
-    rec.diaryProjectOptions = await page.locator("main select").first().locator("option").allTextContents();
+    rec.diaryProjectOptions = await page
+      .locator("main select")
+      .first()
+      .locator("option")
+      .allTextContents();
     rec.diaryProjectValue = await page.locator("main select").first().inputValue();
     rec.entitySwitchOk = Boolean(rec.aravalliRows && !rec.aravalliStillKanak);
-    if (!rec.entitySwitchOk) note("p1", seat.title, "/app/site", "Entity switch Kanakpura → Aravalli did not swap site rows.");
+    if (!rec.entitySwitchOk)
+      note(
+        "p1",
+        seat.title,
+        "/app/site",
+        "Entity switch Kanakpura → Aravalli did not swap site rows.",
+      );
     await shot(page, `${prefix}-entity-aravalli`);
     await entitySelect.selectOption({ label: "Kanakpura Developers LLP" });
     await page.waitForTimeout(300);
@@ -405,11 +491,16 @@ async function runMobile(page, seat, rec) {
   await page.getByRole("button", { name: /open menu/i }).click();
   await page.waitForTimeout(250);
   await shot(page, `${prefix}-menu`, false);
-  await page.locator("div.fixed.inset-0").click({ position: { x: 370, y: 40 } }).catch(() => {});
+  await page
+    .locator("div.fixed.inset-0")
+    .click({ position: { x: 370, y: 40 } })
+    .catch(() => {});
   await page.waitForTimeout(200);
 
   await step(rec, "mobile-diary", async () => {
-    await page.getByLabel("Major work").fill(`${seat.key.toUpperCase()} phone diary — raft steel check.`);
+    await page
+      .getByLabel("Major work")
+      .fill(`${seat.key.toUpperCase()} phone diary — raft steel check.`);
     await page.getByRole("button", { name: /seal diary/i }).click();
     await page.waitForTimeout(400);
     rec.diarySealed = /Diary sealed|already exists|raft steel check/i.test(await bodyText(page));
@@ -418,8 +509,14 @@ async function runMobile(page, seat, rec) {
 
   await step(rec, "mobile-insp", async () => {
     await page.getByRole("heading", { name: /inspections/i }).scrollIntoViewIfNeeded();
-    rec.failBox = await page.getByRole("button", { name: /^Fail$/i }).first().boundingBox();
-    rec.passBox = await page.getByRole("button", { name: /^Pass$/i }).first().boundingBox();
+    rec.failBox = await page
+      .getByRole("button", { name: /^Fail$/i })
+      .first()
+      .boundingBox();
+    rec.passBox = await page
+      .getByRole("button", { name: /^Pass$/i })
+      .first()
+      .boundingBox();
     rec.scheduleBox = await page.getByRole("button", { name: /^Schedule$/i }).boundingBox();
     await shot(page, `${prefix}-inspections`, false);
   });
@@ -501,12 +598,23 @@ async function main() {
 
   await browser.close();
   writeFileSync(join(OUT, "report.json"), JSON.stringify(report, null, 2));
-  console.log(JSON.stringify({ ok: true, findings: report.findings.length, out: OUT, errors: {
-    seD: report.seats.se.desktop.errors || report.seats.se.desktop.error,
-    seM: report.seats.se.mobile.errors || report.seats.se.mobile.error,
-    svD: report.seats.sv.desktop.errors || report.seats.sv.desktop.error,
-    svM: report.seats.sv.mobile.errors || report.seats.sv.mobile.error,
-  } }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        ok: true,
+        findings: report.findings.length,
+        out: OUT,
+        errors: {
+          seD: report.seats.se.desktop.errors || report.seats.se.desktop.error,
+          seM: report.seats.se.mobile.errors || report.seats.se.mobile.error,
+          svD: report.seats.sv.desktop.errors || report.seats.sv.desktop.error,
+          svM: report.seats.sv.mobile.errors || report.seats.sv.mobile.error,
+        },
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 main().catch((err) => {

@@ -8,11 +8,7 @@ const BASE = process.env.ATLAS_URL || "http://127.0.0.1:8080";
 const OUT = join(process.cwd(), "screenshots", "review", "md");
 mkdirSync(OUT, { recursive: true });
 
-const LS_KEYS = [
-  "atlas3-company-day-v1",
-  "atlas3-clt-v1",
-  "atlas3-sales-v10",
-];
+const LS_KEYS = ["atlas3-company-day-v1", "atlas3-clt-v1", "atlas3-sales-v10"];
 
 const ROUTES = [
   "/app",
@@ -68,14 +64,19 @@ async function probe(page) {
     const nav = Array.from(document.querySelectorAll("aside nav a")).map((a) =>
       a.textContent.replace(/\s+/g, " ").trim(),
     );
-    const headerSelects = Array.from(document.querySelectorAll(".sticky select, header.sticky select")).map((s) => {
+    const headerSelects = Array.from(
+      document.querySelectorAll(".sticky select, header.sticky select"),
+    ).map((s) => {
       const el = s;
       return { label: el.selectedOptions?.[0]?.textContent?.trim() ?? "", value: el.value };
     });
-    const jade = Array.from(document.querySelectorAll("button, a")).filter((el) => {
-      const bg = getComputedStyle(el).backgroundColor;
-      return bg === "rgb(29, 79, 66)";
-    }).map((el) => el.textContent.replace(/\s+/g, " ").trim()).filter(Boolean);
+    const jade = Array.from(document.querySelectorAll("button, a"))
+      .filter((el) => {
+        const bg = getComputedStyle(el).backgroundColor;
+        return bg === "rgb(29, 79, 66)";
+      })
+      .map((el) => el.textContent.replace(/\s+/g, " ").trim())
+      .filter(Boolean);
     const sticky = document.querySelector(".sticky.top-0")?.innerText ?? "";
     const body = document.body.innerText;
     const find = (re) => re.test(body);
@@ -86,10 +87,16 @@ async function probe(page) {
       navCount: nav.length,
       nav,
       headerSelects,
-      localBadge: /local only/i.test(sticky) ? "Local only · not live" : /local/i.test(sticky) ? "Local (abbrev)" : "missing",
+      localBadge: /local only/i.test(sticky)
+        ? "Local only · not live"
+        : /local/i.test(sticky)
+          ? "Local (abbrev)"
+          : "missing",
       jadeCount: jade.length,
       jade,
-      titles: Array.from(document.querySelectorAll("h1, h2")).map((el) => el.textContent.replace(/\s+/g, " ").trim()),
+      titles: Array.from(document.querySelectorAll("h1, h2")).map((el) =>
+        el.textContent.replace(/\s+/g, " ").trim(),
+      ),
       hasPinkCity: find(/Pink City/i),
       hasDesertReach: find(/Desert Reach/i),
       hasShekhawat: find(/Shekhawat/i),
@@ -112,14 +119,26 @@ async function go(page, path) {
 
 async function main() {
   const browser = await chromium.launch({ headless: true });
-  const report = { at: new Date().toISOString(), screens: [], actions: [], isolation: {}, entitySwitch: {}, mobile: [], errors: [] };
+  const report = {
+    at: new Date().toISOString(),
+    screens: [],
+    actions: [],
+    isolation: {},
+    entitySwitch: {},
+    mobile: [],
+    errors: [],
+  };
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await context.newPage();
   page.on("pageerror", (e) => report.errors.push(e.message));
 
   const t0 = Date.now();
   await login(page);
-  report.actions.push({ action: "login", ms: Date.now() - t0, landed: new URL(page.url()).pathname });
+  report.actions.push({
+    action: "login",
+    ms: Date.now() - t0,
+    landed: new URL(page.url()).pathname,
+  });
 
   for (const path of ROUTES) {
     await go(page, path);
@@ -190,7 +209,10 @@ async function main() {
   const reopen = page.getByRole("button", { name: /reopen/i });
   if (await reopen.count()) {
     await reopen.first().click();
-    await page.getByPlaceholder(/your decision/i).first().fill("Keep self-hosted. No commercial API.");
+    await page
+      .getByPlaceholder(/your decision/i)
+      .first()
+      .fill("Keep self-hosted. No commercial API.");
     await page.getByRole("button", { name: /record decision/i }).click();
     report.actions.push({ action: "record-decision", ok: true });
   }
@@ -206,7 +228,18 @@ async function main() {
   const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const mpage = await mobile.newPage();
   await login(mpage);
-  for (const path of ["/app", "/app/portfolio", "/app/capital", "/app/approvals", "/app/decisions", "/app/sales/analytics", "/app/finance", "/app/sales/channel", "/app/projects", "/app/crm"]) {
+  for (const path of [
+    "/app",
+    "/app/portfolio",
+    "/app/capital",
+    "/app/approvals",
+    "/app/decisions",
+    "/app/sales/analytics",
+    "/app/finance",
+    "/app/sales/channel",
+    "/app/projects",
+    "/app/crm",
+  ]) {
     await go(mpage, path);
     report.mobile.push(await probe(mpage));
   }
@@ -216,32 +249,46 @@ async function main() {
     const links = Array.from(document.querySelectorAll(".fixed a, .fixed button")).map((el) =>
       el.textContent.replace(/\s+/g, " ").trim(),
     );
-    return { linkCount: links.length, links, overflow: document.documentElement.scrollWidth > window.innerWidth + 8 };
+    return {
+      linkCount: links.length,
+      links,
+      overflow: document.documentElement.scrollWidth > window.innerWidth + 8,
+    };
   });
   report.mobileLocalChip = await mpage.locator(".sticky.top-0").first().innerText();
   await mobile.close();
   await browser.close();
 
   writeFileSync(join(OUT, "_notes.json"), JSON.stringify(report, null, 2));
-  console.log(JSON.stringify({
-    ok: true,
-    screens: report.screens.length,
-    landed: report.actions[0],
-    entityChanged: report.entitySwitch.changed,
-    channelHomes: {
-      pink: report.isolation.channelHomes.hasPinkCity,
-      desert: report.isolation.channelHomes.hasDesertReach,
-      bhati: report.isolation.channelHomes.hasBhati,
-      soni: report.isolation.channelHomes.hasSoni,
-    },
-    channelLlp: {
-      pink: report.isolation.channelLlp.hasPinkCity,
-      desert: report.isolation.channelLlp.hasDesertReach,
-    },
-    company: { pink: report.isolation.company.hasPinkCity, desert: report.isolation.company.hasDesertReach, h1: report.isolation.company.h1 },
-    mobileOverflow: report.mobile.filter((m) => m.overflow).map((m) => m.path),
-    jade: report.screens.map((s) => [s.path, s.jadeCount, s.jade.slice(0, 4)]),
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        ok: true,
+        screens: report.screens.length,
+        landed: report.actions[0],
+        entityChanged: report.entitySwitch.changed,
+        channelHomes: {
+          pink: report.isolation.channelHomes.hasPinkCity,
+          desert: report.isolation.channelHomes.hasDesertReach,
+          bhati: report.isolation.channelHomes.hasBhati,
+          soni: report.isolation.channelHomes.hasSoni,
+        },
+        channelLlp: {
+          pink: report.isolation.channelLlp.hasPinkCity,
+          desert: report.isolation.channelLlp.hasDesertReach,
+        },
+        company: {
+          pink: report.isolation.company.hasPinkCity,
+          desert: report.isolation.company.hasDesertReach,
+          h1: report.isolation.company.h1,
+        },
+        mobileOverflow: report.mobile.filter((m) => m.overflow).map((m) => m.path),
+        jade: report.screens.map((s) => [s.path, s.jadeCount, s.jade.slice(0, 4)]),
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 main().catch((err) => {

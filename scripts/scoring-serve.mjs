@@ -10,7 +10,9 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "services", "scoring");
 const win = process.platform === "win32";
-const venvPy = win ? join(root, ".venv", "Scripts", "python.exe") : join(root, ".venv", "bin", "python");
+const venvPy = win
+  ? join(root, ".venv", "Scripts", "python.exe")
+  : join(root, ".venv", "bin", "python");
 
 function run(command, args) {
   const r = spawnSync(command, args, { cwd: root, stdio: "inherit", shell: false });

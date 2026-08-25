@@ -8,7 +8,9 @@ export function adaptMagicbricks(payload: unknown): IngestRequest | { error: str
   const phone = pickString(row, ["Mobile", "mobile", "Phone", "phone", "MobileNo"]);
   if (!name || !phone) return { error: "MagicBricks payload needs Name and Mobile." };
   return {
-    projectId: mapProject(pickString(row, ["ProjectId", "projectId", "ProjectName", "projectName", "Project"])),
+    projectId: mapProject(
+      pickString(row, ["ProjectId", "projectId", "ProjectName", "projectName", "Project"]),
+    ),
     name,
     phone,
     source: "magicbricks",

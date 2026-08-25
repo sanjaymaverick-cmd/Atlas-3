@@ -5,7 +5,14 @@ import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { companyAgentIds, isThirdParty, myAgent, myCompanyId, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
+import {
+  companyAgentIds,
+  isThirdParty,
+  myAgent,
+  myCompanyId,
+  scopedProjectIds,
+  scopedUnits,
+} from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { unitConfig } from "@/lib/unit-pick";
 import { inr } from "@/lib/utils";
@@ -15,7 +22,20 @@ export const Route = createFileRoute("/app/sales/inventory")({ component: Invent
 
 function Inventory() {
   const navigate = useNavigate();
-  const { projects, entityId, projectId, units, towers, unitEvents, holds, agents, user, setUnitDispute, addBooking, bookNextAvailable } = useAtlas();
+  const {
+    projects,
+    entityId,
+    projectId,
+    units,
+    towers,
+    unitEvents,
+    holds,
+    agents,
+    user,
+    setUnitDispute,
+    addBooking,
+    bookNextAvailable,
+  } = useAtlas();
   const third = isThirdParty(user?.role);
   const companyId = myCompanyId(user, agents);
   const agentIds = companyAgentIds(agents, companyId);
@@ -56,21 +76,43 @@ function Inventory() {
       />
       <div className="mb-4 flex flex-wrap gap-2">
         {towerOpts.map((t) => (
-          <Button key={t.id} size="sm" variant={towerId === t.id ? "default" : "outline"} onClick={() => setTowerId(t.id)}>
+          <Button
+            key={t.id}
+            size="sm"
+            variant={towerId === t.id ? "default" : "outline"}
+            onClick={() => setTowerId(t.id)}
+          >
             {t.name}
           </Button>
         ))}
-        <Button size="sm" variant={filter === "all" ? "default" : "outline"} onClick={() => setFilter("all")}>
+        <Button
+          size="sm"
+          variant={filter === "all" ? "default" : "outline"}
+          onClick={() => setFilter("all")}
+        >
           All
         </Button>
-        <Button size="sm" variant={filter === "available" ? "default" : "outline"} onClick={() => setFilter("available")}>
+        <Button
+          size="sm"
+          variant={filter === "available" ? "default" : "outline"}
+          onClick={() => setFilter("available")}
+        >
           Available
         </Button>
-        <Button size="sm" variant={filter === "held" ? "default" : "outline"} onClick={() => setFilter("held")}>
+        <Button
+          size="sm"
+          variant={filter === "held" ? "default" : "outline"}
+          onClick={() => setFilter("held")}
+        >
           Held
         </Button>
         {(["", "2BHK", "3BHK"] as const).map((id) => (
-          <Button key={id || "bhk-all"} size="sm" variant={bhk === id ? "default" : "outline"} onClick={() => setBhk(id)}>
+          <Button
+            key={id || "bhk-all"}
+            size="sm"
+            variant={bhk === id ? "default" : "outline"}
+            onClick={() => setBhk(id)}
+          >
             {id || "All BHK"}
           </Button>
         ))}
@@ -78,7 +120,10 @@ function Inventory() {
           <Button
             size="sm"
             onClick={() => {
-              const err = bookNextAvailable(bookPid, { towerId: towerId || undefined, config: bhk || undefined });
+              const err = bookNextAvailable(bookPid, {
+                towerId: towerId || undefined,
+                config: bhk || undefined,
+              });
               toast(err ?? "Booked the next free unit in this list.");
             }}
           >
@@ -133,7 +178,9 @@ function Inventory() {
                       ) : null}
                       {!third ? (
                         <MoreMenu label="⋯">
-                          {u.status === "available" || u.status === "held" || u.status === "booked" ? (
+                          {u.status === "available" ||
+                          u.status === "held" ||
+                          u.status === "booked" ? (
                             <Button
                               size="sm"
                               variant="ghost"

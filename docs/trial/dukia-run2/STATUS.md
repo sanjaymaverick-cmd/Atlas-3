@@ -7,25 +7,25 @@
 
 ## Success criteria
 
-| Gate | Result |
-|------|--------|
-| Every seat has at least one active day log | PASS — 30 seats under agents/ |
-| Must-do catalog attempted | PASS — land x3, vendor Active x3, PO x3, diaries x3, stores, bookings x6, channel isolation, CEO |
-| At least one PO after Active | PASS — po_cj4qijse, po_iijof7w0, po_1f5q7xh6 |
-| At least one submitted ATLAS-OPS JE per sister | PASS — capital + opex on SBC/SCN/MGB |
-| At least 3 IC loan pairs both sides | PASS — 25L SBC to SCN, 40L SBC to MGB, 15L SCN to MGB |
-| Zero elim JEs on entity books | PASS |
-| Channel isolation incidents | 0 |
-| Close inventory | close-inventory.json |
-| UX scores | ux-scores.csv |
+| Gate                                           | Result                                                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Every seat has at least one active day log     | PASS — 30 seats under agents/                                                                    |
+| Must-do catalog attempted                      | PASS — land x3, vendor Active x3, PO x3, diaries x3, stores, bookings x6, channel isolation, CEO |
+| At least one PO after Active                   | PASS — po_cj4qijse, po_iijof7w0, po_1f5q7xh6                                                     |
+| At least one submitted ATLAS-OPS JE per sister | PASS — capital + opex on SBC/SCN/MGB                                                             |
+| At least 3 IC loan pairs both sides            | PASS — 25L SBC to SCN, 40L SBC to MGB, 15L SCN to MGB                                            |
+| Zero elim JEs on entity books                  | PASS                                                                                             |
+| Channel isolation incidents                    | 0                                                                                                |
+| Close inventory                                | close-inventory.json                                                                             |
+| UX scores                                      | ux-scores.csv                                                                                    |
 
 ## IC loans (short-term unsecured)
 
-| Pair | Amount | Lender JE | Borrower JE |
-|------|--------|-----------|-------------|
+| Pair                     | Amount       | Lender JE         | Borrower JE       |
+| ------------------------ | ------------ | ----------------- | ----------------- |
 | BUILDCOM to CONSTRUCTION | Rs 25,00,000 | ACC-JV-2026-00016 | ACC-JV-2026-00017 |
-| BUILDCOM to MGB | Rs 40,00,000 | ACC-JV-2026-00018 | ACC-JV-2026-00019 |
-| CONSTRUCTION to MGB | Rs 15,00,000 | ACC-JV-2026-00020 | ACC-JV-2026-00021 |
+| BUILDCOM to MGB          | Rs 40,00,000 | ACC-JV-2026-00018 | ACC-JV-2026-00019 |
+| CONSTRUCTION to MGB      | Rs 15,00,000 | ACC-JV-2026-00020 | ACC-JV-2026-00021 |
 
 ## Operating JEs
 
@@ -45,7 +45,7 @@ RFQ to PO scored 2 (too many screens). Land/RERA scored 2. Channel daily report 
 
 **What changed**
 
-- Atlas commercial: RFQ → attach paper/WhatsApp quote → pick Active quote → raise PO (≤4 steps). Gate copy: *Cannot raise PO — vendor not Active. Open Approvals.*
+- Atlas commercial: RFQ → attach paper/WhatsApp quote → pick Active quote → raise PO (≤4 steps). Gate copy: _Cannot raise PO — vendor not Active. Open Approvals._
 - Atlas sales: book-next from the filtered free-unit list (BHK chips). Prefix typing is not the primary path. Exhausted-band prefix fallback kept.
 - Atlas land: consideration ₹ → sale deed → RERA challan required before filed.
 - Supervisor diary: labour-by-trade chips with Hindi secondary labels. Stores still Receive / Issue.

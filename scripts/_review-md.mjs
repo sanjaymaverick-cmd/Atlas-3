@@ -89,24 +89,35 @@ async function probe(page, extra = {}) {
     if (overflow) notes.push("Horizontal overflow");
     const h1 = document.querySelector("h1")?.textContent?.trim() ?? "";
     const kicker = document.querySelector("header p, main header p")?.textContent?.trim() ?? "";
-    const desc = document.querySelector("main header p.mt-1, main header p.text-sm")?.textContent?.trim() ?? "";
-    const nav = Array.from(document.querySelectorAll("aside nav a")).map((a) => a.textContent.replace(/\s+/g, " ").trim());
+    const desc =
+      document.querySelector("main header p.mt-1, main header p.text-sm")?.textContent?.trim() ??
+      "";
+    const nav = Array.from(document.querySelectorAll("aside nav a")).map((a) =>
+      a.textContent.replace(/\s+/g, " ").trim(),
+    );
     const headerSelects = Array.from(document.querySelectorAll("header select")).map((s) => {
       const el = s;
       const opt = el.selectedOptions?.[0];
       return { label: opt?.textContent?.trim() ?? "", value: el.value };
     });
     const localBadge = document.querySelector("header")?.innerText ?? "";
-    const jade = Array.from(document.querySelectorAll("button, a, [role='button']")).filter((el) => {
-      const bg = getComputedStyle(el).backgroundColor;
-      return bg === "rgb(29, 79, 66)" || bg === "rgba(29, 79, 66, 1)";
-    }).map((el) => el.textContent.replace(/\s+/g, " ").trim()).filter(Boolean);
-    const titles = Array.from(document.querySelectorAll("h1, h2")).map((el) => el.textContent.replace(/\s+/g, " ").trim());
-    const kpis = Array.from(document.querySelectorAll("main [class*='font-display']")).slice(0, 12).map((el) => {
-      const card = el.closest("[class*='p-4'], [class*='p-5']");
-      const label = card?.querySelector("p")?.textContent?.trim() ?? "";
-      return { label, value: el.textContent.replace(/\s+/g, " ").trim() };
-    });
+    const jade = Array.from(document.querySelectorAll("button, a, [role='button']"))
+      .filter((el) => {
+        const bg = getComputedStyle(el).backgroundColor;
+        return bg === "rgb(29, 79, 66)" || bg === "rgba(29, 79, 66, 1)";
+      })
+      .map((el) => el.textContent.replace(/\s+/g, " ").trim())
+      .filter(Boolean);
+    const titles = Array.from(document.querySelectorAll("h1, h2")).map((el) =>
+      el.textContent.replace(/\s+/g, " ").trim(),
+    );
+    const kpis = Array.from(document.querySelectorAll("main [class*='font-display']"))
+      .slice(0, 12)
+      .map((el) => {
+        const card = el.closest("[class*='p-4'], [class*='p-5']");
+        const label = card?.querySelector("p")?.textContent?.trim() ?? "";
+        return { label, value: el.textContent.replace(/\s+/g, " ").trim() };
+      });
     const body = document.body.innerText;
     const find = (re) => re.test(body);
     return {
@@ -119,7 +130,11 @@ async function probe(page, extra = {}) {
       navCount: nav.length,
       nav,
       headerSelects,
-      localBadge: /local only/i.test(localBadge) ? "Local only" : /local/i.test(localBadge) ? "Local (abbrev)" : "missing",
+      localBadge: /local only/i.test(localBadge)
+        ? "Local only"
+        : /local/i.test(localBadge)
+          ? "Local (abbrev)"
+          : "missing",
       jadeCount: jade.length,
       jade,
       titles,
@@ -189,7 +204,11 @@ async function main() {
 
   const t0 = Date.now();
   await login(page);
-  report.actions.push({ action: "login", ms: Date.now() - t0, landed: new URL(page.url()).pathname });
+  report.actions.push({
+    action: "login",
+    ms: Date.now() - t0,
+    landed: new URL(page.url()).pathname,
+  });
   await shotPage(page, "01-landing-after-login", true);
 
   const findCashStart = Date.now();
@@ -207,7 +226,11 @@ async function main() {
     await gotoApp(page, r.path);
     const p = await probe(page, { slug: r.slug, deep: Boolean(r.deep) });
     report.screens.push(p);
-    await shotPage(page, `desk-${r.slug}`, Boolean(r.deep) || r.slug === "projects" || r.slug === "crm" || r.slug === "sales-channel");
+    await shotPage(
+      page,
+      `desk-${r.slug}`,
+      Boolean(r.deep) || r.slug === "projects" || r.slug === "crm" || r.slug === "sales-channel",
+    );
   }
 
   await gotoApp(page, "/app/projects");
@@ -215,7 +238,11 @@ async function main() {
   const projectHref = await projectLink.getAttribute("href");
   await projectLink.click();
   await page.waitForTimeout(500);
-  report.actions.push({ action: "open-project", href: projectHref, path: new URL(page.url()).pathname });
+  report.actions.push({
+    action: "open-project",
+    href: projectHref,
+    path: new URL(page.url()).pathname,
+  });
   report.screens.push(await probe(page, { slug: "project-detail", deep: true }));
   await shotPage(page, "desk-project-detail", true);
 
@@ -251,8 +278,20 @@ async function main() {
   await shotPage(page, "02b-command-homes", true);
   report.entitySwitch = {
     options,
-    llp: { path: beforeEntity.path, kpis: beforeEntity.kpis, snippet: beforeEntity.bodySnippet.slice(0, 900), hasPink: beforeEntity.hasPinkCity, hasDesert: beforeEntity.hasDesertReach },
-    homes: { path: afterHomes.path, kpis: afterHomes.kpis, snippet: afterHomes.bodySnippet.slice(0, 900), hasPink: afterHomes.hasPinkCity, hasDesert: afterHomes.hasDesertReach },
+    llp: {
+      path: beforeEntity.path,
+      kpis: beforeEntity.kpis,
+      snippet: beforeEntity.bodySnippet.slice(0, 900),
+      hasPink: beforeEntity.hasPinkCity,
+      hasDesert: beforeEntity.hasDesertReach,
+    },
+    homes: {
+      path: afterHomes.path,
+      kpis: afterHomes.kpis,
+      snippet: afterHomes.bodySnippet.slice(0, 900),
+      hasPink: afterHomes.hasPinkCity,
+      hasDesert: afterHomes.hasDesertReach,
+    },
     numbersChanged: JSON.stringify(beforeEntity.kpis) !== JSON.stringify(afterHomes.kpis),
   };
 
@@ -331,12 +370,19 @@ async function main() {
   if (await reopen.count()) {
     await reopen.click();
     await page.waitForTimeout(300);
-    await page.getByPlaceholder(/your decision/i).first().fill("Keep self-hosted open-weight. No commercial API.");
+    await page
+      .getByPlaceholder(/your decision/i)
+      .first()
+      .fill("Keep self-hosted open-weight. No commercial API.");
     await page.getByRole("button", { name: /record decision/i }).click();
     await page.waitForTimeout(400);
     report.actions.push({ action: "reopen-and-record-decision", ok: true });
   } else {
-    report.actions.push({ action: "reopen-and-record-decision", ok: false, reason: "no reopen button" });
+    report.actions.push({
+      action: "reopen-and-record-decision",
+      ok: false,
+      reason: "no reopen button",
+    });
   }
   await shotPage(page, "desk-decisions-after-record", true);
 
@@ -355,7 +401,14 @@ async function main() {
     await newBtn.click();
     await page.waitForTimeout(200);
     await shotPage(page, "desk-projects-new-form", false);
-    report.actions.push({ action: "open-new-project-form", fields: await page.locator("form, .grid").first().innerText().catch(() => "open") });
+    report.actions.push({
+      action: "open-new-project-form",
+      fields: await page
+        .locator("form, .grid")
+        .first()
+        .innerText()
+        .catch(() => "open"),
+    });
   }
 
   await context.close();
@@ -407,7 +460,13 @@ async function main() {
 
   const outJson = join(OUT, "_notes.json");
   writeFileSync(outJson, JSON.stringify(report, null, 2));
-  console.log(JSON.stringify({ ok: true, screens: report.screens.length, mobile: report.mobile.length, out: OUT }, null, 2));
+  console.log(
+    JSON.stringify(
+      { ok: true, screens: report.screens.length, mobile: report.mobile.length, out: OUT },
+      null,
+      2,
+    ),
+  );
 }
 
 main().catch((err) => {

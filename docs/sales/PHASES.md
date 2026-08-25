@@ -4,14 +4,14 @@
 
 ## Recommended tech stack
 
-| Layer | This host | Go-live |
-|---|---|---|
-| UI | TanStack Start, React 19, Tailwind | Same |
-| State | Zustand persist | Postgres + JSONB |
+| Layer          | This host                          | Go-live                                         |
+| -------------- | ---------------------------------- | ----------------------------------------------- |
+| UI             | TanStack Start, React 19, Tailwind | Same                                            |
+| State          | Zustand persist                    | Postgres + JSONB                                |
 | Inventory lock | Optimistic status machine + refuse | `UPDATE … WHERE status = 'available' RETURNING` |
-| Scoring | Hybrid rules + GBDT-lite | Native CatBoost (`cat_features`) |
-| WhatsApp | Template registry + thread log | WhatsApp Business API |
-| Auth | Local test seats | RBAC on server |
+| Scoring        | Hybrid rules + GBDT-lite           | Native CatBoost (`cat_features`)                |
+| WhatsApp       | Template registry + thread log     | WhatsApp Business API                           |
+| Auth           | Local test seats                   | RBAC on server                                  |
 
 ## Folder structure
 
@@ -78,17 +78,17 @@ Handover (OC/snags/possession/society), booking docs, WhatsApp templates (Utilit
 
 ## Main UI “endpoints” (this host)
 
-| Path | Phase |
-|---|---|
-| `/app/sales/inventory` | 1 |
-| `/app/sales/channel` | 1 |
-| `/app/sales/company` | 1 |
-| `/app/approvals` | 1 (hold booking) |
-| `/app/sales/pipeline` | 2 |
-| `/app/sales/people` | 2 (360) |
-| `/app/sales/integrations` | 2 |
-| `/app/sales/whatsapp` | 3 |
-| `/app/sales/handover` | 3 |
-| `/app/sales/analytics` | 3 |
+| Path                      | Phase            |
+| ------------------------- | ---------------- |
+| `/app/sales/inventory`    | 1                |
+| `/app/sales/channel`      | 1                |
+| `/app/sales/company`      | 1                |
+| `/app/approvals`          | 1 (hold booking) |
+| `/app/sales/pipeline`     | 2                |
+| `/app/sales/people`       | 2 (360)          |
+| `/app/sales/integrations` | 2                |
+| `/app/sales/whatsapp`     | 3                |
+| `/app/sales/handover`     | 3                |
+| `/app/sales/analytics`    | 3                |
 
 99acres / MagicBricks / Housing.com webhooks are bound (`POST /api/ingest/…`). WhatsApp Business, payment gateway, and live ads remain owner TODOs to **bind**, not to re-scaffold.

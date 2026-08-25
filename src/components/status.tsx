@@ -2,7 +2,10 @@ import { Hint } from "@/components/hint";
 import { Badge } from "@/components/ui/badge";
 import { getTerm } from "@/lib/glossary";
 
-const MAP: Record<string, { tone: "ok" | "warn" | "danger" | "default" | "ink" | "muted"; label?: string }> = {
+const MAP: Record<
+  string,
+  { tone: "ok" | "warn" | "danger" | "default" | "ink" | "muted"; label?: string }
+> = {
   active: { tone: "ok" },
   executed: { tone: "ok" },
   issued: { tone: "ok" },

@@ -11,7 +11,9 @@ export const Route = createFileRoute("/app/capital")({ component: Capital });
 
 function Capital() {
   const { projects, entityId, projectId, pos } = useAtlas();
-  const list = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
+  const list = projects.filter(
+    (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+  );
   const rows = list.map((p) => capitalRow(p, pos));
   const committed = rows.filter((r) => !r.concept);
   const planSum = committed.reduce((s, r) => s + r.planned, 0);
@@ -27,16 +29,23 @@ function Capital() {
         description="Remaining ≈ Planned − JTD spent − Forecast. Concept/land is not committed until acquire. Atlas never posts this to ERPNext."
       />
       <GateBanner>
-        Statutory books stay in ERPNext. These figures are an operations view for the MD — not a voucher.
+        Statutory books stay in ERPNext. These figures are an operations view for the MD — not a
+        voucher.
       </GateBanner>
-      <EntityTable columns={["Project", "Planned", "JTD spent", "Open commitments", "Forecast", "Remaining"]}>
+      <EntityTable
+        columns={["Project", "Planned", "JTD spent", "Open commitments", "Forecast", "Remaining"]}
+      >
         {rows.map((r) => (
           <tr key={r.id} className="border-b border-line last:border-0">
             <td className="px-4 py-3">
               <p className="font-medium">
                 {r.code} · {r.name}
               </p>
-              {r.concept ? <p className="text-xs text-muted">Concept — planned only; not in committed totals</p> : null}
+              {r.concept ? (
+                <p className="text-xs text-muted">
+                  Concept — planned only; not in committed totals
+                </p>
+              ) : null}
             </td>
             <td className="px-4 py-3 tabular-nums">{inr(r.planned, true)}</td>
             <td className="px-4 py-3 tabular-nums">{inr(r.jtd, true)}</td>
@@ -58,8 +67,8 @@ function Capital() {
         </tr>
       </EntityTable>
       <p className="mt-3 text-xs text-muted">
-        Forecast is a 12-month remaining-work allowance on the project (seed). Optional monthly cells can be added
-        later — owner decision, not a funding-source module.
+        Forecast is a 12-month remaining-work allowance on the project (seed). Optional monthly
+        cells can be added later — owner decision, not a funding-source module.
       </p>
     </div>
   );

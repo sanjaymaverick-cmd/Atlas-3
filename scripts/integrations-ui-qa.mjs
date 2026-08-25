@@ -12,7 +12,8 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 30000 });
 await page.evaluate(() => {
-  for (const k of Object.keys(localStorage)) if (k.startsWith("atlas3-")) localStorage.removeItem(k);
+  for (const k of Object.keys(localStorage))
+    if (k.startsWith("atlas3-")) localStorage.removeItem(k);
 });
 await page.reload({ waitUntil: "networkidle" });
 await page.getByText("Local test accounts").waitFor({ timeout: 20000 });
@@ -29,7 +30,10 @@ if (!/Email fallback/i.test(t)) errors.push("missing email fallback");
 if (!/Designed only/i.test(t)) errors.push("missing designed-only");
 if (!/atlas-local-ingest-2026/.test(t)) errors.push("secret not shown");
 if (!/\/api\/ingest\/99acres/.test(t)) errors.push("99acres URL missing");
-await page.getByRole("button", { name: /send sample/i }).first().click();
+await page
+  .getByRole("button", { name: /send sample/i })
+  .first()
+  .click();
 await page.waitForTimeout(1500);
 await page.screenshot({ path: join(OUT, "integrations-live.png"), fullPage: true });
 await browser.close();

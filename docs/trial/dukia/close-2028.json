@@ -16,11 +16,7 @@
     "v_fin:invited"
   ],
   "pos": [],
-  "quotes": [
-    "q_hpbniuqf:submitted",
-    "q_jy7mjffa:submitted",
-    "q_0ipiqe9t:submitted"
-  ],
+  "quotes": ["q_hpbniuqf:submitted", "q_jy7mjffa:submitted", "q_0ipiqe9t:submitted"],
   "bookings": 160,
   "available": 196,
   "sold": 100,

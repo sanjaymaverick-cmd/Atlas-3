@@ -8,11 +8,16 @@ export default {
       async run(page, api) {
         await api.act("File diary", () =>
           window.__atlasStore.getState().addDiary({
-            projectId: "p_kanak", date: "2026-09-01", weather: "Cloudy, 33C", labour: 141,
+            projectId: "p_kanak",
+            date: "2026-09-01",
+            weather: "Cloudy, 33C",
+            labour: 141,
             work: "Tower B raft curing complete, cube 7-day 22 MPa. Tower A L13 slab shuttering.",
-            materials: "Cement 340 bags. TMT 8t.", safety: "No incidents.",
+            materials: "Cement 340 bags. TMT 8t.",
+            safety: "No incidents.",
             deviceKey: "eng-a1-2026-09-01",
-          }));
+          }),
+        );
       },
     },
     {
@@ -21,10 +26,21 @@ export default {
       async run(page, api) {
         const snags = await api.read("snags");
         const open = (snags ?? []).filter((s) => s.status !== "closed");
-        api.note("did", `Open snags: ${open.length}`, open.map((s) => `${s.unit}:${s.title}`).slice(0, 5).join(" · ") || "none");
+        api.note(
+          "did",
+          `Open snags: ${open.length}`,
+          open
+            .map((s) => `${s.unit}:${s.title}`)
+            .slice(0, 5)
+            .join(" · ") || "none",
+        );
 
         await api.act("Raise snag — C-512 window leak recurrence", () => {
-          window.__atlasStore.getState().addSnag({ projectId: "p_mansar", unit: "C-512", title: "Window leak recurrence after monsoon" });
+          window.__atlasStore.getState().addSnag({
+            projectId: "p_mansar",
+            unit: "C-512",
+            title: "Window leak recurrence after monsoon",
+          });
           return null;
         });
 
@@ -42,8 +58,13 @@ export default {
       note: "Mansarovar handover readiness",
       async run(page, api) {
         const h = await api.read("handovers");
-        api.note("did", `Handover files: ${(h ?? []).length}`,
-          (h ?? []).map((x) => `${x.unit ?? x.id}:oc=${x.oc ?? "-"}:stage=${x.stage ?? "-"}`).join(" · ") || "none");
+        api.note(
+          "did",
+          `Handover files: ${(h ?? []).length}`,
+          (h ?? [])
+            .map((x) => `${x.unit ?? x.id}:oc=${x.oc ?? "-"}:stage=${x.stage ?? "-"}`)
+            .join(" · ") || "none",
+        );
 
         await api.act("Advance the Mansarovar handover", () => {
           const s = window.__atlasStore.getState();

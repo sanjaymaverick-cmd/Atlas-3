@@ -6,7 +6,13 @@ import { PageHeader } from "@/components/page-header";
 import { Status } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { driftNote, modelMix, nativeScoreCount, recentScoreMean, SCORE_BASELINE_MEAN } from "@/lib/sales/observe";
+import {
+  driftNote,
+  modelMix,
+  nativeScoreCount,
+  recentScoreMean,
+  SCORE_BASELINE_MEAN,
+} from "@/lib/sales/observe";
 import { isThirdParty } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr } from "@/lib/utils";
@@ -15,7 +21,16 @@ import type { LeadStage } from "@/lib/types";
 
 export const Route = createFileRoute("/app/sales/analytics")({ component: SalesAnalytics });
 
-const STAGES: LeadStage[] = ["inquiry", "contacted", "qualified", "visit", "negotiation", "won", "lost", "nurture"];
+const STAGES: LeadStage[] = [
+  "inquiry",
+  "contacted",
+  "qualified",
+  "visit",
+  "negotiation",
+  "won",
+  "lost",
+  "nurture",
+];
 
 function SalesAnalytics() {
   const {
@@ -34,7 +49,9 @@ function SalesAnalytics() {
     approvals,
     requestCommission,
   } = useAtlas();
-  const ids = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id);
+  const ids = projects
+    .filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId))
+    .map((p) => p.id);
   const rows = leads.filter((l) => ids.includes(l.projectId));
   const live = rows.filter((l) => l.stage !== "lost" && l.stage !== "won");
   const partnerLeads = rows.filter((l) => l.partnerId);
@@ -61,11 +78,16 @@ function SalesAnalytics() {
         description="Conversion by source and score band. Cost-per-lead waits on portal spend. Local only."
       />
       <GateBanner>
-        {driftNote(scoreHistory)} Live portal spend is still an owner TODO, so cost-per-lead is blank.
+        {driftNote(scoreHistory)} Live portal spend is still an owner TODO, so cost-per-lead is
+        blank.
       </GateBanner>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi label="Live pipeline" value={String(live.length)} hint={`${won.length} won`} />
-        <Kpi label="Channel leads" value={String(partnerLeads.length)} vs={`${inHouse.length} in-house`} />
+        <Kpi
+          label="Channel leads"
+          value={String(partnerLeads.length)}
+          vs={`${inHouse.length} in-house`}
+        />
         <Kpi
           label="Hot band"
           value={String(byBand.hot)}
@@ -74,7 +96,10 @@ function SalesAnalytics() {
         />
         <Kpi
           label="Commission accrued"
-          value={inr(accrued.reduce((s, c) => s + c.amount, 0), true)}
+          value={inr(
+            accrued.reduce((s, c) => s + c.amount, 0),
+            true,
+          )}
           hint="Never self-pays"
           tone="warn"
         />
@@ -88,7 +113,10 @@ function SalesAnalytics() {
             <div key={s} className="grid grid-cols-[7rem_1fr_3rem] items-center gap-3 text-sm">
               <span className="text-muted">{STAGE_LABEL[s]}</span>
               <div className="h-3 overflow-hidden rounded-full bg-chip">
-                <div className="h-full bg-primary" style={{ width: `${Math.max(6, (n / maxStage) * 100)}%` }} />
+                <div
+                  className="h-full bg-primary"
+                  style={{ width: `${Math.max(6, (n / maxStage) * 100)}%` }}
+                />
               </div>
               <span className="tabular-nums">{n}</span>
             </div>
@@ -110,7 +138,9 @@ function SalesAnalytics() {
                 </p>
               </div>
               <p className="tabular-nums text-sm text-muted">
-                {w === 0 ? `${set.length} live · none booked yet` : `${Math.round((w / set.length) * 100)}% booked`}
+                {w === 0
+                  ? `${set.length} live · none booked yet`
+                  : `${Math.round((w / set.length) * 100)}% booked`}
               </p>
             </Card>
           );
@@ -143,16 +173,22 @@ function SalesAnalytics() {
       </div>
 
       <h2 className="mb-3 mt-8 font-display text-2xl">Commission payouts</h2>
-      <p className="mb-3 text-sm text-muted">Accrued only. Atlas never pays and never posts ERPNext. Send to Approvals.</p>
+      <p className="mb-3 text-sm text-muted">
+        Accrued only. Atlas never pays and never posts ERPNext. Send to Approvals.
+      </p>
       <div className="space-y-2">
         {commissions
           .filter((c) => ids.includes(c.projectId))
           .map((c) => {
-            const waiting = approvals.some((a) => a.kind === "Commission" && a.refId === c.id && a.status === "pending");
+            const waiting = approvals.some(
+              (a) => a.kind === "Commission" && a.refId === c.id && a.status === "pending",
+            );
             return (
               <Card key={c.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <div>
-                  <p className="font-medium">{partners.find((p) => p.id === c.partnerId)?.name ?? c.partnerId}</p>
+                  <p className="font-medium">
+                    {partners.find((p) => p.id === c.partnerId)?.name ?? c.partnerId}
+                  </p>
                   <p className="text-sm tabular-nums text-muted">
                     {inr(c.amount, true)} · booking {c.bookingId}
                   </p>
@@ -182,9 +218,20 @@ function SalesAnalytics() {
       <h2 className="mb-3 mt-8 font-display text-2xl">Model monitor</h2>
       <GateBanner>{driftNote(scoreHistory)}</GateBanner>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi label="Recent mean" value={String(recentScoreMean(scoreHistory))} hint={`baseline ${SCORE_BASELINE_MEAN}`} />
-        <Kpi label="Active model" value={scoreModels.find((m) => m.kind === activeScoreModel)?.name ?? activeScoreModel} />
-        <Kpi label="Native CatBoost rows" value={String(nativeScoreCount(scoreHistory))} hint="Bind scoring URL to fill" />
+        <Kpi
+          label="Recent mean"
+          value={String(recentScoreMean(scoreHistory))}
+          hint={`baseline ${SCORE_BASELINE_MEAN}`}
+        />
+        <Kpi
+          label="Active model"
+          value={scoreModels.find((m) => m.kind === activeScoreModel)?.name ?? activeScoreModel}
+        />
+        <Kpi
+          label="Native CatBoost rows"
+          value={String(nativeScoreCount(scoreHistory))}
+          hint="Bind scoring URL to fill"
+        />
         <Kpi label="History" value={String(scoreHistory.length)} hint="last 200 kept" />
       </div>
       <div className="mt-3 grid gap-3 md:grid-cols-2">

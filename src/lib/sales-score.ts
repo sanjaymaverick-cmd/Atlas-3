@@ -51,8 +51,16 @@ export function extractFeatures(
   activities: LeadActivity[] = [],
 ): Record<string, number> {
   const sourcePrior = SOURCE_PRIOR[lead.source] ?? 0.1;
-  const budgetFit = unit && lead.budget ? clamp((lead.budget - unit.price) / Math.max(unit.price, 1), -1, 1) : 0;
-  const budgetOk = unit && lead.budget ? (Math.abs(budgetFit) <= 0.2 ? 1 : 0) : lead.budget && lead.budget >= 5_000_000 ? 0.5 : 0;
+  const budgetFit =
+    unit && lead.budget ? clamp((lead.budget - unit.price) / Math.max(unit.price, 1), -1, 1) : 0;
+  const budgetOk =
+    unit && lead.budget
+      ? Math.abs(budgetFit) <= 0.2
+        ? 1
+        : 0
+      : lead.budget && lead.budget >= 5_000_000
+        ? 0.5
+        : 0;
   const intent = /west|3 bhk|car park|urgent|this month|clinic|loan/i.test(lead.note || "") ? 1 : 0;
   const wa = activities.filter((a) => /whatsapp|wa/i.test(a.kind)).length;
   const call = activities.filter((a) => /call/i.test(a.kind)).length;

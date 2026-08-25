@@ -32,17 +32,27 @@ async function login(page) {
 async function dismissOnboarding(page) {
   const skip = page.getByText("Skip All", { exact: false });
   if (await skip.count()) {
-    await skip.first().click({ timeout: 2000 }).catch(() => {});
+    await skip
+      .first()
+      .click({ timeout: 2000 })
+      .catch(() => {});
     await page.waitForTimeout(400);
   }
-  const close = page.locator('.onboarding-widget button, [aria-label="Close"], .onboarding-widget .close, button:has-text("×")');
+  const close = page.locator(
+    '.onboarding-widget button, [aria-label="Close"], .onboarding-widget .close, button:has-text("×")',
+  );
   if (await close.count()) {
-    await close.first().click({ timeout: 1500 }).catch(() => {});
+    await close
+      .first()
+      .click({ timeout: 1500 })
+      .catch(() => {});
   }
   await page.evaluate(() => {
-    document.querySelectorAll(".onboarding-widget, .widget.onboarding-widget, [class*='onboarding']").forEach((n) => {
-      if (n.innerText && n.innerText.includes("Getting Started")) n.remove();
-    });
+    document
+      .querySelectorAll(".onboarding-widget, .widget.onboarding-widget, [class*='onboarding']")
+      .forEach((n) => {
+        if (n.innerText && n.innerText.includes("Getting Started")) n.remove();
+      });
   });
 }
 
@@ -76,10 +86,17 @@ async function shot(page, name) {
   await dismissOnboarding(page);
   await shot(page, "21-je-list.png");
   const listText = await page.evaluate(() => document.body.innerText);
-  say("je-list", { ms: Date.now() - tJe, accountingMs, hasAtlas: /ATLAS-OPS|ACC-JV-2026/.test(listText), snippet: listText.slice(0, 1800) });
+  say("je-list", {
+    ms: Date.now() - tJe,
+    accountingMs,
+    hasAtlas: /ATLAS-OPS|ACC-JV-2026/.test(listText),
+    snippet: listText.slice(0, 1800),
+  });
 
   // Open submitted IC loan
-  await page.goto(`${BASE}/desk/journal-entry/ACC-JV-2026-00016`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}/desk/journal-entry/ACC-JV-2026-00016`, {
+    waitUntil: "domcontentloaded",
+  });
   await page.waitForTimeout(4000);
   await dismissOnboarding(page);
   await shot(page, "22-je-00016.png");
@@ -110,7 +127,9 @@ async function shot(page, name) {
   await dismissOnboarding(page);
   await shot(page, "24-je-new.png");
   // click company control
-  const companyInput = page.locator('[data-fieldname="company"] input, .frappe-control[data-fieldname="company"] input').first();
+  const companyInput = page
+    .locator('[data-fieldname="company"] input, .frappe-control[data-fieldname="company"] input')
+    .first();
   if (await companyInput.count()) {
     await companyInput.click();
     await companyInput.fill("");
@@ -120,14 +139,20 @@ async function shot(page, name) {
     await page.waitForTimeout(800);
   }
   await shot(page, "25-je-company-buildcom.png");
-  say("new-je-company", { text: (await page.evaluate(() => document.body.innerText)).slice(0, 1200) });
+  say("new-je-company", {
+    text: (await page.evaluate(() => document.body.innerText)).slice(0, 1200),
+  });
 
   // Chart of Accounts — switch company in tree toolbar
-  await page.goto(`${BASE}/desk/account/view/tree/Chart%20of%20Accounts`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}/desk/account/view/tree/Chart%20of%20Accounts`, {
+    waitUntil: "domcontentloaded",
+  });
   await page.waitForTimeout(3500);
   await dismissOnboarding(page);
   await shot(page, "26-coa-default.png");
-  const coDrop = page.locator("button:has-text('MOCK'), .btn:has-text('MOCK'), [data-fieldname='company']");
+  const _coDrop = page.locator(
+    "button:has-text('MOCK'), .btn:has-text('MOCK'), [data-fieldname='company']",
+  );
   if (await page.getByText("MOCK ATLA", { exact: false }).count()) {
     await page.getByText("MOCK ATLA", { exact: false }).first().click();
     await page.waitForTimeout(500);
@@ -155,7 +180,9 @@ async function shot(page, name) {
   await page.goto(`${BASE}/desk/journal-entry/new`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(2500);
   await dismissOnboarding(page);
-  const vt = page.locator('[data-fieldname="voucher_type"] input, [data-fieldname="voucher_type"] .control-input');
+  const vt = page.locator(
+    '[data-fieldname="voucher_type"] input, [data-fieldname="voucher_type"] .control-input',
+  );
   if (await vt.count()) {
     await vt.first().click();
     await page.waitForTimeout(500);
@@ -164,7 +191,11 @@ async function shot(page, name) {
   say("entry-type", { text: (await page.evaluate(() => document.body.innerText)).slice(0, 1800) });
 
   // User menu
-  await page.locator("text=Administrator").first().click().catch(() => {});
+  await page
+    .locator("text=Administrator")
+    .first()
+    .click()
+    .catch(() => {});
   await page.waitForTimeout(600);
   await shot(page, "31-user-menu.png");
 
@@ -173,7 +204,11 @@ async function shot(page, name) {
   await page.goto(`${BASE}/desk`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(2000);
   await shot(page, "32-mobile-home.png");
-  await page.getByText("Accounting", { exact: true }).first().click().catch(() => {});
+  await page
+    .getByText("Accounting", { exact: true })
+    .first()
+    .click()
+    .catch(() => {});
   await page.waitForTimeout(2000);
   await shot(page, "33-mobile-accounting.png");
 

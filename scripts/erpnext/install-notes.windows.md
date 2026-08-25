@@ -5,11 +5,11 @@ https://github.com/frappe/erpnext. Then Atlas reads it over REST.
 
 ## Ports
 
-| Service | Port |
-|---------|------|
-| Atlas   | 8080 |
-| CatBoost scoring | 8091 |
-| ERPNext web | **8000** (or set `ERPNEXT_URL`) |
+| Service          | Port                            |
+| ---------------- | ------------------------------- |
+| Atlas            | 8080                            |
+| CatBoost scoring | 8091                            |
+| ERPNext web      | **8000** (or set `ERPNEXT_URL`) |
 
 ## Path A — Docker (recommended on Windows)
 

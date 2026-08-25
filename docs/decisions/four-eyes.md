@@ -18,10 +18,10 @@ It does **not** silently turn the bypass off. Product has not decided.
 
 ## Flag
 
-| Env | Default | Effect |
-|-----|---------|--------|
-| `VITE_MD_BYPASS_FOUR_EYES` unset / `true` | **current behaviour** | MD can act on any approval |
-| `VITE_MD_BYPASS_FOUR_EYES=false` | opt-in | MD is scoped like every other named waiter |
+| Env                                       | Default               | Effect                                     |
+| ----------------------------------------- | --------------------- | ------------------------------------------ |
+| `VITE_MD_BYPASS_FOUR_EYES` unset / `true` | **current behaviour** | MD can act on any approval                 |
+| `VITE_MD_BYPASS_FOUR_EYES=false`          | opt-in                | MD is scoped like every other named waiter |
 
 Routing of `waitingOn` is a typed union (`src/lib/waiting-on.ts`). Unmapped values are a compile error. `"Four-eyes approver"` maps to owner + project director; with the bypass off, an MD who is not in that map still cannot act unless they are a mapped waiter.
 

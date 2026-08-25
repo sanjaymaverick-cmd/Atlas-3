@@ -14,7 +14,10 @@ async function login(page, seat) {
   await page.getByText("Local test accounts").waitFor({ timeout: 20000 });
   await page.getByRole("button", { name: seat }).click();
   await page.getByRole("button", { name: /enter local atlas/i }).click();
-  await page.getByRole("button", { name: /end session/i }).first().waitFor({ timeout: 25000 });
+  await page
+    .getByRole("button", { name: /end session/i })
+    .first()
+    .waitFor({ timeout: 25000 });
 }
 
 async function main() {
@@ -33,33 +36,51 @@ async function main() {
     findings.push({ sev: "ok", issue: `CA CRM blocked → ${crmUrl}` });
   }
 
-  await page.getByRole("button", { name: /end session/i }).first().click();
+  await page
+    .getByRole("button", { name: /end session/i })
+    .first()
+    .click();
   await login(page, "Finance Lead");
   await page.goto(`${BASE}/app/approvals`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(600);
   const appr = await page.locator("body").innerText();
-  if (/PO-1042[\s\S]{0,400}Approve/i.test(appr) && !/PO-1042[\s\S]{0,500}Waiting on Managing Director/i.test(appr)) {
+  if (
+    /PO-1042[\s\S]{0,400}Approve/i.test(appr) &&
+    !/PO-1042[\s\S]{0,500}Waiting on Managing Director/i.test(appr)
+  ) {
     findings.push({ sev: "p1", issue: "FL can still approve MD PO" });
   } else {
-    findings.push({ sev: "ok", issue: "FL cannot approve MD-waiting PO (waitingOn copy or no Approve)" });
+    findings.push({
+      sev: "ok",
+      issue: "FL cannot approve MD-waiting PO (waitingOn copy or no Approve)",
+    });
   }
 
-  await page.getByRole("button", { name: /end session/i }).first().click();
+  await page
+    .getByRole("button", { name: /end session/i })
+    .first()
+    .click();
   await login(page, "Managing Director");
   await page.goto(`${BASE}/app`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(600);
   const cmd = await page.locator("body").innerText();
   const openGates = (cmd.match(/Open gates/gi) || []).length;
   const approvalsWaiting = (cmd.match(/Approvals waiting/gi) || []).length;
-  if (openGates && approvalsWaiting) findings.push({ sev: "p2", issue: "Command still duplicates Open gates + Approvals waiting" });
+  if (openGates && approvalsWaiting)
+    findings.push({ sev: "p2", issue: "Command still duplicates Open gates + Approvals waiting" });
   else findings.push({ sev: "ok", issue: "Command no longer dual-counts Open gates" });
-  if (/Ctrl\/⌘ K/i.test(cmd) || /Ctrl/i.test(cmd)) findings.push({ sev: "ok", issue: "Command palette hint present" });
+  if (/Ctrl\/⌘ K/i.test(cmd) || /Ctrl/i.test(cmd))
+    findings.push({ sev: "ok", issue: "Command palette hint present" });
 
-  await page.getByRole("button", { name: /end session/i }).first().click();
+  await page
+    .getByRole("button", { name: /end session/i })
+    .first()
+    .click();
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
   await login(mobile, "Channel agent (Pink City)");
   const head = await mobile.locator("header").first().innerText();
-  if (!/Local only/i.test(head)) findings.push({ sev: "p1", issue: `Agent header missing Local only: ${head.slice(0, 80)}` });
+  if (!/Local only/i.test(head))
+    findings.push({ sev: "p1", issue: `Agent header missing Local only: ${head.slice(0, 80)}` });
   else findings.push({ sev: "ok", issue: "Agent header shows Local only" });
   const desk = await mobile.locator("body").innerText();
   if (/Cancellations/i.test(desk) && !/More fields/i.test(desk)) {
@@ -67,7 +88,8 @@ async function main() {
   } else {
     findings.push({ sev: "ok", issue: "Agent report is compact (More fields or already filed)" });
   }
-  if (await mobile.getByRole("link", { name: "Desk" }).count()) findings.push({ sev: "ok", issue: "Bottom nav Desk present" });
+  if (await mobile.getByRole("link", { name: "Desk" }).count())
+    findings.push({ sev: "ok", issue: "Bottom nav Desk present" });
   else findings.push({ sev: "p2", issue: "Bottom nav missing on agent phone" });
 
   await mobile.goto(`${BASE}/app/land`, { waitUntil: "networkidle" });

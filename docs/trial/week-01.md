@@ -1,6 +1,6 @@
 # MOCK ATLAS3 LLP — Week 1 (24–28 Aug 2026)
 
-**Operating company:** MOCK ATLAS3 LLP · **Books:** ERPNext at D:\ERPNext — *configure when ready*
+**Operating company:** MOCK ATLAS3 LLP · **Books:** ERPNext at D:\ERPNext — _configure when ready_
 **Days run:** 5 · **Seat turns:** 29 · **Errors:** 0 · **Audit events:** 76 across 13 named people
 
 Portfolio: KPR-01 Kanakpura (construction 42%) · MSE-03 Mansarovar (handover 78%) · BGH-02 Baggad (planning 18%).
@@ -31,15 +31,15 @@ Conversion/CLU flag once the order came in.
 
 ## Invariants — all held
 
-| Invariant | Result | Evidence |
-|-----------|--------|----------|
-| **Unit lock is strict** | ✅ | `un1` booked → "Unit A-1204 is booked — hold refused." · `un10` held → "Unit S-12 is held — hold refused." |
-| **Commission accrues, never self-pays** | ✅ | Payout requested Friday; both commissions still `accrued` |
-| **Pink City ≠ Desert Reach** | ✅ | 0 leaks across 12 seat/route UI checks; `/app/crm` redirects |
-| **Over-issue refused** | ✅ | 9999t probe → "Cannot issue more than accepted receipts." |
-| **Acquisition blocked until diligence** | ✅ | Refused Thu — correctly, `Title search — 30 year` is still `open` |
-| **Vendor cannot skip KYC** | ✅ | "Vendor can only be activated from the approval stage." |
-| **Daily report gates a hold** | ✅ | "File today's daily report before placing a hold." |
+| Invariant                               | Result | Evidence                                                                                                   |
+| --------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------- |
+| **Unit lock is strict**                 | ✅     | `un1` booked → "Unit A-1204 is booked — hold refused." · `un10` held → "Unit S-12 is held — hold refused." |
+| **Commission accrues, never self-pays** | ✅     | Payout requested Friday; both commissions still `accrued`                                                  |
+| **Pink City ≠ Desert Reach**            | ✅     | 0 leaks across 12 seat/route UI checks; `/app/crm` redirects                                               |
+| **Over-issue refused**                  | ✅     | 9999t probe → "Cannot issue more than accepted receipts."                                                  |
+| **Acquisition blocked until diligence** | ✅     | Refused Thu — correctly, `Title search — 30 year` is still `open`                                          |
+| **Vendor cannot skip KYC**              | ✅     | "Vendor can only be activated from the approval stage."                                                    |
+| **Daily report gates a hold**           | ✅     | "File today's daily report before placing a hold."                                                         |
 
 Seven gates, seven correct refusals. Nothing was worked around to complete a day.
 
@@ -53,7 +53,7 @@ MD approved a Change **waiting on the Project Director**, `pending → approved`
 refusal. `FIX-THIS.md` B4. Needs a product decision: scope the MD, or retire the
 four-eyes claim.
 
-Note the contrast — on Thursday the MD correctly ran into the *vendor* KYC gate.
+Note the contrast — on Thursday the MD correctly ran into the _vendor_ KYC gate.
 So gates the MD shouldn't cross do exist; the approval seat just isn't one of them.
 
 ### F2 — Near-miss has nowhere to go (P2, new)
@@ -71,18 +71,18 @@ Scheduled inspections carry `result: "pending"` rather than an empty result, so
 in the app, but it cost the harness a day — Thursday reported "none open" when
 three inspections were in fact awaiting sign-off.
 
-*(This was my script's wrong predicate, not an Atlas defect — recording it because
-the same conflation will bite a report writer later.)*
+_(This was my script's wrong predicate, not an Atlas defect — recording it because
+the same conflation will bite a report writer later.)_
 
 ### F4 — Jargon log (running)
 
-| Term | Seat | What the person expected |
-|------|------|--------------------------|
-| "Waiting for a yes" | MD | Replaced *Approvals* — loses the word they'd search for |
-| GRN, QS | Stores | "gate entry" and "measurement" |
-| Band | Channel agent | Reads hot/warm/cold; "band" itself means nothing |
-| Quarantine | Doc Controller | Read as "legally held", not "virus scan" |
-| Accrued | MD | "Earned, not paid" is the right gloss — the word alone isn't |
+| Term                | Seat           | What the person expected                                     |
+| ------------------- | -------------- | ------------------------------------------------------------ |
+| "Waiting for a yes" | MD             | Replaced _Approvals_ — loses the word they'd search for      |
+| GRN, QS             | Stores         | "gate entry" and "measurement"                               |
+| Band                | Channel agent  | Reads hot/warm/cold; "band" itself means nothing             |
+| Quarantine          | Doc Controller | Read as "legally held", not "virus scan"                     |
+| Accrued             | MD             | "Earned, not paid" is the right gloss — the word alone isn't |
 
 ---
 

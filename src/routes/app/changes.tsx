@@ -19,8 +19,11 @@ const KIND_LABEL: Record<ChangeItem["kind"], string> = {
 };
 
 function Changes() {
-  const { changes, projects, entityId, projectId, raiseChange, respondChange, closeNcr } = useAtlas();
-  const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
+  const { changes, projects, entityId, projectId, raiseChange, respondChange, closeNcr } =
+    useAtlas();
+  const scoped = projects.filter(
+    (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+  );
   const ids = scoped.map((p) => p.id);
   const rows = changes.filter((c) => ids.includes(c.projectId));
   const [kind, setKind] = useState<ChangeItem["kind"]>("rfi");
@@ -47,11 +50,13 @@ function Changes() {
           <p className="mt-1 text-xs text-muted">
             {kind === "rfi" ? (
               <>
-                <Hint term="rfi">Question to design</Hint> — site asks the drawing team before they can continue.
+                <Hint term="rfi">Question to design</Hint> — site asks the drawing team before they
+                can continue.
               </>
             ) : kind === "ncr" ? (
               <>
-                <Hint term="ncr">Failed work report</Hint> — inspection found a problem. Fix it, then check again.
+                <Hint term="ncr">Failed work report</Hint> — inspection found a problem. Fix it,
+                then check again.
               </>
             ) : (
               <>

@@ -58,10 +58,10 @@
 
 ## Logins (local)
 
-| Seat | User | Password | Notes |
-|------|------|----------|-------|
-| Finance | `finance@dukia.local` | `DukiaBooks-FL` | Role Profile Accounts. Submits JEs. |
-| MD | `md@dukia.local` | `DukiaBooks-MD` | Auditor — report read, **no JE submit**. |
+| Seat    | User                  | Password        | Notes                                    |
+| ------- | --------------------- | --------------- | ---------------------------------------- |
+| Finance | `finance@dukia.local` | `DukiaBooks-FL` | Role Profile Accounts. Submits JEs.      |
+| MD      | `md@dukia.local`      | `DukiaBooks-MD` | Auditor — report read, **no JE submit**. |
 
 User Permission Allow=Company: SATYAM BUILDCOM, SATYAM CONSTRUCTION, MGB PRIME ESTATES LLP. **Not** MOCK ATLAS3 LLP. **Not** DUKIA GROUP posting.
 

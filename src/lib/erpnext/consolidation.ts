@@ -103,7 +103,9 @@ export function eliminatePair(pair: IcPair, balances: IcPairBalances): ElimPairR
   const lines: ElimLine[] = [];
   const matchedAr = dueFromA === dueToB && dueFromB === dueToA;
   if (dueFromA !== dueToB) {
-    issues.push(`${pair.dueFromA} ₹${dueFromA} ≠ ${pair.dueToB} ₹${dueToB} — fix entity books first`);
+    issues.push(
+      `${pair.dueFromA} ₹${dueFromA} ≠ ${pair.dueToB} ₹${dueToB} — fix entity books first`,
+    );
   } else if (dueFromA > 0) {
     lines.push({
       account: pair.dueToB,
@@ -119,7 +121,9 @@ export function eliminatePair(pair: IcPair, balances: IcPairBalances): ElimPairR
     });
   }
   if (dueFromB !== dueToA) {
-    issues.push(`${pair.dueFromB} ₹${dueFromB} ≠ ${pair.dueToA} ₹${dueToA} — fix entity books first`);
+    issues.push(
+      `${pair.dueFromB} ₹${dueFromB} ≠ ${pair.dueToA} ₹${dueToA} — fix entity books first`,
+    );
   } else if (dueFromB > 0) {
     lines.push({
       account: pair.dueToA,
@@ -161,7 +165,10 @@ export function eliminatePair(pair: IcPair, balances: IcPairBalances): ElimPairR
   };
 }
 
-export function buildElimWorksheet(pairs: IcPair[], balances: IcPairBalances[]): {
+export function buildElimWorksheet(
+  pairs: IcPair[],
+  balances: IcPairBalances[],
+): {
   results: ElimPairResult[];
   lines: ElimLine[];
   unmatched: number;

@@ -48,10 +48,19 @@ export function DocumentPreview({
             {doc.sheet} · {doc.revision} · {doc.sha256.slice(0, 16)} · watermarked · {mm}:{ss}
           </p>
         </div>
-        <Button size="sm" variant="outline" className="border-white/20 bg-transparent text-sidebar-fg" onClick={onRequestExport}>
+        <Button
+          size="sm"
+          variant="outline"
+          className="border-white/20 bg-transparent text-sidebar-fg"
+          onClick={onRequestExport}
+        >
           Request original
         </Button>
-        <button className="grid size-11 place-items-center rounded-md hover:bg-white/10" onClick={onClose} aria-label="Close preview">
+        <button
+          className="grid size-11 place-items-center rounded-md hover:bg-white/10"
+          onClick={onClose}
+          aria-label="Close preview"
+        >
           <X className="size-5" />
         </button>
       </header>
@@ -96,8 +105,24 @@ function PlanSheet({ doc }: { doc: Document }) {
         <p className="font-mono text-xs tabular-nums">{doc.sheet}</p>
       </div>
       <svg viewBox="0 0 640 420" className="h-auto w-full text-ink">
-        <rect x="8" y="8" width="624" height="404" fill="none" stroke="currentColor" strokeWidth="1.2" />
-        <rect x="40" y="36" width="220" height="320" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        <rect
+          x="8"
+          y="8"
+          width="624"
+          height="404"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.2"
+        />
+        <rect
+          x="40"
+          y="36"
+          width="220"
+          height="320"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+        />
         <rect x="48" y="48" width="92" height="70" fill="none" stroke="currentColor" />
         <rect x="156" y="48" width="92" height="70" fill="none" stroke="currentColor" />
         <rect x="48" y="132" width="200" height="88" fill="none" stroke="currentColor" />
@@ -108,7 +133,15 @@ function PlanSheet({ doc }: { doc: Document }) {
         <text x="286" y="200" fontSize="9" fill="currentColor" transform="rotate(-90 294 200)">
           CORE / LIFTS
         </text>
-        <rect x="328" y="36" width="220" height="320" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        <rect
+          x="328"
+          y="36"
+          width="220"
+          height="320"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+        />
         {[0, 1, 2, 3].map((i) => (
           <rect
             key={i}
@@ -139,8 +172,8 @@ function CertificateSheet({ doc }: { doc: Document }) {
       <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Controlled original</p>
       <h2 className="mt-3 max-w-md font-display text-3xl">{doc.title}</h2>
       <p className="mt-4 max-w-sm text-sm text-muted">
-        This preview is a session-bound rendering. The statutory original is not transferred until a four-eyes
-        export grant is consumed.
+        This preview is a session-bound rendering. The statutory original is not transferred until a
+        four-eyes export grant is consumed.
       </p>
       <p className="mt-8 font-mono text-xs tabular-nums text-muted">
         {doc.sheet} · {doc.revision} · {doc.sha256}
@@ -155,8 +188,8 @@ function ReportSheet({ doc }: { doc: Document }) {
       <p className="text-[11px] uppercase tracking-[0.16em] text-muted">{doc.kind}</p>
       <h2 className="font-display text-3xl">{doc.title}</h2>
       <p className={cn("mt-4 max-w-prose text-sm leading-relaxed text-muted")}>
-        Controlled excerpt. Body text of the registered file is not streamed to the browser; only a watermarked
-        facsimile of the title sheet is shown. Integrity {doc.sha256}.
+        Controlled excerpt. Body text of the registered file is not streamed to the browser; only a
+        watermarked facsimile of the title sheet is shown. Integrity {doc.sha256}.
       </p>
       <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
         <div>

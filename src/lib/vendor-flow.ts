@@ -18,7 +18,8 @@ export function vendorApprovalCard(vendor: Vendor, projectId: string, id: string
     agingDays: 0,
     status: "pending",
     refId: vendor.id,
-    context: "GST / identity complete. Approve to Active so quotes can be selected and a purchase order can be raised.",
+    context:
+      "GST / identity complete. Approve to Active so quotes can be selected and a purchase order can be raised.",
   };
 }
 
@@ -32,7 +33,9 @@ export function ensureVendorActivationCards(
   const fallbackProject = projects[0]?.id ?? "p_av";
   for (const v of vendors) {
     if (v.stage !== "approval") continue;
-    const pending = out.some((a) => a.kind === "Vendor" && a.refId === v.id && a.status === "pending");
+    const pending = out.some(
+      (a) => a.kind === "Vendor" && a.refId === v.id && a.status === "pending",
+    );
     if (pending) continue;
     out.unshift(vendorApprovalCard(v, fallbackProject, `a_act_${v.id}`));
   }

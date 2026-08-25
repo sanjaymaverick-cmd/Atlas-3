@@ -6,7 +6,14 @@
  */
 import { openTrial, signIn, signOut, closeTrial } from "../session.mjs";
 
-const FORBIDDEN = ["Square and Yard", "SBG Sales Group", "Sunflower", "Acropolis", "R. Shekhawat", "P. Rathi"];
+const FORBIDDEN = [
+  "Square and Yard",
+  "SBG Sales Group",
+  "Sunflower",
+  "Acropolis",
+  "R. Shekhawat",
+  "P. Rathi",
+];
 
 const { context, page } = await openTrial({ reset: false });
 try {
@@ -14,7 +21,8 @@ try {
   const r = await page.evaluate((forbidden) => {
     const s = window.__atlasStore.getState();
     const user = s.user;
-    const me = s.agents.find((a) => a.userId === user?.id) ?? s.agents.find((a) => a.name === user?.name);
+    const me =
+      s.agents.find((a) => a.userId === user?.id) ?? s.agents.find((a) => a.name === user?.name);
     const companyId = me?.companyId;
     const agentIds = s.agents.filter((a) => a.companyId === companyId).map((a) => a.id);
     const projectIds = s.projects
@@ -27,7 +35,10 @@ try {
       return true;
     });
     const units = s.units.filter((u) => projectIds.includes(u.projectId));
-    const holds = s.holds.filter((h) => h.status === "held" && projectIds.includes(h.projectId) && agentIds.includes(h.agentId));
+    const holds = s.holds.filter(
+      (h) =>
+        h.status === "held" && projectIds.includes(h.projectId) && agentIds.includes(h.agentId),
+    );
     const reports = s.dailyReports.filter((d) => agentIds.includes(d.agentId));
     const blob = [
       ...leads.map((l) => `${l.name} ${l.note ?? ""} ${l.partnerId ?? ""}`),
@@ -48,7 +59,11 @@ try {
       unitLeak,
     };
   }, FORBIDDEN);
-  const ok = r.hits.length === 0 && r.unitLeak.length === 0 && r.projectIds.includes("p_av") && !r.projectIds.includes("p_sf");
+  const ok =
+    r.hits.length === 0 &&
+    r.unitLeak.length === 0 &&
+    r.projectIds.includes("p_av") &&
+    !r.projectIds.includes("p_sf");
   console.log(ok ? "PASS" : "FAIL", JSON.stringify(r));
   if (!ok) process.exitCode = 1;
   await signOut(page);

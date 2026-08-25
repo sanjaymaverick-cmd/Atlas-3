@@ -12,25 +12,49 @@ import { inr } from "@/lib/utils";
 export const Route = createFileRoute("/app/sales/")({ component: SalesCommand });
 
 function SalesCommand() {
-  const { projects, entityId, projectId, units, leads, holds, dailyReports, commissions, agents, user, partners, notices } =
-    useAtlas();
+  const {
+    projects,
+    entityId,
+    projectId,
+    units,
+    leads,
+    holds,
+    dailyReports,
+    commissions,
+    agents,
+    user,
+    partners,
+    notices,
+  } = useAtlas();
   const channel = isThirdParty(user?.role);
   const companyId = myCompanyId(user, agents);
   const ids = companyId
     ? projects.map((p) => p.id)
-    : projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id);
+    : projects
+        .filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId))
+        .map((p) => p.id);
   const agentIds = companyAgentIds(agents, companyId);
   const inv = units.filter((u) => ids.includes(u.projectId));
   const liveLeads = leads.filter((l) => {
     if (!ids.includes(l.projectId) || l.stage === "lost" || l.stage === "won") return false;
-    if (companyId) return l.partnerId === companyId || (l.agentId ? agentIds.includes(l.agentId) : false);
+    if (companyId)
+      return l.partnerId === companyId || (l.agentId ? agentIds.includes(l.agentId) : false);
     return true;
   });
   const hot = liveLeads.filter((l) => l.band === "hot");
-  const held = holds.filter((h) => h.status === "held" && ids.includes(h.projectId) && agentIds.includes(h.agentId));
+  const held = holds.filter(
+    (h) => h.status === "held" && ids.includes(h.projectId) && agentIds.includes(h.agentId),
+  );
   const available = inv.filter((u) => u.status === "available");
-  const todayRep = dailyReports.filter((d) => d.date === new Date().toISOString().slice(0, 10) && agentIds.includes(d.agentId));
-  const accrued = commissions.filter((c) => ids.includes(c.projectId) && c.status === "accrued" && (!companyId || c.partnerId === companyId));
+  const todayRep = dailyReports.filter(
+    (d) => d.date === new Date().toISOString().slice(0, 10) && agentIds.includes(d.agentId),
+  );
+  const accrued = commissions.filter(
+    (c) =>
+      ids.includes(c.projectId) &&
+      c.status === "accrued" &&
+      (!companyId || c.partnerId === companyId),
+  );
   const firm = companyId ? partners.find((p) => p.id === companyId)?.name : undefined;
 
   return (
@@ -41,8 +65,9 @@ function SalesCommand() {
         description="A unit can be free, on hold, or booked — never two at once. Commission is counted, never paid by itself. Atlas never writes to company accounts."
       />
       <GateBanner>
-        Portal connectors (99acres, MagicBricks, Housing, ads) and a trained GBDT lab are owner TODOs. This host scores with
-        rules + a swappable GBDT-lite (XGBoost / LightGBM / CatBoost encodings).
+        Portal connectors (99acres, MagicBricks, Housing, ads) and a trained GBDT lab are owner
+        TODOs. This host scores with rules + a swappable GBDT-lite (XGBoost / LightGBM / CatBoost
+        encodings).
       </GateBanner>
       <QueueStrip
         items={
@@ -51,9 +76,13 @@ function SalesCommand() {
                 { to: "/app/sales/channel", label: "Units on hold", count: held.length },
                 { to: "/app/sales/channel", label: "Daily reports today", count: todayRep.length },
                 {
-                  to: user?.role === "channel_admin" ? "/app/sales/company" : "/app/sales/inventory",
+                  to:
+                    user?.role === "channel_admin" ? "/app/sales/company" : "/app/sales/inventory",
                   label: user?.role === "channel_admin" ? "Agents" : "Available to hold",
-                  count: user?.role === "channel_admin" ? agents.filter((a) => a.companyId === companyId).length : available.length,
+                  count:
+                    user?.role === "channel_admin"
+                      ? agents.filter((a) => a.companyId === companyId).length
+                      : available.length,
                 },
                 { to: "/app/sales/channel", label: "Hot (your firm)", count: hot.length },
               ]
@@ -66,17 +95,28 @@ function SalesCommand() {
         }
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi label="Inventory lock" value={String(inv.length)} hint={`${held.length} held · ${available.length} free`} />
+        <Kpi
+          label="Inventory lock"
+          value={String(inv.length)}
+          hint={`${held.length} held · ${available.length} free`}
+        />
         <Kpi
           label="Live leads"
           value={String(liveLeads.length)}
           vs={`${hot.length} hot`}
           tone={hot.length ? "ok" : "warn"}
         />
-        <Kpi label="Daily reports today" value={String(todayRep.length)} hint="Mandatory before a hold" />
+        <Kpi
+          label="Daily reports today"
+          value={String(todayRep.length)}
+          hint="Mandatory before a hold"
+        />
         <Kpi
           label="Commission accrued"
-          value={inr(accrued.reduce((s, c) => s + c.amount, 0), true)}
+          value={inr(
+            accrued.reduce((s, c) => s + c.amount, 0),
+            true,
+          )}
           hint="Never self-pays"
           tone="warn"
         />
@@ -119,7 +159,10 @@ function SalesCommand() {
           <ul className="mb-6 space-y-2 text-sm">
             {notices.slice(0, 4).map((n) => (
               <li key={n.id}>
-                <Link to={n.to as "/app/sales"} className="block rounded-md border border-line px-4 py-3 hover:bg-chip">
+                <Link
+                  to={n.to as "/app/sales"}
+                  className="block rounded-md border border-line px-4 py-3 hover:bg-chip"
+                >
                   {n.title}
                 </Link>
               </li>
@@ -127,7 +170,9 @@ function SalesCommand() {
           </ul>
         </>
       ) : null}
-      <h2 className="mb-3 mt-8 font-display text-2xl">{channel ? "Your hot / warm" : "Hot / warm"}</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">
+        {channel ? "Your hot / warm" : "Hot / warm"}
+      </h2>
       <div className="space-y-2">
         {liveLeads
           .slice()

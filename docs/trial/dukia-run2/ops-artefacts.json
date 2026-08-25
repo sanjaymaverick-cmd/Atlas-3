@@ -41,36 +41,18 @@
     "bookings": [
       {
         "seat": "smav",
-        "errs": [
-          "ok",
-          "ok"
-        ],
-        "booked": [
-          "AVA-0102",
-          "AVA-0101"
-        ]
+        "errs": ["ok", "ok"],
+        "booked": ["AVA-0102", "AVA-0101"]
       },
       {
         "seat": "smsf",
-        "errs": [
-          "ok",
-          "ok"
-        ],
-        "booked": [
-          "SFA-0102",
-          "SFA-0101"
-        ]
+        "errs": ["ok", "ok"],
+        "booked": ["SFA-0102", "SFA-0101"]
       },
       {
         "seat": "smac",
-        "errs": [
-          "ok",
-          "ok"
-        ],
-        "booked": [
-          "ACA-0102",
-          "ACA-0101"
-        ]
+        "errs": ["ok", "ok"],
+        "booked": ["ACA-0102", "ACA-0101"]
       }
     ],
     "diaries": [
@@ -93,9 +75,7 @@
     "isolation": [
       {
         "companyId": "pt_ap",
-        "projectIds": [
-          "p_av"
-        ],
+        "projectIds": ["p_av"],
         "hits": [],
         "report": null
       }
@@ -367,10 +347,7 @@
     {
       "seat": "md",
       "company": "group",
-      "work": [
-        "Opened CEO pulse",
-        "Confirmed group is ops not post-elim P&L"
-      ],
+      "work": ["Opened CEO pulse", "Confirmed group is ops not post-elim P&L"],
       "erpnext": "none (ops)",
       "friction": [],
       "hire": "Y — MD desk is English and large type."
@@ -389,251 +366,190 @@
     {
       "seat": "md",
       "company": "group",
-      "work": [
-        "Activated vendors: active, active, active"
-      ],
+      "work": ["Activated vendors: active, active, active"],
       "hire": "Y — Approvals is one big yes button."
     },
     {
       "seat": "cm",
       "company": "all",
-      "work": [
-        "p_av PO po_cj4qijse",
-        "p_sf PO po_iijof7w0",
-        "p_ac PO po_1f5q7xh6"
-      ],
+      "work": ["p_av PO po_cj4qijse", "p_sf PO po_iijof7w0", "p_ac PO po_1f5q7xh6"],
       "hire": "N — RFQ/quote/select/PO is too many screens for a first-week hire without a buddy."
     },
     {
       "seat": "svav",
       "company": "p_av",
-      "work": [
-        "Diary sealed"
-      ],
+      "work": ["Diary sealed"],
       "hire": "Y — big date, weather, labour numbers. Hindi labels would help."
     },
     {
       "seat": "svac",
       "company": "p_ac",
-      "work": [
-        "Diary sealed"
-      ],
+      "work": ["Diary sealed"],
       "hire": "Y — big date, weather, labour numbers. Hindi labels would help."
     },
     {
       "seat": "svsf",
       "company": "p_sf",
-      "work": [
-        "Diary sealed"
-      ],
+      "work": ["Diary sealed"],
       "hire": "Y — big date, weather, labour numbers. Hindi labels would help."
     },
     {
       "seat": "st",
       "company": "le_sbc",
-      "work": [
-        "Receive 20 issue 5 → 5/20"
-      ],
+      "work": ["Receive 20 issue 5 → 5/20"],
       "hire": "Y — two buttons."
     },
     {
       "seat": "st2",
       "company": "le_mgb",
-      "work": [
-        "Receive 20 issue 5 → 5/20"
-      ],
+      "work": ["Receive 20 issue 5 → 5/20"],
       "hire": "Y — two buttons."
     },
     {
       "seat": "smav",
       "company": "p_av",
-      "work": [
-        "Booked AVA-0102, AVA-0101"
-      ],
+      "work": ["Booked AVA-0102, AVA-0101"],
       "hire": "Y if the unit list is filtered; N if they must type prefixes."
     },
     {
       "seat": "smsf",
       "company": "p_sf",
-      "work": [
-        "Booked SFA-0102, SFA-0101"
-      ],
+      "work": ["Booked SFA-0102, SFA-0101"],
       "hire": "Y if the unit list is filtered; N if they must type prefixes."
     },
     {
       "seat": "smac",
       "company": "p_ac",
-      "work": [
-        "Booked ACA-0102, ACA-0101"
-      ],
+      "work": ["Booked ACA-0102, ACA-0101"],
       "hire": "Y if the unit list is filtered; N if they must type prefixes."
     },
     {
       "seat": "agap1",
       "company": "Aadhaar Prime",
-      "work": [
-        "Daily report",
-        "Scoped projects only"
-      ],
+      "work": ["Daily report", "Scoped projects only"],
       "hire": "Y — as long as they never see another firm’s name."
     },
     {
       "seat": "agsy1",
       "company": "pt_sy",
-      "work": [
-        "Daily report"
-      ],
+      "work": ["Daily report"],
       "hire": "Y"
     },
     {
       "seat": "agsbg1",
       "company": "pt_sbg",
-      "work": [
-        "Daily report"
-      ],
+      "work": ["Daily report"],
       "hire": "Y"
     },
     {
       "seat": "dir1",
       "company": "group",
-      "work": [
-        "Seat present: Director (group)"
-      ],
+      "work": ["Seat present: Director (group)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "dir2",
       "company": "group",
-      "work": [
-        "Seat present: Director (group)"
-      ],
+      "work": ["Seat present: Director (group)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "fl",
       "company": "group",
-      "work": [
-        "Seat present: Finance Lead"
-      ],
+      "work": ["Seat present: Finance Lead"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "fl2",
       "company": "group",
-      "work": [
-        "Seat present: Finance (group books)"
-      ],
+      "work": ["Seat present: Finance (group books)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "dc",
       "company": "group",
-      "work": [
-        "Seat present: Document Controller"
-      ],
+      "work": ["Seat present: Document Controller"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "pdav",
       "company": "group",
-      "work": [
-        "Seat present: Project Director (Aerovista)"
-      ],
+      "work": ["Seat present: Project Director (Aerovista)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "pdac",
       "company": "group",
-      "work": [
-        "Seat present: Project Director (Acropolis)"
-      ],
+      "work": ["Seat present: Project Director (Acropolis)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "pdsf",
       "company": "group",
-      "work": [
-        "Seat present: Project Director (Sunflower)"
-      ],
+      "work": ["Seat present: Project Director (Sunflower)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "seav",
       "company": "group",
-      "work": [
-        "Seat present: Site Engineer (Aerovista)"
-      ],
+      "work": ["Seat present: Site Engineer (Aerovista)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "seac",
       "company": "group",
-      "work": [
-        "Seat present: Site Engineer (Acropolis)"
-      ],
+      "work": ["Seat present: Site Engineer (Acropolis)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "sesf",
       "company": "group",
-      "work": [
-        "Seat present: Site Engineer (Sunflower)"
-      ],
+      "work": ["Seat present: Site Engineer (Sunflower)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "caap",
       "company": "group",
-      "work": [
-        "Seat present: Aadhaar Prime — company admin"
-      ],
+      "work": ["Seat present: Aadhaar Prime — company admin"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "casy",
       "company": "group",
-      "work": [
-        "Seat present: Square and Yard — company admin"
-      ],
+      "work": ["Seat present: Square and Yard — company admin"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "casbg",
       "company": "group",
-      "work": [
-        "Seat present: SBG Sales Group — company admin"
-      ],
+      "work": ["Seat present: SBG Sales Group — company admin"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "agap2",
       "company": "group",
-      "work": [
-        "Seat present: Aadhaar Prime — agent 2"
-      ],
+      "work": ["Seat present: Aadhaar Prime — agent 2"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     },
     {
       "seat": "sm",
       "company": "group",
-      "work": [
-        "Seat present: Sales Manager (group)"
-      ],
+      "work": ["Seat present: Sales Manager (group)"],
       "hire": "Y for login. Task depth depends on desk.",
       "idle": false
     }

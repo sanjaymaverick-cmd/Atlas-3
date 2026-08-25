@@ -51,7 +51,10 @@ export function CommandPalette() {
         run: () => navigate({ to: "/app/approvals" }),
       }));
     return [...nav, ...proj, ...unitRows, ...gates].filter(
-      (row) => !needle || row.label.toLowerCase().includes(needle) || row.hint.toLowerCase().includes(needle),
+      (row) =>
+        !needle ||
+        row.label.toLowerCase().includes(needle) ||
+        row.hint.toLowerCase().includes(needle),
     );
   }, [user, q, projects, units, approvals, navigate]);
 
@@ -83,7 +86,9 @@ export function CommandPalette() {
                 }}
               >
                 <span>{row.label}</span>
-                <span className="text-[10px] uppercase tracking-[0.12em] text-muted">{row.hint}</span>
+                <span className="text-[10px] uppercase tracking-[0.12em] text-muted">
+                  {row.hint}
+                </span>
               </button>
             </li>
           ))}

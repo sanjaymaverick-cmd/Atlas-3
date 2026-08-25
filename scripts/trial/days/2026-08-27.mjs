@@ -36,8 +36,14 @@ export default {
       note: "Collections against an existing booking",
       async run(page, api) {
         const bookings = await api.read("bookings");
-        api.note("did", `Bookings: ${(bookings ?? []).length}`,
-          (bookings ?? []).map((b) => `${b.unit ?? b.id}:collected ${b.collected ?? 0}`).slice(0, 4).join(" · ") || "none");
+        api.note(
+          "did",
+          `Bookings: ${(bookings ?? []).length}`,
+          (bookings ?? [])
+            .map((b) => `${b.unit ?? b.id}:collected ${b.collected ?? 0}`)
+            .slice(0, 4)
+            .join(" · ") || "none",
+        );
 
         await api.act("Collect an installment", () => {
           const s = window.__atlasStore.getState();
@@ -73,7 +79,11 @@ export default {
         const mine = (approvals ?? []).filter(
           (a) => a.status === "pending" && /managing director|md/i.test(a.waitingOn ?? ""),
         );
-        api.note("did", `Waiting on MD: ${mine.length}`, mine.map((a) => a.kind).join(" · ") || "none");
+        api.note(
+          "did",
+          `Waiting on MD: ${mine.length}`,
+          mine.map((a) => a.kind).join(" · ") || "none",
+        );
 
         for (let i = 0; i < mine.length; i += 1) {
           await api.act("Approve an MD item", () => {

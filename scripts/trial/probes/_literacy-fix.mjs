@@ -22,7 +22,13 @@ try {
   await go(page, "/app/quotations");
   await page.waitForSelector("h1", { timeout: 15000 });
   const q = await page.evaluate(() => document.body.innerText);
-  check("quotations-4-steps", /Ask for prices/.test(q) && /Attach the quote/.test(q) && /Pick the Active quote/.test(q) && /Raise the purchase order/.test(q));
+  check(
+    "quotations-4-steps",
+    /Ask for prices/.test(q) &&
+      /Attach the quote/.test(q) &&
+      /Pick the Active quote/.test(q) &&
+      /Raise the purchase order/.test(q),
+  );
   await page.screenshot({ path: join(OUT, "cm-quotations.png") });
   await go(page, "/app/commercial");
   await page.waitForSelector("h1", { timeout: 15000 });
@@ -34,7 +40,10 @@ try {
   await go(page, "/app/customers");
   await page.waitForSelector("h1", { timeout: 15000 });
   const cu = await page.evaluate(() => document.body.innerText);
-  check("book-from-list", /Free unit/.test(cu) && /Book this unit/.test(cu) && /Book next in this list/.test(cu));
+  check(
+    "book-from-list",
+    /Free unit/.test(cu) && /Book this unit/.test(cu) && /Book next in this list/.test(cu),
+  );
   check("no-prefix-placeholder", !/A-0802/.test(cu));
   await page.screenshot({ path: join(OUT, "smav-customers.png") });
   const booked = await page.evaluate(() => {
@@ -57,7 +66,12 @@ try {
     const g = window.__atlasStore.getState();
     let o = g.obligations.find((x) => x.status !== "filed");
     if (!o) {
-      g.addObligation({ projectId: "p_av", kind: "rera", title: "Literacy QPR", due: "2026-09-01" });
+      g.addObligation({
+        projectId: "p_av",
+        kind: "rera",
+        title: "Literacy QPR",
+        due: "2026-09-01",
+      });
       o = window.__atlasStore.getState().obligations.find((x) => x.title === "Literacy QPR");
     }
     return window.__atlasStore.getState().fileObligation(o.id, "");
@@ -85,10 +99,25 @@ try {
   await go(page, "/app/ceo");
   await page.waitForSelector("h1", { timeout: 15000 });
   const md = await page.evaluate(() => document.body.innerText);
-  check("ceo-three-cards", /SATYAM BUILDCOM/.test(md) && /SATYAM CONSTRUCTION/.test(md) && /MGB PRIME ESTATES LLP/.test(md));
-  check("ceo-not-elim", /does not eliminate/i.test(md) || /not P&L after/i.test(md) || /worksheet/i.test(md));
+  check(
+    "ceo-three-cards",
+    /SATYAM BUILDCOM/.test(md) &&
+      /SATYAM CONSTRUCTION/.test(md) &&
+      /MGB PRIME ESTATES LLP/.test(md),
+  );
+  check(
+    "ceo-not-elim",
+    /does not eliminate/i.test(md) || /not P&L after/i.test(md) || /worksheet/i.test(md),
+  );
   check("ceo-erpnext-hint", /ERPNext/.test(md));
-  check("ceo-funnel-bars", /Funnel/.test(md) && /Available/.test(md) && /Possessed/.test(md) && /Velocity/.test(md) && /Aging/.test(md));
+  check(
+    "ceo-funnel-bars",
+    /Funnel/.test(md) &&
+      /Available/.test(md) &&
+      /Possessed/.test(md) &&
+      /Velocity/.test(md) &&
+      /Aging/.test(md),
+  );
   await page.screenshot({ path: join(OUT, "md-ceo.png") });
   await signOut(page);
 } finally {

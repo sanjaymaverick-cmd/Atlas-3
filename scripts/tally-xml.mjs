@@ -79,7 +79,8 @@ export async function tallyPost(xml) {
     const text = await res.text();
     const created = /<CREATED>(\d+)<\/CREATED>/i.exec(text) || /CREATED\s*=\s*"?(\d+)/i.exec(text);
     const errors = /<ERRORS>(\d+)<\/ERRORS>/i.exec(text) || /ERRORS\s*=\s*"?(\d+)/i.exec(text);
-    const exceptions = /<EXCEPTIONS>(\d+)<\/EXCEPTIONS>/i.exec(text) || /EXCEPTIONS\s*=\s*"?(\d+)/i.exec(text);
+    const exceptions =
+      /<EXCEPTIONS>(\d+)<\/EXCEPTIONS>/i.exec(text) || /EXCEPTIONS\s*=\s*"?(\d+)/i.exec(text);
     const lineError = /<LINEERROR>([^<]+)<\/LINEERROR>/i.exec(text);
     const createdN = Number(created?.[1] ?? 0);
     return {
@@ -102,7 +103,10 @@ export async function tallyPost(xml) {
       created: 0,
       errors: 1,
       text: "",
-      detail: err?.name === "AbortError" ? "Tally XML port 9000 did not answer" : String(err?.message || err),
+      detail:
+        err?.name === "AbortError"
+          ? "Tally XML port 9000 did not answer"
+          : String(err?.message || err),
     };
   } finally {
     clearTimeout(t);
@@ -283,9 +287,17 @@ export async function handleTallyAction(payload) {
   }
   if (action === "bootstrap") {
     const ping = await pingTally();
-    if (!ping.status) return { action, live: false, ok: false, detail: ping.detail, company: MOCK_COMPANY };
+    if (!ping.status)
+      return { action, live: false, ok: false, detail: ping.detail, company: MOCK_COMPANY };
     const ledgers = await bootstrapLedgers();
-    return { action, live: false, ok: ledgers.some((l) => l.ok || /already/i.test(l.detail + l.text)), company: MOCK_COMPANY, ledgers, ping };
+    return {
+      action,
+      live: false,
+      ok: ledgers.some((l) => l.ok || /already/i.test(l.detail + l.text)),
+      company: MOCK_COMPANY,
+      ledgers,
+      ping,
+    };
   }
   if (action === "voucher") {
     const r = await postMockVoucher(payload);
@@ -294,7 +306,9 @@ export async function handleTallyAction(payload) {
   if (action === "company-day") {
     const ping = await pingTally();
     const open = Boolean(ping.status);
-    const listed = new RegExp(MOCK_COMPANY.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(ping.text || "");
+    const listed = new RegExp(MOCK_COMPANY.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(
+      ping.text || "",
+    );
     return {
       action,
       live: false,

@@ -41,7 +41,9 @@ function People() {
 
   if (isThirdParty(user?.role)) return <Navigate to="/app/sales/channel" />;
 
-  const ids = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)).map((p) => p.id);
+  const ids = projects
+    .filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId))
+    .map((p) => p.id);
   const scopedLeads = leads.filter((l) => ids.includes(l.projectId));
   const scopedBooks = bookings.filter((b) => ids.includes(b.projectId));
   const master: Customer[] = customers.filter(
@@ -80,7 +82,11 @@ function People() {
           const shown = open === c.id;
           return (
             <Card key={c.id} className="p-4">
-              <button type="button" className="flex w-full flex-wrap items-start justify-between gap-3 text-left" onClick={() => setOpen(shown ? null : c.id)}>
+              <button
+                type="button"
+                className="flex w-full flex-wrap items-start justify-between gap-3 text-left"
+                onClick={() => setOpen(shown ? null : c.id)}
+              >
                 <div>
                   <p className="font-display text-xl">{c.name}</p>
                   <p className="text-sm text-muted">
@@ -99,24 +105,36 @@ function People() {
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Master</p>
                     <p className="text-sm">
-                      {book?.unit ?? primary?.unit ?? "—"} {inv ? `· ${inv.status} · ${inr(inv.price, true)}` : ""}
+                      {book?.unit ?? primary?.unit ?? "—"}{" "}
+                      {inv ? `· ${inv.status} · ${inr(inv.price, true)}` : ""}
                     </p>
-                    {primary?.budget ? <p className="text-sm text-muted">Budget {inr(primary.budget, true)}</p> : null}
+                    {primary?.budget ? (
+                      <p className="text-sm text-muted">Budget {inr(primary.budget, true)}</p>
+                    ) : null}
                     <p className="mt-2 text-sm">{primary?.note ?? "Customer master row."}</p>
                     {primary ? (
-                      <Button className="mt-3 h-11" variant="outline" onClick={() => toast(toggleWaConsent(primary.id) ?? "Consent updated.")}>
+                      <Button
+                        className="mt-3 h-11"
+                        variant="outline"
+                        onClick={() => toast(toggleWaConsent(primary.id) ?? "Consent updated.")}
+                      >
                         WhatsApp consent: {primary.waConsent ? "on" : "off"}
                       </Button>
                     ) : null}
                   </div>
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Score & desk</p>
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
+                      Score & desk
+                    </p>
                     {primary ? (
                       <>
                         <p className="text-sm">
-                          {primary.currentScore ?? primary.score ?? "—"} · {(primary.currentScoreReasons ?? primary.scoreReasons ?? []).join(" · ")}
+                          {primary.currentScore ?? primary.score ?? "—"} ·{" "}
+                          {(primary.currentScoreReasons ?? primary.scoreReasons ?? []).join(" · ")}
                         </p>
-                        <p className="mt-1 text-xs text-muted">{primary.scoreModel ?? "unscored"}</p>
+                        <p className="mt-1 text-xs text-muted">
+                          {primary.scoreModel ?? "unscored"}
+                        </p>
                         <ul className="mt-2 space-y-1 text-xs text-muted">
                           {scoreHistory
                             .filter((s) => theirs.some((l) => l.id === s.leadId))
@@ -126,8 +144,13 @@ function People() {
                                 {s.at.slice(0, 10)} · {s.score} {s.band} · {s.model}
                               </li>
                             ))}
-                          {leadActivities.filter((a) => theirs.some((l) => l.id === a.leadId)).length} events ·{" "}
-                          {waSends.filter((w) => theirs.some((l) => l.id === w.leadId)).length} WhatsApp
+                          {
+                            leadActivities.filter((a) => theirs.some((l) => l.id === a.leadId))
+                              .length
+                          }{" "}
+                          events ·{" "}
+                          {waSends.filter((w) => theirs.some((l) => l.id === w.leadId)).length}{" "}
+                          WhatsApp
                         </ul>
                       </>
                     ) : (
@@ -135,10 +158,13 @@ function People() {
                     )}
                   </div>
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Money & snags</p>
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
+                      Money & snags
+                    </p>
                     {book ? (
                       <p className="text-sm">
-                        {book.unit} · collected {inr(book.collected, true)} of {inr(book.value, true)}
+                        {book.unit} · collected {inr(book.collected, true)} of{" "}
+                        {inr(book.value, true)}
                       </p>
                     ) : (
                       <p className="text-sm text-muted">No booking yet.</p>

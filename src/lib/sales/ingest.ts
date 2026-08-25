@@ -1,6 +1,15 @@
 import type { Lead } from "@/lib/types";
 
-const PORTALS = new Set(["99acres", "magicbricks", "housing", "meta", "google", "website", "email", "webhook"]);
+const PORTALS = new Set([
+  "99acres",
+  "magicbricks",
+  "housing",
+  "meta",
+  "google",
+  "website",
+  "email",
+  "webhook",
+]);
 
 export interface IngestRequest {
   projectId: string;
@@ -28,7 +37,13 @@ export function normalizePhone(phone: string) {
 
 export function findDuplicate(leads: Lead[], phone: string, projectId: string) {
   const p = normalizePhone(phone);
-  return leads.find((l) => normalizePhone(l.phone) === p && l.projectId === projectId && l.stage !== "lost" && l.stage !== "nurture");
+  return leads.find(
+    (l) =>
+      normalizePhone(l.phone) === p &&
+      l.projectId === projectId &&
+      l.stage !== "lost" &&
+      l.stage !== "nurture",
+  );
 }
 
 export function isPortalSource(source: string) {
@@ -50,7 +65,7 @@ const PROJECT_ALIASES: Record<string, string> = {
 export function mapProject(raw?: string | null) {
   if (!raw) return "p_av";
   const key = raw.trim().toLowerCase();
-  return PROJECT_ALIASES[key] ?? (PROJECT_ALIASES[key.replace(/\s+/g, " ")] ?? "p_av");
+  return PROJECT_ALIASES[key] ?? PROJECT_ALIASES[key.replace(/\s+/g, " ")] ?? "p_av";
 }
 
 export function mapKind(raw?: string | null): Lead["kind"] | undefined {
@@ -63,7 +78,8 @@ export function mapKind(raw?: string | null): Lead["kind"] | undefined {
 }
 
 export function asRecord(payload: unknown): Record<string, unknown> {
-  if (payload && typeof payload === "object" && !Array.isArray(payload)) return payload as Record<string, unknown>;
+  if (payload && typeof payload === "object" && !Array.isArray(payload))
+    return payload as Record<string, unknown>;
   return {};
 }
 
@@ -81,7 +97,12 @@ export function pickNumber(row: Record<string, unknown>, keys: string[]) {
     const v = row[key];
     if (typeof v === "number" && Number.isFinite(v)) return v;
     if (typeof v === "string" && v.trim()) {
-      const n = Number(v.replace(/[,\s]/g, "").replace(/lakh|lac/i, "00000").replace(/cr/i, "0000000"));
+      const n = Number(
+        v
+          .replace(/[,\s]/g, "")
+          .replace(/lakh|lac/i, "00000")
+          .replace(/cr/i, "0000000"),
+      );
       if (Number.isFinite(n) && n > 0) return n;
     }
   }

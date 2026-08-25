@@ -11,10 +11,38 @@ export {
 export const EMIS: Emi[] = [];
 
 export const BUDGET_LINES: BudgetLine[] = [
-  { id: "bl_av_civ", projectId: "p_av", code: "01-CIV", name: "Civil structure", budget: 420_000_000, committed: 0 },
-  { id: "bl_av_mep", projectId: "p_av", code: "02-MEP", name: "MEP", budget: 90_000_000, committed: 0 },
-  { id: "bl_sf_civ", projectId: "p_sf", code: "01-CIV", name: "Civil structure", budget: 95_000_000, committed: 0 },
-  { id: "bl_ac_civ", projectId: "p_ac", code: "01-CIV", name: "Civil structure", budget: 720_000_000, committed: 0 },
+  {
+    id: "bl_av_civ",
+    projectId: "p_av",
+    code: "01-CIV",
+    name: "Civil structure",
+    budget: 420_000_000,
+    committed: 0,
+  },
+  {
+    id: "bl_av_mep",
+    projectId: "p_av",
+    code: "02-MEP",
+    name: "MEP",
+    budget: 90_000_000,
+    committed: 0,
+  },
+  {
+    id: "bl_sf_civ",
+    projectId: "p_sf",
+    code: "01-CIV",
+    name: "Civil structure",
+    budget: 95_000_000,
+    committed: 0,
+  },
+  {
+    id: "bl_ac_civ",
+    projectId: "p_ac",
+    code: "01-CIV",
+    name: "Civil structure",
+    budget: 720_000_000,
+    committed: 0,
+  },
 ];
 
 export const QUANTITIES: QuantityItem[] = [];
@@ -25,7 +53,8 @@ export const OWNER_TODOS = [
   {
     id: "todo_funding",
     title: "Funding-source module",
-    detail: "Whether to track lender / internal / JV funding inside Atlas. Stub only until go-live is decided.",
+    detail:
+      "Whether to track lender / internal / JV funding inside Atlas. Stub only until go-live is decided.",
     status: "open" as const,
   },
   {
@@ -37,7 +66,8 @@ export const OWNER_TODOS = [
   {
     id: "todo_erpnext_posting",
     title: "ERPNext posting (Phase 2)",
-    detail: "Read/reconcile is Phase 1. Controlled posting stays off until ERPNEXT_POSTING_ENABLED is an explicit owner decision.",
+    detail:
+      "Read/reconcile is Phase 1. Controlled posting stays off until ERPNEXT_POSTING_ENABLED is an explicit owner decision.",
     status: "open" as const,
   },
   {
@@ -49,19 +79,22 @@ export const OWNER_TODOS = [
   {
     id: "todo_portals",
     title: "Portal / ads connectors",
-    detail: "99acres, MagicBricks, Housing.com webhooks are bound on this host. Meta / Google Lead Ads and live WhatsApp Business remain owner TODOs.",
+    detail:
+      "99acres, MagicBricks, Housing.com webhooks are bound on this host. Meta / Google Lead Ads and live WhatsApp Business remain owner TODOs.",
     status: "open" as const,
   },
   {
     id: "todo_ic_elim",
     title: "Automatic intercompany elimination",
-    detail: "ERPNext records IC pairs; group elim is a period-end worksheet. Auto-elim is optional later — not Atlas CEO pulse.",
+    detail:
+      "ERPNext records IC pairs; group elim is a period-end worksheet. Auto-elim is optional later — not Atlas CEO pulse.",
     status: "open" as const,
   },
   {
     id: "todo_stock_bridge",
     title: "ERPNext stock / GRN",
-    detail: "Atlas Materials is quantity. Valued stock in ERPNext needs Stock Entry when posting is on. Labels only until then.",
+    detail:
+      "Atlas Materials is quantity. Valued stock in ERPNext needs Stock Entry when posting is on. Labels only until then.",
     status: "open" as const,
   },
   {

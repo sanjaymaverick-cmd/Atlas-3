@@ -49,7 +49,10 @@ function Controls() {
         title="Materials"
         description="How much came in, how much went to site, and what is still open. You cannot issue more than was received. Site engineers own this desk — a separate stores seat is optional. ERPNext warehouse names are labels only; Atlas never posts Stock Entry."
       />
-      <GateBanner>Receipts here are quantities, not GRNs. No challan or vendor on this desk. Not ERPNext stock. Local only.</GateBanner>
+      <GateBanner>
+        Receipts here are quantities, not GRNs. No challan or vendor on this desk. Not ERPNext
+        stock. Local only.
+      </GateBanner>
 
       <h2 className="mb-3 font-display text-2xl">Budget vs committed</h2>
       <div className="space-y-3">
@@ -75,7 +78,8 @@ function Controls() {
 
       <h2 className="mb-3 mt-8 font-display text-2xl">Open stock</h2>
       <p className="mb-3 text-sm text-muted">
-        Open stock = received − issued. Receive when the truck comes. Issue when material goes to the pour.
+        Open stock = received − issued. Receive when the truck comes. Issue when material goes to
+        the pour.
       </p>
       {mats.length === 0 ? (
         <p className="mb-6 text-sm text-muted">No material lines for this entity / project.</p>
@@ -98,8 +102,10 @@ function Controls() {
                 </p>
                 <p className="text-xs text-muted">
                   ERPNext {erpnextItemCode(m.name)} @{" "}
-                  {erpnextWarehouse(projects.find((p) => p.id === m.projectId)?.entityId ?? entityId)} · not
-                  posted
+                  {erpnextWarehouse(
+                    projects.find((p) => p.id === m.projectId)?.entityId ?? entityId,
+                  )}{" "}
+                  · not posted
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -172,7 +178,15 @@ function Controls() {
                   Drawing qty {q.bimQty} · site measure {q.siteQty}
                 </p>
               </div>
-              <Status value={q.status === "variance" ? "review" : q.status === "approved" ? "approved" : "pending"} />
+              <Status
+                value={
+                  q.status === "variance"
+                    ? "review"
+                    : q.status === "approved"
+                      ? "approved"
+                      : "pending"
+                }
+              />
             </div>
             {q.status !== "approved" ? (
               <Button

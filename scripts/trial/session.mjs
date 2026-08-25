@@ -40,8 +40,7 @@ export const BASE = process.env.ATLAS_URL || "http://127.0.0.1:8080";
  * holds a lock on `Default/Network/Cookies`, which makes the watcher throw
  * EBUSY and take the dev server down with it.
  */
-export const PROFILE =
-  process.env.ATLAS_TRIAL_PROFILE || join(tmpdir(), "atlas3-trial-profile");
+export const PROFILE = process.env.ATLAS_TRIAL_PROFILE || join(tmpdir(), "atlas3-trial-profile");
 
 const STORE_KEYS = ["atlas3-company-day-v1", "atlas3-clt-v1"];
 const STORE_PREFIX = "atlas3-";
@@ -124,7 +123,9 @@ async function assertServer() {
     const r = await fetch(BASE, { signal: AbortSignal.timeout(90_000) });
     if (!r.ok && r.status !== 200) throw new Error(`HTTP ${r.status}`);
   } catch (err) {
-    throw new Error(`Atlas is not running at ${BASE}. Start it with: npm run dev\n(${err.message})`);
+    throw new Error(
+      `Atlas is not running at ${BASE}. Start it with: npm run dev\n(${err.message})`,
+    );
   }
 }
 
@@ -187,9 +188,7 @@ export async function waitForHydration(page, timeout = 60_000) {
 
 /** True when a seat is currently signed in. */
 export async function isSignedIn(page) {
-  return page
-    .evaluate(() => Boolean(window.__atlasStore?.getState?.().user))
-    .catch(() => false);
+  return page.evaluate(() => Boolean(window.__atlasStore?.getState?.().user)).catch(() => false);
 }
 
 /**
@@ -206,17 +205,15 @@ export async function signIn(page, seat) {
   await waitForHydration(page);
   if (await isSignedIn(page)) await signOut(page);
 
-  const err = await page.evaluate(
-    ({ e, p }) => window.__atlasStore.getState().signInLocal(e, p),
-    { e: email, p: PASSWORDS[email] },
-  );
+  const err = await page.evaluate(({ e, p }) => window.__atlasStore.getState().signInLocal(e, p), {
+    e: email,
+    p: PASSWORDS[email],
+  });
   if (err) throw new Error(`Sign-in refused for ${email}: ${err}`);
 
-  await page.waitForFunction(
-    (e) => window.__atlasStore?.getState?.().user?.email === e,
-    email,
-    { timeout: 15000 },
-  );
+  await page.waitForFunction((e) => window.__atlasStore?.getState?.().user?.email === e, email, {
+    timeout: 15000,
+  });
   return email;
 }
 
@@ -232,11 +229,9 @@ export async function signInViaForm(page, seat) {
   await page.getByLabel("Password").fill(PASSWORDS[email]);
   await page.getByRole("button", { name: /enter local atlas/i }).click();
 
-  await page.waitForFunction(
-    (e) => window.__atlasStore?.getState?.().user?.email === e,
-    email,
-    { timeout: 30000 },
-  );
+  await page.waitForFunction((e) => window.__atlasStore?.getState?.().user?.email === e, email, {
+    timeout: 30000,
+  });
   return email;
 }
 
@@ -251,7 +246,9 @@ export async function go(page, path) {
 export async function signOut(page) {
   if (!(await isSignedIn(page))) return;
   await page.evaluate(() => window.__atlasStore.getState().signOut());
-  await page.waitForFunction(() => !window.__atlasStore?.getState?.().user, null, { timeout: 15000 });
+  await page.waitForFunction(() => !window.__atlasStore?.getState?.().user, null, {
+    timeout: 15000,
+  });
 }
 
 /**
@@ -265,7 +262,10 @@ export async function setTrialDate(page, iso) {
     w.__atlasStore.getState().setSimDate(d);
     return w.__atlasStore.getState().simDate === d;
   }, iso);
-  if (!ok) throw new Error("Could not set the trial clock — is the store bridge mounted? (see scripts/trial/README.md)");
+  if (!ok)
+    throw new Error(
+      "Could not set the trial clock — is the store bridge mounted? (see scripts/trial/README.md)",
+    );
   return iso;
 }
 

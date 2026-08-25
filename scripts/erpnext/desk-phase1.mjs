@@ -7,7 +7,13 @@
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ERP_CREATE_TIMEOUT_MS, ERP_SLOW_TIMEOUT_MS, erpnextFetch, loadDotEnv, readErpnextConfig } from "./lib.mjs";
+import {
+  ERP_CREATE_TIMEOUT_MS,
+  ERP_SLOW_TIMEOUT_MS,
+  erpnextFetch,
+  loadDotEnv,
+  readErpnextConfig,
+} from "./lib.mjs";
 
 loadDotEnv();
 const cfg = readErpnextConfig();
@@ -121,7 +127,14 @@ async function findByFilters(doctype, filters) {
   return r?.data?.[0] ?? null;
 }
 
-async function upsertProperty({ doc_type, field_name, property, value, property_type, doctype_or_field = "DocField" }) {
+async function upsertProperty({
+  doc_type,
+  field_name,
+  property,
+  value,
+  property_type,
+  doctype_or_field = "DocField",
+}) {
   const hit = await findByFilters("Property Setter", [
     ["doc_type", "=", doc_type],
     ["field_name", "=", field_name],
@@ -150,7 +163,10 @@ try {
     module_profile_name: "DUKIA Books",
     block_modules: BLOCK_MODULES.map((module) => ({ module })),
   });
-  tick(true, "Module Profile DUKIA Books (blocked Stock/Mfg/Selling/Buying/CRM/Quality/Support/Website/Subcontracting/Projects/Assets)");
+  tick(
+    true,
+    "Module Profile DUKIA Books (blocked Stock/Mfg/Selling/Buying/CRM/Quality/Support/Website/Subcontracting/Projects/Assets)",
+  );
 } catch (e) {
   tick(false, "Module Profile DUKIA Books", e.message);
 }
@@ -262,7 +278,8 @@ for (const user of [FINANCE, MD]) {
         apply_to_all_doctypes: 1,
         is_default: company === "SATYAM BUILDCOM" ? 1 : 0,
       };
-      if (hit?.name) await put(`/api/resource/User Permission/${encodeURIComponent(hit.name)}`, body);
+      if (hit?.name)
+        await put(`/api/resource/User Permission/${encodeURIComponent(hit.name)}`, body);
       else await post("/api/resource/User Permission", body);
       tick(true, `User Permission ${user} → ${company}`);
     } catch (e) {
@@ -273,18 +290,58 @@ for (const user of [FINANCE, MD]) {
 
 // ── Workspace ─────────────────────────────────────────────────────────
 const shortcuts = [
-  { type: "DocType", label: "New voucher", link_to: "Journal Entry", doc_view: "New", color: "#2490EF" },
-  { type: "DocType", label: "Vouchers", link_to: "Journal Entry", doc_view: "List", color: "#2490EF" },
+  {
+    type: "DocType",
+    label: "New voucher",
+    link_to: "Journal Entry",
+    doc_view: "New",
+    color: "#2490EF",
+  },
+  {
+    type: "DocType",
+    label: "Vouchers",
+    link_to: "Journal Entry",
+    doc_view: "List",
+    color: "#2490EF",
+  },
   { type: "DocType", label: "Accounts (tree)", link_to: "Account", doc_view: "Tree" },
   { type: "Report", label: "Ledger", link_to: "General Ledger", report_ref_doctype: "GL Entry" },
-  { type: "Report", label: "Trial Balance", link_to: "Trial Balance", report_ref_doctype: "GL Entry" },
-  { type: "Report", label: "Profit & Loss", link_to: "Profit and Loss Statement", report_ref_doctype: "GL Entry" },
-  { type: "Report", label: "Balance Sheet", link_to: "Balance Sheet", report_ref_doctype: "GL Entry" },
-  { type: "Report", label: "Sister loans", link_to: "General Ledger", report_ref_doctype: "GL Entry" },
+  {
+    type: "Report",
+    label: "Trial Balance",
+    link_to: "Trial Balance",
+    report_ref_doctype: "GL Entry",
+  },
+  {
+    type: "Report",
+    label: "Profit & Loss",
+    link_to: "Profit and Loss Statement",
+    report_ref_doctype: "GL Entry",
+  },
+  {
+    type: "Report",
+    label: "Balance Sheet",
+    link_to: "Balance Sheet",
+    report_ref_doctype: "GL Entry",
+  },
+  {
+    type: "Report",
+    label: "Sister loans",
+    link_to: "General Ledger",
+    report_ref_doctype: "GL Entry",
+  },
 ];
 const content = JSON.stringify([
-  { id: sid(), type: "header", data: { text: '<span class="h4"><b>DUKIA Books</b></span>', col: 12 } },
-  ...shortcuts.map((s) => ({ id: sid(), type: "shortcut", data: { shortcut_name: s.label, col: 3 } })),
+  {
+    id: sid(),
+    type: "header",
+    data: { text: '<span class="h4"><b>DUKIA Books</b></span>', col: 12 },
+  },
+  ...shortcuts.map((s) => ({
+    id: sid(),
+    type: "shortcut",
+    data: { shortcut_name: s.label, col: 3 },
+  })),
 ]);
 
 try {
@@ -307,7 +364,9 @@ try {
 
 for (const user of [FINANCE, MD]) {
   try {
-    await put(`/api/resource/User/${encodeURIComponent(user)}`, { default_workspace: "DUKIA Books" });
+    await put(`/api/resource/User/${encodeURIComponent(user)}`, {
+      default_workspace: "DUKIA Books",
+    });
     tick(true, `Default workspace for ${user}`);
   } catch (e) {
     tick(false, `Default workspace for ${user}`, e.message);
@@ -316,7 +375,9 @@ for (const user of [FINANCE, MD]) {
 
 // ── Global Defaults: never MOCK ───────────────────────────────────────
 try {
-  await put("/api/resource/Global Defaults/Global Defaults", { default_company: "SATYAM BUILDCOM" });
+  await put("/api/resource/Global Defaults/Global Defaults", {
+    default_company: "SATYAM BUILDCOM",
+  });
   tick(true, "Global Defaults company = SATYAM BUILDCOM (never MOCK)");
 } catch (e) {
   tick(false, "Global Defaults", e.message);
@@ -334,15 +395,32 @@ const labels = [
 ];
 for (const [field, label] of labels) {
   try {
-    await upsertProperty({ doc_type: "Journal Entry", field_name: field, property: "label", value: label, property_type: "Data" });
+    await upsertProperty({
+      doc_type: "Journal Entry",
+      field_name: field,
+      property: "label",
+      value: label,
+      property_type: "Data",
+    });
     tick(true, `JE label ${field} → ${label}`);
   } catch (e) {
     tick(false, `JE label ${field}`, e.message);
   }
 }
-for (const field of ["title", "user_remark", "inter_company_journal_entry_reference", "from_template"]) {
+for (const field of [
+  "title",
+  "user_remark",
+  "inter_company_journal_entry_reference",
+  "from_template",
+]) {
   try {
-    await upsertProperty({ doc_type: "Journal Entry", field_name: field, property: "hidden", value: 0, property_type: "Check" });
+    await upsertProperty({
+      doc_type: "Journal Entry",
+      field_name: field,
+      property: "hidden",
+      value: 0,
+      property_type: "Check",
+    });
     tick(true, `JE unhide ${field}`);
   } catch (e) {
     tick(false, `JE unhide ${field}`, e.message);
@@ -350,7 +428,13 @@ for (const field of ["title", "user_remark", "inter_company_journal_entry_refere
 }
 for (const field of ["title", "user_remark", "company"]) {
   try {
-    await upsertProperty({ doc_type: "Journal Entry", field_name: field, property: "reqd", value: 1, property_type: "Check" });
+    await upsertProperty({
+      doc_type: "Journal Entry",
+      field_name: field,
+      property: "reqd",
+      value: 1,
+      property_type: "Check",
+    });
     tick(true, `JE mandatory ${field}`);
   } catch (e) {
     tick(false, `JE mandatory ${field}`, e.message);
@@ -394,14 +478,28 @@ try {
 }
 for (const field of JE_HIDE) {
   try {
-    await upsertProperty({ doc_type: "Journal Entry", field_name: field, property: "hidden", value: 1, property_type: "Check" });
+    await upsertProperty({
+      doc_type: "Journal Entry",
+      field_name: field,
+      property: "hidden",
+      value: 1,
+      property_type: "Check",
+    });
   } catch (e) {
     tick(false, `JE hide ${field}`, e.message);
   }
 }
 tick(true, `JE hide noise fields (${JE_HIDE.length})`);
 
-for (const field of ["party_type", "party", "bank_account", "project", "user_remark", "reference_type", "reference_name"]) {
+for (const field of [
+  "party_type",
+  "party",
+  "bank_account",
+  "project",
+  "user_remark",
+  "reference_type",
+  "reference_name",
+]) {
   try {
     await upsertProperty({
       doc_type: "Journal Entry Account",
@@ -414,7 +512,12 @@ for (const field of ["party_type", "party", "bank_account", "project", "user_rem
     tick(false, `JEA hide column ${field}`, e.message);
   }
 }
-for (const field of ["account", "debit_in_account_currency", "credit_in_account_currency", "cost_center"]) {
+for (const field of [
+  "account",
+  "debit_in_account_currency",
+  "credit_in_account_currency",
+  "cost_center",
+]) {
   try {
     await upsertProperty({
       doc_type: "Journal Entry Account",
@@ -494,10 +597,14 @@ frappe.listview_settings['Journal Entry'] = {
 `.trim();
 
 async function upsertClientScript(name, dt, view, script) {
-  const hit = await findByFilters("Client Script", [
-    ["name", "=", name],
-  ]);
-  const byTitle = hit || (await findByFilters("Client Script", [["dt", "=", dt], ["view", "=", view], ["script", "like", "%DUKIA%"]]));
+  const hit = await findByFilters("Client Script", [["name", "=", name]]);
+  const byTitle =
+    hit ||
+    (await findByFilters("Client Script", [
+      ["dt", "=", dt],
+      ["view", "=", view],
+      ["script", "like", "%DUKIA%"],
+    ]));
   const body = {
     doctype: "Client Script",
     name,
@@ -506,13 +613,17 @@ async function upsertClientScript(name, dt, view, script) {
     enabled: 1,
     script: `/* DUKIA Phase 1 */\n${script}`,
   };
-  if (byTitle?.name) return put(`/api/resource/Client Script/${encodeURIComponent(byTitle.name)}`, body);
+  if (byTitle?.name)
+    return put(`/api/resource/Client Script/${encodeURIComponent(byTitle.name)}`, body);
   return post("/api/resource/Client Script", body);
 }
 
 try {
   await upsertClientScript("DUKIA JE Form", "Journal Entry", "Form", formScript);
-  tick(true, "Client Script JE Form (MOCK warn, stock sentence, group folder, MD read-only, title from Why)");
+  tick(
+    true,
+    "Client Script JE Form (MOCK warn, stock sentence, group folder, MD read-only, title from Why)",
+  );
 } catch (e) {
   tick(false, "Client Script JE Form", `${e.message} ${e.body ?? ""}`.slice(0, 200));
 }
@@ -524,7 +635,11 @@ try {
 }
 
 // ── JE Templates ──────────────────────────────────────────────────────
-const ABBR = { "SATYAM BUILDCOM": "SBC", "SATYAM CONSTRUCTION": "SCN", "MGB PRIME ESTATES LLP": "MGB" };
+const ABBR = {
+  "SATYAM BUILDCOM": "SBC",
+  "SATYAM CONSTRUCTION": "SCN",
+  "MGB PRIME ESTATES LLP": "MGB",
+};
 const SISTERS = {
   "SATYAM BUILDCOM": "SATYAM CONSTRUCTION",
   "SATYAM CONSTRUCTION": "MGB PRIME ESTATES LLP",
@@ -544,7 +659,8 @@ async function upsertTemplate(title, company, voucher_type, accounts) {
     naming_series: "ACC-JV-.YYYY.-",
     accounts,
   };
-  if (hit?.name) return put(`/api/resource/Journal Entry Template/${encodeURIComponent(hit.name)}`, body);
+  if (hit?.name)
+    return put(`/api/resource/Journal Entry Template/${encodeURIComponent(hit.name)}`, body);
   return post("/api/resource/Journal Entry Template", body);
 }
 
@@ -603,7 +719,9 @@ for (const company of TRADING) {
 
 // ── Confirm trial JEs still present ───────────────────────────────────
 try {
-  const r = await get('/api/resource/Journal Entry?fields=["name","docstatus"]&filters=[["name","in",["ACC-JV-2026-00010","ACC-JV-2026-00021","ACC-JV-2026-00001","ACC-JV-2026-00022"]]]&limit_page_length=20');
+  const r = await get(
+    '/api/resource/Journal Entry?fields=["name","docstatus"]&filters=[["name","in",["ACC-JV-2026-00010","ACC-JV-2026-00021","ACC-JV-2026-00001","ACC-JV-2026-00022"]]]&limit_page_length=20',
+  );
   const names = (r?.data ?? []).map((row) => row.name);
   const keep = ["ACC-JV-2026-00010", "ACC-JV-2026-00021"].every((n) => names.includes(n));
   tick(keep, "Trial JEs 00010 and 00021 still present (no delete, no elim)");
@@ -652,7 +770,14 @@ Training card: [\`docs/finance/DUKIA-BOOKS-10MIN.md\`](../finance/DUKIA-BOOKS-10
 Re-verify: \`node scripts/erpnext/verify-desk-phase1.mjs\`.
 `;
 
-const out = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "docs", "review", "erpnext-phase1-done.md");
+const out = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "docs",
+  "review",
+  "erpnext-phase1-done.md",
+);
 writeFileSync(out, done);
 console.log("wrote", out);
 const failed = log.filter((l) => l.startsWith("[ ]")).length;

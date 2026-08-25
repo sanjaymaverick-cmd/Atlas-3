@@ -14,7 +14,12 @@ export function ProjectTimeline({ projects }: { projects: Project[] }) {
       {projects.map((p) => {
         const t = pct(p.start, p.possession);
         return (
-          <Link key={p.id} to="/app/projects/$id" params={{ id: p.id }} className="block hover:opacity-90">
+          <Link
+            key={p.id}
+            to="/app/projects/$id"
+            params={{ id: p.id }}
+            className="block hover:opacity-90"
+          >
             <div className="mb-1.5 flex items-baseline justify-between gap-3">
               <p className="truncate text-sm font-medium">{p.name}</p>
               <p className="shrink-0 font-mono text-[10px] tabular-nums text-muted">
@@ -22,7 +27,10 @@ export function ProjectTimeline({ projects }: { projects: Project[] }) {
               </p>
             </div>
             <div className="relative h-7 overflow-hidden rounded-md bg-chip">
-              <div className="absolute inset-y-0 left-0 bg-primary/25" style={{ width: `${p.progress}%` }} />
+              <div
+                className="absolute inset-y-0 left-0 bg-primary/25"
+                style={{ width: `${p.progress}%` }}
+              />
               <div
                 className="absolute top-0 h-full w-px bg-ink"
                 style={{ left: `${t}%` }}

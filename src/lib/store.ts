@@ -60,7 +60,13 @@ import { refuseDailyReport, refuseHoldWithoutReport } from "./sales/channel";
 import { findDuplicate, ingestErrorToResult, normalizePhone } from "./sales/ingest";
 import type { IngestRequest, IngestResult } from "./sales/ingest";
 import { STAGE_NEXT } from "./sales/stages";
-import { fillTemplate, leadValues, readReply, refuseSend, templateByTrigger } from "./sales/whatsapp";
+import {
+  fillTemplate,
+  leadValues,
+  readReply,
+  refuseSend,
+  templateByTrigger,
+} from "./sales/whatsapp";
 import type {
   Approval,
   AuditEvent,
@@ -206,8 +212,21 @@ interface AtlasState {
   inviteVendor: (input: { name: string; trade: string; city: string; gstin: string }) => void;
   scheduleInspection: (input: { projectId: string; template: string; location: string }) => void;
   cancelBooking: (id: string) => string | null;
-  createPO: (input: { projectId: string; vendorId: string; title: string; amount: number; quoteId?: string; rfqId?: string }) => string | null;
-  createRfq: (input: { projectId: string; title: string; package: string; due: string; required?: boolean }) => string | null;
+  createPO: (input: {
+    projectId: string;
+    vendorId: string;
+    title: string;
+    amount: number;
+    quoteId?: string;
+    rfqId?: string;
+  }) => string | null;
+  createRfq: (input: {
+    projectId: string;
+    title: string;
+    package: string;
+    due: string;
+    required?: boolean;
+  }) => string | null;
   submitQuote: (input: {
     rfqId: string;
     vendorId: string;
@@ -258,20 +277,36 @@ interface AtlasState {
   setDiligence: (id: string, status: DiligenceItem["status"]) => void;
   addDiligence: (input: { parcelId: string; title: string }) => string | null;
   fileObligation: (id: string, ack: string) => string | null;
-  addParcel: (input: { projectId: string; name: string; khasra: string; area: string; rera: string }) => string | null;
-  addObligation: (input: { projectId: string; kind: Obligation["kind"]; title: string; due: string }) => string | null;
+  addParcel: (input: {
+    projectId: string;
+    name: string;
+    khasra: string;
+    area: string;
+    rera: string;
+  }) => string | null;
+  addObligation: (input: {
+    projectId: string;
+    kind: Obligation["kind"];
+    title: string;
+    due: string;
+  }) => string | null;
   payEmi: (id: string) => string | null;
   acquireParcel: (id: string, details?: ParcelAcquireDetails) => string | null;
   recordParcelDeed: (id: string, details: ParcelAcquireDetails) => string | null;
   startDiligencePack: (parcelId: string) => string | null;
   clearDiligencePack: (parcelId: string) => string | null;
-  addFundingSanction: (input: Omit<FundingSanction, "id" | "status"> & { status?: FundingSanction["status"] }) => string | null;
+  addFundingSanction: (
+    input: Omit<FundingSanction, "id" | "status"> & { status?: FundingSanction["status"] },
+  ) => string | null;
   bookNextAvailable: (
     projectId: string,
     opts?: { prefix?: string; towerId?: string; config?: string; customer?: string },
   ) => string | null;
   copyForwardDiary: (projectId: string) => string | null;
-  setProjectLaunch: (projectId: string, input?: { exclusivePartnerId?: string; freezePrices?: boolean }) => string | null;
+  setProjectLaunch: (
+    projectId: string,
+    input?: { exclusivePartnerId?: string; freezePrices?: boolean },
+  ) => string | null;
   executeContract: (id: string, evidenceId: string) => string | null;
   receiveMaterial: (id: string, qty: number) => void;
   issueMaterial: (id: string, qty: number) => string | null;
@@ -296,7 +331,12 @@ interface AtlasState {
   log: (action: string, entity: string) => void;
   companyDay: CompanyDayReport | null;
   runCompanyDay: () => Promise<CompanyDayReport>;
-  holdUnit: (input: { unitId: string; agentId: string; customer: string; until: string }) => string | null;
+  holdUnit: (input: {
+    unitId: string;
+    agentId: string;
+    customer: string;
+    until: string;
+  }) => string | null;
   releaseHold: (holdId: string) => string | null;
   bookHold: (holdId: string, value: number) => string | null;
   fileDailyReport: (input: {
@@ -309,7 +349,9 @@ interface AtlasState {
     cancellations?: number;
     notes: string;
   }) => string | null;
-  ingestLead: (input: Omit<Lead, "id" | "stage" | "score" | "band" | "scoreReasons" | "scoreModel">) => string | null;
+  ingestLead: (
+    input: Omit<Lead, "id" | "stage" | "score" | "band" | "scoreReasons" | "scoreModel">,
+  ) => string | null;
   ingestFromRequest: (input: IngestRequest) => IngestResult;
   pullPortalJournal: () => Promise<{ pulled: number; errors: string[] }>;
   assignLead: (leadId: string, agentId: string) => string | null;
@@ -338,7 +380,10 @@ function nextRev(current: string) {
   return `R${n + 1}`;
 }
 
-function projectEntityError(state: Pick<AtlasState, "projects" | "entities" | "entityId">, projectId: string): string | null {
+function projectEntityError(
+  state: Pick<AtlasState, "projects" | "entities" | "entityId">,
+  projectId: string,
+): string | null {
   const p = state.projects.find((x) => x.id === projectId);
   if (!p) return "Project not found.";
   if (p.entityId !== state.entityId) {
@@ -357,14 +402,27 @@ function exclusiveChannelError(
   if (!p?.exclusivePartnerId) return null;
   if (!partnerId) return null;
   if (partnerId === p.exclusivePartnerId) return null;
-  const firm = state.partners.find((x) => x.id === p.exclusivePartnerId)?.name ?? p.exclusivePartnerId;
+  const firm =
+    state.partners.find((x) => x.id === p.exclusivePartnerId)?.name ?? p.exclusivePartnerId;
   return `This project is locked to ${firm}.`;
 }
 
 const PROJECT_EXTRAS: Record<string, Partial<Project>> = {
-  p_av: { constructionStart: "2024-10-01", constructionEnd: "2026-10-31", exclusivePartnerId: "pt_ap" },
-  p_sf: { constructionStart: "2025-04-01", constructionEnd: "2026-06-14", exclusivePartnerId: "pt_sy" },
-  p_ac: { constructionStart: "2025-06-02", constructionEnd: "2027-10-31", exclusivePartnerId: "pt_sbg" },
+  p_av: {
+    constructionStart: "2024-10-01",
+    constructionEnd: "2026-10-31",
+    exclusivePartnerId: "pt_ap",
+  },
+  p_sf: {
+    constructionStart: "2025-04-01",
+    constructionEnd: "2026-06-14",
+    exclusivePartnerId: "pt_sy",
+  },
+  p_ac: {
+    constructionStart: "2025-06-02",
+    constructionEnd: "2027-10-31",
+    exclusivePartnerId: "pt_sbg",
+  },
 };
 
 function migratePersisted(state: unknown) {
@@ -406,7 +464,13 @@ function migratePersisted(state: unknown) {
   };
 }
 
-function moveUnit(units: InventoryUnit[], events: UnitEvent[], unitId: string, to: UnitStatus, note: string) {
+function moveUnit(
+  units: InventoryUnit[],
+  events: UnitEvent[],
+  unitId: string,
+  to: UnitStatus,
+  note: string,
+) {
   const u = units.find((x) => x.id === unitId);
   if (!u) return { units, events };
   const ev: UnitEvent = {
@@ -423,7 +487,12 @@ function moveUnit(units: InventoryUnit[], events: UnitEvent[], unitId: string, t
   };
 }
 
-function accrueCommission(commissions: Commission[], partners: Partner[], booking: Booking, value: number) {
+function accrueCommission(
+  commissions: Commission[],
+  partners: Partner[],
+  booking: Booking,
+  value: number,
+) {
   const partner = booking.partnerId ? partners.find((p) => p.id === booking.partnerId) : undefined;
   if (!partner || partner.status !== "active") return commissions;
   if (commissions.some((c) => c.bookingId === booking.id)) return commissions;
@@ -441,7 +510,9 @@ function accrueCommission(commissions: Commission[], partners: Partner[], bookin
 }
 
 function upsertCustomer(customers: Customer[], name: string, phone?: string, source?: string) {
-  const hit = (phone ? customers.find((c) => c.phone === phone) : undefined) ?? customers.find((c) => c.name === name);
+  const hit =
+    (phone ? customers.find((c) => c.phone === phone) : undefined) ??
+    customers.find((c) => c.name === name);
   if (hit) return { customers, id: hit.id };
   const row: Customer = {
     id: uid("cu"),
@@ -508,7 +579,10 @@ function rememberScore(
   };
   return {
     history: [row, ...history].slice(0, 1000),
-    features: [{ id: uid("lf"), leadId, at, features: scored.features }, ...features.filter((f) => f.leadId !== leadId)],
+    features: [
+      { id: uid("lf"), leadId, at, features: scored.features },
+      ...features.filter((f) => f.leadId !== leadId),
+    ],
     stamp: {
       score: scored.score,
       band: scored.band,
@@ -533,25 +607,27 @@ function queueNativeScore(leadId: string, triggerType: string, triggerDetail: st
   if (!l) return;
   const unit = state.units.find((u) => u.code === l.unit);
   const acts = state.leadActivities.filter((a) => a.leadId === leadId);
-  void scoreNative({ lead: l, unit, activities: acts, model, triggerType, triggerDetail }).then((scored) => {
-    if (scored.servedBy !== "catboost") return;
-    const latest = useAtlas.getState();
-    const mem = rememberScore(
-      leadId,
-      scored,
-      latest.scoreHistory,
-      latest.leadFeatures,
-      model.id,
-      triggerType,
-      triggerDetail,
-    );
-    useAtlas.setState({
-      leads: latest.leads.map((x) => (x.id === leadId ? { ...x, ...mem.stamp } : x)),
-      scoreHistory: mem.history,
-      leadFeatures: mem.features,
-    });
-    latest.log("CatBoost native applied", `${l.name} · ${scored.score}`);
-  });
+  void scoreNative({ lead: l, unit, activities: acts, model, triggerType, triggerDetail }).then(
+    (scored) => {
+      if (scored.servedBy !== "catboost") return;
+      const latest = useAtlas.getState();
+      const mem = rememberScore(
+        leadId,
+        scored,
+        latest.scoreHistory,
+        latest.leadFeatures,
+        model.id,
+        triggerType,
+        triggerDetail,
+      );
+      useAtlas.setState({
+        leads: latest.leads.map((x) => (x.id === leadId ? { ...x, ...mem.stamp } : x)),
+        scoreHistory: mem.history,
+        leadFeatures: mem.features,
+      });
+      latest.log("CatBoost native applied", `${l.name} · ${scored.score}`);
+    },
+  );
 }
 
 export const useAtlas = create<AtlasState>()(
@@ -624,11 +700,15 @@ export const useAtlas = create<AtlasState>()(
       },
       signInLocal: (email, password) => {
         const found = USERS.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
-        if (!found || found.password !== password) return "Email or password is wrong. Local test accounts only.";
+        if (!found || found.password !== password)
+          return "Email or password is wrong. Local test accounts only.";
         const remembered = get().entityByUser[found.id];
         set({
           user: { ...found, password: "" },
-          entityId: remembered && get().entities.some((e) => e.id === remembered) ? remembered : get().entityId,
+          entityId:
+            remembered && get().entities.some((e) => e.id === remembered)
+              ? remembered
+              : get().entityId,
         });
         get().log("Signed in (local test)", found.email);
         return null;
@@ -673,10 +753,14 @@ export const useAtlas = create<AtlasState>()(
       },
       addDiary: (entry) => {
         const exists = get().diaries.some(
-          (d) => d.projectId === entry.projectId && d.date === entry.date && d.deviceKey === entry.deviceKey,
+          (d) =>
+            d.projectId === entry.projectId &&
+            d.date === entry.date &&
+            d.deviceKey === entry.deviceKey,
         );
         if (exists) return "A diary for this device and date already exists.";
-        const trades = (entry.labourCivil ?? 0) + (entry.labourMep ?? 0) + (entry.labourFinish ?? 0);
+        const trades =
+          (entry.labourCivil ?? 0) + (entry.labourMep ?? 0) + (entry.labourFinish ?? 0);
         const row: DiaryEntry = {
           ...entry,
           labour: entry.labour || trades,
@@ -706,7 +790,9 @@ export const useAtlas = create<AtlasState>()(
         }
         if (item.kind === "Vendor" && item.refId && status === "approved") {
           set({
-            vendors: get().vendors.map((v) => (v.id === item.refId ? { ...v, stage: "active" } : v)),
+            vendors: get().vendors.map((v) =>
+              v.id === item.refId ? { ...v, stage: "active" } : v,
+            ),
           });
         }
         if (item.kind === "Document export" && item.refId) {
@@ -721,7 +807,9 @@ export const useAtlas = create<AtlasState>()(
         if (item.kind === "Change" && item.refId) {
           set({
             changes: get().changes.map((c) =>
-              c.id === item.refId ? { ...c, status: status === "approved" ? "approved" : "rejected" } : c,
+              c.id === item.refId
+                ? { ...c, status: status === "approved" ? "approved" : "rejected" }
+                : c,
             ),
           });
         }
@@ -741,7 +829,9 @@ export const useAtlas = create<AtlasState>()(
           } else {
             set({
               holds: get().holds.map((h) =>
-                h.id === item.refId ? { ...h, bookingRequested: false, bookingValue: undefined } : h,
+                h.id === item.refId
+                  ? { ...h, bookingRequested: false, bookingValue: undefined }
+                  : h,
               ),
             });
           }
@@ -755,7 +845,9 @@ export const useAtlas = create<AtlasState>()(
         if (v.stage === "active") return "Vendor is already Active.";
         if (v.stage === "suspended") return "Suspended vendors cannot be advanced.";
         if (v.stage === "approval") {
-          const existing = get().approvals.find((a) => a.kind === "Vendor" && a.refId === id && a.status === "pending");
+          const existing = get().approvals.find(
+            (a) => a.kind === "Vendor" && a.refId === id && a.status === "pending",
+          );
           if (existing) return "Waiting on Managing Director to activate.";
           const approval = vendorApprovalCard(v, get().projects[0]?.id ?? "p_av", uid("a"));
           set({ approvals: [approval, ...get().approvals] });
@@ -899,7 +991,10 @@ export const useAtlas = create<AtlasState>()(
           sha256: input.sha256,
         };
         set({ quotes: [row, ...get().quotes] });
-        get().log("Quote submitted", `${vendor.name} · ${rfq.title}${input.source === "paper" ? " · paper" : ""}`);
+        get().log(
+          "Quote submitted",
+          `${vendor.name} · ${rfq.title}${input.source === "paper" ? " · paper" : ""}`,
+        );
         return null;
       },
       addDrawing: (input) => {
@@ -944,7 +1039,9 @@ export const useAtlas = create<AtlasState>()(
             }
             return x;
           }),
-          rfqs: get().rfqs.map((r) => (r.id === q.rfqId ? { ...r, status: "awarded" as const } : r)),
+          rfqs: get().rfqs.map((r) =>
+            r.id === q.rfqId ? { ...r, status: "awarded" as const } : r,
+          ),
         });
         get().log("Quote selected", vendor.name);
         return null;
@@ -953,7 +1050,8 @@ export const useAtlas = create<AtlasState>()(
         const q = get().quotes.find((x) => x.id === quoteId);
         if (!q) return "Quote not found.";
         if (q.status !== "selected") return "Select the quote before creating a PO.";
-        if (get().pos.some((p) => p.quoteId === quoteId)) return "A PO already exists for this quote.";
+        if (get().pos.some((p) => p.quoteId === quoteId))
+          return "A PO already exists for this quote.";
         const rfq = get().rfqs.find((r) => r.id === q.rfqId);
         if (!rfq) return "RFQ not found.";
         return get().createPO({
@@ -996,7 +1094,13 @@ export const useAtlas = create<AtlasState>()(
         const locked = refuseBook(inv, get().bookings, b.projectId, b.unit);
         if (locked) return locked;
         const cu = upsertCustomer(get().customers, b.customer, undefined, "booking");
-        const row: Booking = { ...b, id: uid("b"), collected: 0, status: "active", customerId: cu.id };
+        const row: Booking = {
+          ...b,
+          id: uid("b"),
+          collected: 0,
+          status: "active",
+          customerId: cu.id,
+        };
         const moved = inv
           ? moveUnit(get().units, get().unitEvents, inv.id, "booked", `Booking ${row.id}`)
           : { units: get().units, events: get().unitEvents };
@@ -1056,9 +1160,7 @@ export const useAtlas = create<AtlasState>()(
       },
       reopenDecision: (id) => {
         set({
-          decisions: get().decisions.map((d) =>
-            d.id === id ? { ...d, status: "open" } : d,
-          ),
+          decisions: get().decisions.map((d) => (d.id === id ? { ...d, status: "open" } : d)),
         });
       },
       registerDocument: (input) => {
@@ -1213,7 +1315,11 @@ export const useAtlas = create<AtlasState>()(
         };
         set({
           diligence: [row, ...get().diligence],
-          parcels: get().parcels.map((p) => (p.id === input.parcelId && p.status === "identified" ? { ...p, status: "diligence" } : p)),
+          parcels: get().parcels.map((p) =>
+            p.id === input.parcelId && p.status === "identified"
+              ? { ...p, status: "diligence" }
+              : p,
+          ),
         });
         get().log("Added diligence item", row.title);
         return null;
@@ -1280,7 +1386,8 @@ export const useAtlas = create<AtlasState>()(
         if (open.length) return "All due-diligence items must be clear before acquisition.";
         const consideration = details?.considerationInr ?? parcel.considerationInr ?? 0;
         const saleDeedNo = (details?.saleDeedNo ?? parcel.saleDeedNo ?? "").trim();
-        if (!consideration || consideration <= 0) return "Consideration (₹) is required to acquire the parcel.";
+        if (!consideration || consideration <= 0)
+          return "Consideration (₹) is required to acquire the parcel.";
         if (!saleDeedNo) return "Sale deed number is required to acquire the parcel.";
         set({
           parcels: get().parcels.map((x) =>
@@ -1305,7 +1412,8 @@ export const useAtlas = create<AtlasState>()(
         if (parcel.status !== "acquired") return "Acquire the parcel first.";
         const entityErr = projectEntityError(get(), parcel.projectId);
         if (entityErr) return entityErr;
-        if (!details.considerationInr || details.considerationInr <= 0) return "Consideration (₹) is required.";
+        if (!details.considerationInr || details.considerationInr <= 0)
+          return "Consideration (₹) is required.";
         if (!details.saleDeedNo.trim()) return "Sale deed number is required.";
         set({
           parcels: get().parcels.map((x) =>
@@ -1326,7 +1434,11 @@ export const useAtlas = create<AtlasState>()(
       startDiligencePack: (parcelId) => {
         const parcel = get().parcels.find((x) => x.id === parcelId);
         if (!parcel) return "Parcel not found.";
-        const existing = new Set(get().diligence.filter((d) => d.parcelId === parcelId).map((d) => d.title.toLowerCase()));
+        const existing = new Set(
+          get()
+            .diligence.filter((d) => d.parcelId === parcelId)
+            .map((d) => d.title.toLowerCase()),
+        );
         const added: DiligenceItem[] = [];
         for (const title of STANDARD_DILIGENCE) {
           if (existing.has(title.toLowerCase())) continue;
@@ -1335,7 +1447,9 @@ export const useAtlas = create<AtlasState>()(
         if (!added.length) return "Standard title pack is already on this parcel.";
         set({
           diligence: [...added, ...get().diligence],
-          parcels: get().parcels.map((p) => (p.id === parcelId && p.status === "identified" ? { ...p, status: "diligence" } : p)),
+          parcels: get().parcels.map((p) =>
+            p.id === parcelId && p.status === "identified" ? { ...p, status: "diligence" } : p,
+          ),
         });
         get().log("Opened standard title pack", parcel.name);
         return null;
@@ -1346,7 +1460,9 @@ export const useAtlas = create<AtlasState>()(
         const open = get().diligence.filter((d) => d.parcelId === parcelId && d.status !== "clear");
         if (!open.length) return "Nothing left to clear.";
         set({
-          diligence: get().diligence.map((d) => (d.parcelId === parcelId && d.status !== "clear" ? { ...d, status: "clear" } : d)),
+          diligence: get().diligence.map((d) =>
+            d.parcelId === parcelId && d.status !== "clear" ? { ...d, status: "clear" } : d,
+          ),
         });
         get().log("Cleared diligence pack", parcel.name);
         return null;
@@ -1354,8 +1470,10 @@ export const useAtlas = create<AtlasState>()(
       addFundingSanction: (input) => {
         const entityErr = projectEntityError(get(), input.projectId);
         if (entityErr) return entityErr;
-        if (!input.bank.trim() || !input.sanctionNo.trim()) return "Bank and sanction number required.";
-        if (input.loanPct + input.equityPct !== 100) return "Loan % and partner/equity % must add to 100.";
+        if (!input.bank.trim() || !input.sanctionNo.trim())
+          return "Bank and sanction number required.";
+        if (input.loanPct + input.equityPct !== 100)
+          return "Loan % and partner/equity % must add to 100.";
         const row: FundingSanction = {
           id: uid("fs"),
           projectId: input.projectId,
@@ -1388,7 +1506,9 @@ export const useAtlas = create<AtlasState>()(
           budget: unit.price,
           kind: "flat",
         });
-        const lead = get().leads.find((l) => l.unit === unit.code && l.stage !== "won" && l.stage !== "lost");
+        const lead = get().leads.find(
+          (l) => l.unit === unit.code && l.stage !== "won" && l.stage !== "lost",
+        );
         return leadErr || (lead ? get().convertLead(lead.id, unit.price) : "lead missing");
       },
       copyForwardDiary: (projectId) => {
@@ -1434,7 +1554,8 @@ export const useAtlas = create<AtlasState>()(
       executeContract: (id, evidenceId) => {
         const c = get().contracts.find((x) => x.id === id);
         if (!c) return "Contract not found.";
-        if (c.status !== "approved" && c.status !== "execution") return "Contract must be Approved before execution.";
+        if (c.status !== "approved" && c.status !== "execution")
+          return "Contract must be Approved before execution.";
         const doc = get().documents.find((d) => d.id === evidenceId);
         if (!doc) return "Execution evidence must be a Documents record.";
         set({
@@ -1449,7 +1570,9 @@ export const useAtlas = create<AtlasState>()(
         const m = get().materials.find((x) => x.id === id);
         if (!m || qty <= 0) return;
         set({
-          materials: get().materials.map((x) => (x.id === id ? { ...x, received: x.received + qty } : x)),
+          materials: get().materials.map((x) =>
+            x.id === id ? { ...x, received: x.received + qty } : x,
+          ),
         });
         get().log("Material received", `${m.name} +${qty}`);
       },
@@ -1458,7 +1581,9 @@ export const useAtlas = create<AtlasState>()(
         if (!m) return "Material not found.";
         if (m.issued + qty > m.received) return "Cannot issue more than accepted receipts.";
         set({
-          materials: get().materials.map((x) => (x.id === id ? { ...x, issued: x.issued + qty } : x)),
+          materials: get().materials.map((x) =>
+            x.id === id ? { ...x, issued: x.issued + qty } : x,
+          ),
         });
         get().log("Material issued", `${m.name} ${qty}`);
         return null;
@@ -1517,7 +1642,8 @@ export const useAtlas = create<AtlasState>()(
       markPossession: (id) => {
         const b = get().bookings.find((x) => x.id === id);
         if (!b) return "Booking not found.";
-        if (b.collected < b.value) return "Possession requires the payment plan to be fully collected.";
+        if (b.collected < b.value)
+          return "Possession requires the payment plan to be fully collected.";
         const inv = get().units.find((u) => u.projectId === b.projectId && u.code === b.unit);
         const moved = inv
           ? moveUnit(get().units, get().unitEvents, inv.id, "sold", "Possession")
@@ -1541,8 +1667,7 @@ export const useAtlas = create<AtlasState>()(
         if (!hosting || hosting.status !== "recorded") {
           return "AI is fail-closed. Record the AI hosting decision before any draft is produced.";
         }
-        const draft =
-          `ADVISORY ONLY — not an approval.\n\nQuestion: ${prompt.trim()}\n\nRecommended next human step:\n1. Confirm evidence in Documents.\n2. If money or possession is involved, raise an Approval.\n3. Do not treat this note as a decision.\n\nAuthority: Level 2 drafting. Atlas will not pay, sign, send, or delete.`;
+        const draft = `ADVISORY ONLY — not an approval.\n\nQuestion: ${prompt.trim()}\n\nRecommended next human step:\n1. Confirm evidence in Documents.\n2. If money or possession is involved, raise an Approval.\n3. Do not treat this note as a decision.\n\nAuthority: Level 2 drafting. Atlas will not pay, sign, send, or delete.`;
         const note: AssistantNote = {
           id: uid("ai"),
           at: nowIso(),
@@ -1566,7 +1691,15 @@ export const useAtlas = create<AtlasState>()(
         const acts = get().leadActivities.filter((a) => a.leadId === id);
         const model = get().scoreModels.find((m) => m.active) ?? get().scoreModels[0];
         const scored = scoreLead({ ...l, stage }, unit, acts, get().activeScoreModel);
-        const mem = rememberScore(id, scored, get().scoreHistory, get().leadFeatures, model?.id ?? "m_hybrid", "stage_change", stage);
+        const mem = rememberScore(
+          id,
+          scored,
+          get().scoreHistory,
+          get().leadFeatures,
+          model?.id ?? "m_hybrid",
+          "stage_change",
+          stage,
+        );
         set({
           leads: get().leads.map((x) => (x.id === id ? { ...x, stage, ...mem.stamp } : x)),
           scoreHistory: mem.history,
@@ -1610,7 +1743,10 @@ export const useAtlas = create<AtlasState>()(
         const lock = exclusiveChannelError(get(), l.projectId, l.partnerId);
         if (lock) return lock;
         const clash = get().bookings.find(
-          (x) => x.projectId === l.projectId && x.unit === l.unit && (x.status === "active" || x.status === "possession"),
+          (x) =>
+            x.projectId === l.projectId &&
+            x.unit === l.unit &&
+            (x.status === "active" || x.status === "possession"),
         );
         if (clash) return `Unit ${l.unit} already has an active booking.`;
         const inv = get().units.find((u) => u.projectId === l.projectId && u.code === l.unit);
@@ -1629,12 +1765,41 @@ export const useAtlas = create<AtlasState>()(
         };
         const token = Math.round(value * 0.1);
         const today = todayIso();
-        const possessionDue = get().projects.find((p) => p.id === l.projectId)?.possession ?? addDaysIso(today, 365);
+        const possessionDue =
+          get().projects.find((p) => p.id === l.projectId)?.possession ?? addDaysIso(today, 365);
         const steps: PaymentStep[] = [
-          { id: uid("py"), bookingId: booking.id, label: "Booking token", due: today, amount: token, paid: 0 },
-          { id: uid("py"), bookingId: booking.id, label: "Agreement", due: addDaysIso(today, 15), amount: token, paid: 0 },
-          { id: uid("py"), bookingId: booking.id, label: "Construction", due: addDaysIso(today, 90), amount: Math.round(value * 0.4), paid: 0 },
-          { id: uid("py"), bookingId: booking.id, label: "Possession", due: possessionDue, amount: value - token * 2 - Math.round(value * 0.4), paid: 0 },
+          {
+            id: uid("py"),
+            bookingId: booking.id,
+            label: "Booking token",
+            due: today,
+            amount: token,
+            paid: 0,
+          },
+          {
+            id: uid("py"),
+            bookingId: booking.id,
+            label: "Agreement",
+            due: addDaysIso(today, 15),
+            amount: token,
+            paid: 0,
+          },
+          {
+            id: uid("py"),
+            bookingId: booking.id,
+            label: "Construction",
+            due: addDaysIso(today, 90),
+            amount: Math.round(value * 0.4),
+            paid: 0,
+          },
+          {
+            id: uid("py"),
+            bookingId: booking.id,
+            label: "Possession",
+            due: possessionDue,
+            amount: value - token * 2 - Math.round(value * 0.4),
+            paid: 0,
+          },
         ];
         const cu = upsertCustomer(get().customers, l.name, l.phone, l.source);
         booking.customerId = cu.id;
@@ -1649,7 +1814,9 @@ export const useAtlas = create<AtlasState>()(
         ];
         set({
           bookings: [booking, ...get().bookings],
-          leads: get().leads.map((x) => (x.id === id ? { ...x, stage: "won", customerId: cu.id } : x)),
+          leads: get().leads.map((x) =>
+            x.id === id ? { ...x, stage: "won", customerId: cu.id } : x,
+          ),
           payments: [...steps, ...get().payments],
           units: moved.units,
           unitEvents: moved.events,
@@ -1668,14 +1835,20 @@ export const useAtlas = create<AtlasState>()(
         get().log("Added channel partner", row.name);
       },
       activatePartner: (id) => {
-        set({ partners: get().partners.map((p) => (p.id === id ? { ...p, status: "active" } : p)) });
+        set({
+          partners: get().partners.map((p) => (p.id === id ? { ...p, status: "active" } : p)),
+        });
         get().log("Activated partner", id);
       },
       requestCommission: (id) => {
         const c = get().commissions.find((x) => x.id === id);
         if (!c) return "Commission not found.";
         if (c.status !== "accrued") return "Only accrued commission can be sent for approval.";
-        if (get().approvals.some((a) => a.kind === "Commission" && a.refId === id && a.status === "pending")) {
+        if (
+          get().approvals.some(
+            (a) => a.kind === "Commission" && a.refId === id && a.status === "pending",
+          )
+        ) {
           return "This commission is already waiting in Approvals.";
         }
         const partner = get().partners.find((p) => p.id === c.partnerId);
@@ -1698,7 +1871,9 @@ export const useAtlas = create<AtlasState>()(
         const v = get().vendors.find((x) => x.id === id);
         if (!v) return "Vendor not found.";
         if (!gstin.trim()) return "GSTIN required.";
-        set({ vendors: get().vendors.map((x) => (x.id === id ? { ...x, gstin: gstin.trim() } : x)) });
+        set({
+          vendors: get().vendors.map((x) => (x.id === id ? { ...x, gstin: gstin.trim() } : x)),
+        });
         get().log("Vendor GSTIN recorded", v.name);
         return null;
       },
@@ -1756,7 +1931,13 @@ export const useAtlas = create<AtlasState>()(
       releaseHold: (holdId) => {
         const h = get().holds.find((x) => x.id === holdId);
         if (!h || h.status !== "held") return "Hold not active.";
-        const moved = moveUnit(get().units, get().unitEvents, h.unitId, "available", "Hold released");
+        const moved = moveUnit(
+          get().units,
+          get().unitEvents,
+          h.unitId,
+          "available",
+          "Hold released",
+        );
         set({
           holds: get().holds.map((x) => (x.id === holdId ? { ...x, status: "released" } : x)),
           units: moved.units,
@@ -1852,7 +2033,15 @@ export const useAtlas = create<AtlasState>()(
           scoreReasons: scored.reasons,
           scoreModel: scored.model,
         };
-        const mem = rememberScore(row.id, scored, get().scoreHistory, get().leadFeatures, model?.id ?? "m_hybrid", "arrival", input.source);
+        const mem = rememberScore(
+          row.id,
+          scored,
+          get().scoreHistory,
+          get().leadFeatures,
+          model?.id ?? "m_hybrid",
+          "arrival",
+          input.source,
+        );
         set({
           leads: [{ ...row, ...mem.stamp }, ...get().leads],
           scoreHistory: mem.history,
@@ -1879,7 +2068,9 @@ export const useAtlas = create<AtlasState>()(
           kind: input.kind,
         });
         if (!err) {
-          const lead = get().leads.find((l) => normalizePhone(l.phone) === phone && l.projectId === input.projectId);
+          const lead = get().leads.find(
+            (l) => normalizePhone(l.phone) === phone && l.projectId === input.projectId,
+          );
           return { ok: true, leadId: lead?.id };
         }
         return ingestErrorToResult(err, dup?.id);
@@ -1904,7 +2095,9 @@ export const useAtlas = create<AtlasState>()(
             if (!ev.ingest) continue;
             const r = get().ingestFromRequest(ev.ingest);
             const kind = (
-              ["99acres", "magicbricks", "housing", "email"].includes(ev.ingest.source) ? ev.ingest.source : ev.portal
+              ["99acres", "magicbricks", "housing", "email"].includes(ev.ingest.source)
+                ? ev.ingest.source
+                : ev.portal
             ) as InboundEvent["kind"];
             const row: InboundEvent = {
               id: ev.id,
@@ -1933,7 +2126,10 @@ export const useAtlas = create<AtlasState>()(
           if (pulled) get().log("Portal journal pulled", `${pulled} event(s)`);
           return { pulled, errors };
         } catch (err) {
-          return { pulled: 0, errors: [err instanceof Error ? err.message : "journal pull failed"] };
+          return {
+            pulled: 0,
+            errors: [err instanceof Error ? err.message : "journal pull failed"],
+          };
         }
       },
       rescoreLead: (leadId, activity) => {
@@ -1949,7 +2145,9 @@ export const useAtlas = create<AtlasState>()(
               note: `${activity} engagement`,
             }
           : undefined;
-        const acts = act ? [act, ...get().leadActivities.filter((a) => a.leadId === leadId)] : get().leadActivities.filter((a) => a.leadId === leadId);
+        const acts = act
+          ? [act, ...get().leadActivities.filter((a) => a.leadId === leadId)]
+          : get().leadActivities.filter((a) => a.leadId === leadId);
         const model = get().scoreModels.find((m) => m.active) ?? get().scoreModels[0];
         const scored = scoreLead(l, unit, acts, get().activeScoreModel);
         const mem = rememberScore(
@@ -2035,7 +2233,9 @@ export const useAtlas = create<AtlasState>()(
       completeVisit: (id, result) => {
         const v = get().siteVisits.find((x) => x.id === id);
         if (!v) return "Visit not found.";
-        set({ siteVisits: get().siteVisits.map((x) => (x.id === id ? { ...x, status: result } : x)) });
+        set({
+          siteVisits: get().siteVisits.map((x) => (x.id === id ? { ...x, status: result } : x)),
+        });
         if (result === "done") {
           const l = get().leads.find((x) => x.id === v.leadId);
           if (l && (l.stage === "inquiry" || l.stage === "contacted" || l.stage === "qualified")) {
@@ -2057,15 +2257,22 @@ export const useAtlas = create<AtlasState>()(
       setHandoverOc: (id) => {
         const h = get().handovers.find((x) => x.id === id);
         if (!h) return "Handover not found.";
-        set({ handovers: get().handovers.map((x) => (x.id === id ? { ...x, oc: "received" } : x)) });
+        set({
+          handovers: get().handovers.map((x) => (x.id === id ? { ...x, oc: "received" } : x)),
+        });
         get().log("OC/CC received", h.unit);
         return null;
       },
       setHandoverOcForProject: (projectId) => {
-        const rows = get().handovers.filter((h) => h.projectId === projectId && h.oc !== "received");
-        if (!rows.length) return "Every unit on this project already has permission to live, or none are in handover.";
+        const rows = get().handovers.filter(
+          (h) => h.projectId === projectId && h.oc !== "received",
+        );
+        if (!rows.length)
+          return "Every unit on this project already has permission to live, or none are in handover.";
         set({
-          handovers: get().handovers.map((h) => (h.projectId === projectId ? { ...h, oc: "received" } : h)),
+          handovers: get().handovers.map((h) =>
+            h.projectId === projectId ? { ...h, oc: "received" } : h,
+          ),
         });
         get().log("OC/CC received for project", `${projectId} · ${rows.length} units`);
         return null;
@@ -2086,7 +2293,10 @@ export const useAtlas = create<AtlasState>()(
           const err = get().collect(row.bookingId, 84_500);
           if (err) return err;
         } else if (row.kind === "esign") {
-          const doc = get().bookingDocs.find((d) => d.bookingId === row.bookingId && d.title.includes("Agreement") && d.status === "open");
+          const doc = get().bookingDocs.find(
+            (d) =>
+              d.bookingId === row.bookingId && d.title.includes("Agreement") && d.status === "open",
+          );
           if (!doc) return "No open agreement to mark e-signed.";
           const err = get().toggleBookingDoc(doc.id);
           if (err) return err;
@@ -2114,7 +2324,9 @@ export const useAtlas = create<AtlasState>()(
       rejectInbound: (id) => {
         const row = get().inbound.find((x) => x.id === id);
         if (!row) return "Inbound event not found.";
-        set({ inbound: get().inbound.map((x) => (x.id === id ? { ...x, status: "rejected" } : x)) });
+        set({
+          inbound: get().inbound.map((x) => (x.id === id ? { ...x, status: "rejected" } : x)),
+        });
         get().log("Inbound rejected", row.kind);
         return null;
       },
@@ -2190,7 +2402,10 @@ export const useAtlas = create<AtlasState>()(
         };
         set({ waSends: [row, ...get().waSends], notices: [notice, ...get().notices].slice(0, 20) });
         const kind = readReply(text);
-        if (kind === "confirm" && (lead.stage === "inquiry" || lead.stage === "contacted" || lead.stage === "qualified")) {
+        if (
+          kind === "confirm" &&
+          (lead.stage === "inquiry" || lead.stage === "contacted" || lead.stage === "qualified")
+        ) {
           get().advanceLead(lead.id);
         }
         if (kind === "qualify" && (lead.stage === "inquiry" || lead.stage === "contacted")) {
@@ -2203,7 +2418,9 @@ export const useAtlas = create<AtlasState>()(
       toggleWaConsent: (leadId) => {
         const l = get().leads.find((x) => x.id === leadId);
         if (!l) return "Lead not found.";
-        set({ leads: get().leads.map((x) => (x.id === leadId ? { ...x, waConsent: !x.waConsent } : x)) });
+        set({
+          leads: get().leads.map((x) => (x.id === leadId ? { ...x, waConsent: !x.waConsent } : x)),
+        });
         get().log(l.waConsent ? "WhatsApp consent withdrawn" : "WhatsApp consent recorded", l.name);
         return null;
       },
@@ -2211,7 +2428,10 @@ export const useAtlas = create<AtlasState>()(
         const { executeCompanyDay } = await import("./company-day");
         const report = await executeCompanyDay();
         set({ companyDay: report });
-        get().log("Company day (local test)", `${report.passed} passed · ${report.failed} failed · not live`);
+        get().log(
+          "Company day (local test)",
+          `${report.passed} passed · ${report.failed} failed · not live`,
+        );
         return report;
       },
     }),
@@ -2225,7 +2445,9 @@ export const useAtlas = create<AtlasState>()(
           ...current,
           ...p,
           fundingSanctions: (() => {
-            const cur = p.fundingSanctions?.length ? p.fundingSanctions : current.fundingSanctions ?? [];
+            const cur = p.fundingSanctions?.length
+              ? p.fundingSanctions
+              : (current.fundingSanctions ?? []);
             const have = new Set(cur.map((f) => f.projectId));
             return [...cur, ...FUNDING.filter((f) => !have.has(f.projectId))];
           })(),

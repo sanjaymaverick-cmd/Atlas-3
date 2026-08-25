@@ -4,7 +4,15 @@ import { writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "docs", "trial", "dukia");
+const OUT = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "..",
+  "docs",
+  "trial",
+  "dukia",
+);
 const { context, page } = await openTrial();
 try {
   await setTrialDate(page, "2028-12-31");
@@ -25,13 +33,19 @@ try {
       notes.push(`po ${q.id} -> ${g().createPOFromQuote(q.id)}`);
     }
     g().signInLocal("md@dukia.local", "AtlasLocal-MD");
-    for (const a of g().approvals.filter((x) => x.status === "pending" && x.kind === "Purchase order")) {
+    for (const a of g().approvals.filter(
+      (x) => x.status === "pending" && x.kind === "Purchase order",
+    )) {
       notes.push(`po-approve ${a.id} -> ${g().decideApproval(a.id, "approved")}`);
     }
     g().signInLocal("sm@dukia.local", "AtlasLocal-SM");
     let booked = 0;
     for (const prefix of ["AVB", "SFB", "ACB"]) {
-      const projectId = prefix.startsWith("AV") ? "p_av" : prefix.startsWith("SF") ? "p_sf" : "p_ac";
+      const projectId = prefix.startsWith("AV")
+        ? "p_av"
+        : prefix.startsWith("SF")
+          ? "p_sf"
+          : "p_ac";
       const cap = 20;
       let n = 0;
       while (n < cap) {
@@ -47,7 +61,9 @@ try {
           budget: unit.price,
           kind: "flat",
         });
-        const lead = g().leads.find((l) => l.unit === unit.code && l.stage !== "won" && l.stage !== "lost");
+        const lead = g().leads.find(
+          (l) => l.unit === unit.code && l.stage !== "won" && l.stage !== "lost",
+        );
         const err = lead ? g().convertLead(lead.id, unit.price) : "no lead";
         if (err) {
           notes.push(String(err));

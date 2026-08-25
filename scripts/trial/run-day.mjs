@@ -58,7 +58,9 @@ const { context, page } = await openTrial({ reset });
 try {
   await setTrialDate(page, date);
   console.log(`\n=== ${date} — ${day.label} ===`);
-  console.log(`Operating company: MOCK ATLAS3 LLP · Books: Tally MOCK ATLAS3 LLP (local mock, not live)\n`);
+  console.log(
+    `Operating company: MOCK ATLAS3 LLP · Books: Tally MOCK ATLAS3 LLP (local mock, not live)\n`,
+  );
 
   for (const turn of day.seats) {
     const log = [];
@@ -77,7 +79,14 @@ try {
     results.push({ seat: turn.seat, note: turn.note, log, error });
     console.log(`-- ${turn.seat} — ${turn.note}`);
     for (const e of log) {
-      const tag = { did: "  did    ", blocked: "  BLOCKED", error: "  ERROR  ", jargon: "  jargon ", ux: "  ux     " }[e.kind] ?? "  note   ";
+      const tag =
+        {
+          did: "  did    ",
+          blocked: "  BLOCKED",
+          error: "  ERROR  ",
+          jargon: "  jargon ",
+          ux: "  ux     ",
+        }[e.kind] ?? "  note   ";
       console.log(`${tag} ${e.label}${e.detail && e.detail !== "ok" ? ` — ${e.detail}` : ""}`);
     }
     console.log("");

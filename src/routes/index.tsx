@@ -39,7 +39,9 @@ function Gate() {
             </span>
             <div>
               <p className="font-display text-xl leading-none">Atlas</p>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-sidebar-muted">Private real estate ERP</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-sidebar-muted">
+                Private real estate ERP
+              </p>
             </div>
           </div>
           <p className="shrink-0 rounded-full border border-white/15 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-sidebar-muted">
@@ -49,7 +51,9 @@ function Gate() {
 
         <section className="grid items-end gap-10 py-12 lg:grid-cols-2">
           <div className="max-w-xl">
-            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-sidebar-muted">Local test host</p>
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-sidebar-muted">
+              Local test host
+            </p>
             <h1 className="mt-3 font-display text-5xl leading-[1.05] sm:text-6xl">
               Not live.
               <br />
@@ -58,8 +62,8 @@ function Gate() {
               Then decide go-live.
             </h1>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-sidebar-muted">
-              Atlas stays on this machine until UAT is signed off. No production traffic, no passkeys, no
-              customer data. Test with the local accounts below.
+              Atlas stays on this machine until UAT is signed off. No production traffic, no
+              passkeys, no customer data. Test with the local accounts below.
             </p>
           </div>
           <ElevationMark className="hidden w-full text-sidebar-fg/80 lg:block" />
@@ -67,7 +71,9 @@ function Gate() {
 
         <section className="grid gap-8 lg:grid-cols-2">
           <form onSubmit={submit} className="rounded-xl border border-white/10 bg-white/5 p-5">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.16em] text-sidebar-muted">Test login</p>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.16em] text-sidebar-muted">
+              Test login
+            </p>
             <div className="space-y-3">
               <Field label="Email">
                 <Input
@@ -91,7 +97,9 @@ function Gate() {
             </div>
           </form>
           <div>
-            <p className="mb-3 text-[11px] uppercase tracking-[0.16em] text-sidebar-muted">Local test accounts</p>
+            <p className="mb-3 text-[11px] uppercase tracking-[0.16em] text-sidebar-muted">
+              Local test accounts
+            </p>
             <div className="overflow-x-auto rounded-xl border border-white/10">
               <table className="w-full min-w-[420px] text-left text-sm">
                 <thead className="text-[11px] uppercase tracking-[0.12em] text-sidebar-muted">
@@ -124,7 +132,9 @@ function Gate() {
                 </tbody>
               </table>
             </div>
-            <p className="mt-3 text-xs text-sidebar-muted">Click a seat to fill the form. These passwords never leave this host.</p>
+            <p className="mt-3 text-xs text-sidebar-muted">
+              Click a seat to fill the form. These passwords never leave this host.
+            </p>
           </div>
         </section>
       </div>

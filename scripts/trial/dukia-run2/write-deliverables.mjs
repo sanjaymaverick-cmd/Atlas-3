@@ -2,7 +2,15 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "docs", "trial", "dukia-run2");
+const OUT = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "..",
+  "docs",
+  "trial",
+  "dukia-run2",
+);
 mkdirSync(join(OUT, "agents"), { recursive: true });
 const books = JSON.parse(readFileSync(join(OUT, "books-inventory.json"), "utf8"));
 const ops = JSON.parse(readFileSync(join(OUT, "ops-artefacts.json"), "utf8"));
@@ -10,7 +18,13 @@ const ops = JSON.parse(readFileSync(join(OUT, "ops-artefacts.json"), "utf8"));
 const close = {
   clock: "2026-08-25",
   mode: "dense catalog (not 90 empty calendar days)",
-  companies: ["DUKIA GROUP", "SATYAM BUILDCOM", "SATYAM CONSTRUCTION", "MGB PRIME ESTATES LLP", "MOCK ATLAS3 LLP"],
+  companies: [
+    "DUKIA GROUP",
+    "SATYAM BUILDCOM",
+    "SATYAM CONSTRUCTION",
+    "MGB PRIME ESTATES LLP",
+    "MOCK ATLAS3 LLP",
+  ],
   journalEntriesSubmitted: books.posted.map((p) => ({
     name: p.name,
     company: p.company,
@@ -18,7 +32,17 @@ const close = {
     title: p.title,
     docstatus: p.docstatus,
   })),
-  draftsRetainedFromTimestampRetry: ["ACC-JV-2026-00001", "ACC-JV-2026-00002", "ACC-JV-2026-00003", "ACC-JV-2026-00004", "ACC-JV-2026-00005", "ACC-JV-2026-00006", "ACC-JV-2026-00007", "ACC-JV-2026-00008", "ACC-JV-2026-00009"],
+  draftsRetainedFromTimestampRetry: [
+    "ACC-JV-2026-00001",
+    "ACC-JV-2026-00002",
+    "ACC-JV-2026-00003",
+    "ACC-JV-2026-00004",
+    "ACC-JV-2026-00005",
+    "ACC-JV-2026-00006",
+    "ACC-JV-2026-00007",
+    "ACC-JV-2026-00008",
+    "ACC-JV-2026-00009",
+  ],
   icLoans: books.icLoans.map((l) => ({
     id: l.id,
     from: l.from,
@@ -111,7 +135,19 @@ ${ops.artefacts.refusals?.length ? ops.artefacts.refusals.join("\n") : "- none"}
 }
 
 const csv = ["date,seat,task,score,notes"]
-  .concat(ops.scores.map((s) => [s.date, s.seat, `"${s.task.replace(/"/g, "'")}"`, s.score, `"${String(s.notes ?? "").replace(/"/g, "'").slice(0, 120)}"`].join(",")))
+  .concat(
+    ops.scores.map((s) =>
+      [
+        s.date,
+        s.seat,
+        `"${s.task.replace(/"/g, "'")}"`,
+        s.score,
+        `"${String(s.notes ?? "")
+          .replace(/"/g, "'")
+          .slice(0, 120)}"`,
+      ].join(","),
+    ),
+  )
   .join("\n");
 writeFileSync(join(OUT, "ux-scores.csv"), csv);
 

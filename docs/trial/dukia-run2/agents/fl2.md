@@ -1,9 +1,11 @@
 ## 2026-08-25 · fl2 · Finance (group books)
 
 ### Work completed
+
 - Seat present: Finance (group books)
 
 ### ERPNext documents created (names/IDs) or none
+
 - ACC-JV-2026-00010 · SATYAM BUILDCOM · dukia-run2-capital-SBC
 - ACC-JV-2026-00011 · SATYAM BUILDCOM · dukia-run2-opex-SBC
 - ACC-JV-2026-00012 · SATYAM CONSTRUCTION · dukia-run2-capital-SCN
@@ -18,16 +20,19 @@
 - ACC-JV-2026-00021 · MGB PRIME ESTATES LLP · ic-loan-scn-mgb-borrower
 
 ### Task scores
-| Task | Score | Notes |
-|------|-------|-------|
-| Signed in / must-do present | 1 | Finance (group books) |
+
+| Task                        | Score | Notes                 |
+| --------------------------- | ----- | --------------------- |
+| Signed in / must-do present | 1     | Finance (group books) |
 
 ### UI/UX friction
-| ID | Screen | Issue | Severity | Effort | Fix type |
-|----|--------|-------|----------|--------|----------|
-| — | — | none this seat | — | — | — |
+
+| ID  | Screen | Issue          | Severity | Effort | Fix type |
+| --- | ------ | -------------- | -------- | ------ | -------- |
+| —   | —      | none this seat | —        | —      | —        |
 
 ### Gate refusals (exact product text)
+
 - none
 
 ### Would a first-week site hire succeed on today’s tasks? Y for login. Task depth depends on desk.

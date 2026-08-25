@@ -1,22 +1,27 @@
 ## 2026-08-25 · dir1 · Director 1
 
 ### Work completed
+
 - Seat present: Director (group)
 
 ### ERPNext documents created (names/IDs) or none
+
 - none (ops seat — no ERPNext login)
 
 ### Task scores
-| Task | Score | Notes |
-|------|-------|-------|
-| Signed in / must-do present | 1 | Director (group) |
+
+| Task                        | Score | Notes            |
+| --------------------------- | ----- | ---------------- |
+| Signed in / must-do present | 1     | Director (group) |
 
 ### UI/UX friction
-| ID | Screen | Issue | Severity | Effort | Fix type |
-|----|--------|-------|----------|--------|----------|
-| — | — | none this seat | — | — | — |
+
+| ID  | Screen | Issue          | Severity | Effort | Fix type |
+| --- | ------ | -------------- | -------- | ------ | -------- |
+| —   | —      | none this seat | —        | —      | —        |
 
 ### Gate refusals (exact product text)
+
 - none
 
 ### Would a first-week site hire succeed on today’s tasks? Y for login. Task depth depends on desk.

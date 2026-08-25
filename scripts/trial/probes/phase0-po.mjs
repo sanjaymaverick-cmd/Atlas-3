@@ -37,7 +37,9 @@ try {
     if (g().vendors.find((x) => x.id === v.id)?.stage === "approval") {
       last = g().advanceVendor(v.id) ?? last;
     }
-    const card = g().approvals.find((a) => a.kind === "Vendor" && a.refId === v.id && a.status === "pending");
+    const card = g().approvals.find(
+      (a) => a.kind === "Vendor" && a.refId === v.id && a.status === "pending",
+    );
     return {
       vendorId: v?.id,
       stage: g().vendors.find((x) => x.id === v.id)?.stage,
@@ -56,7 +58,12 @@ try {
     const card = pending.find((a) => a.id === cardId) ?? pending[0];
     const act = card ? g().decideApproval(card.id, "approved") : "none pending";
     const v = g().vendors.find((x) => x.name === "Phase0 Proof Civil");
-    return { pendingBefore: pending.length, act, stage: v?.stage, nonePending: pending.length === 0 };
+    return {
+      pendingBefore: pending.length,
+      act,
+      stage: v?.stage,
+      nonePending: pending.length === 0,
+    };
   }, cm.card?.id);
   line("md-sees-card", md.pendingBefore > 0 && md.act !== "none pending", JSON.stringify(md));
   line("vendor-active", md.stage === "active", md.stage);
@@ -101,13 +108,19 @@ try {
       posCount: g().pos.length,
       landRefuse,
       book,
-      land: av ? { status: av.status, considerationInr: av.considerationInr, saleDeedNo: av.saleDeedNo } : null,
+      land: av
+        ? { status: av.status, considerationInr: av.considerationInr, saleDeedNo: av.saleDeedNo }
+        : null,
       stage: shakti?.stage,
     };
   }, cm.vendorId);
   line("quote-select", !po.sel, po.sel);
   line("po-created", Boolean(po.po?.id) && po.posCount >= 1, JSON.stringify(po.po));
-  line("land-consideration-required", Boolean(po.landRefuse) || Boolean(po.land?.considerationInr && po.land?.saleDeedNo), po.landRefuse ?? JSON.stringify(po.land));
+  line(
+    "land-consideration-required",
+    Boolean(po.landRefuse) || Boolean(po.land?.considerationInr && po.land?.saleDeedNo),
+    po.landRefuse ?? JSON.stringify(po.land),
+  );
   line("book-next-fallback", po.book === null, po.book);
   line("vendor-still-active", po.stage === "active", po.stage);
   await signOut(page);

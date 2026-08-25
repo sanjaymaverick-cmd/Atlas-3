@@ -15,7 +15,15 @@
  * produce a company — stop and fix the harness first.
  */
 
-import { openTrial, signIn, signOut, setTrialDate, trialDate, readStore, closeTrial } from "./session.mjs";
+import {
+  openTrial,
+  signIn,
+  signOut,
+  setTrialDate,
+  trialDate,
+  readStore,
+  closeTrial,
+} from "./session.mjs";
 
 const reset = process.argv.includes("--reset");
 const MARKER = "TRIAL-CONTINUITY-PROBE";
@@ -94,7 +102,11 @@ async function main() {
 
     // ---- clock survives the seat switch ----
     const dAfter = await trialDate(page);
-    check("continuity: trial clock survives the seat switch", dAfter === "2026-11-08", dAfter ?? "null");
+    check(
+      "continuity: trial clock survives the seat switch",
+      dAfter === "2026-11-08",
+      dAfter ?? "null",
+    );
 
     // ---- audit attributes the right person ----
     const audit = await readStore(page, "audit");
@@ -116,7 +128,9 @@ async function main() {
     process.exit(1);
   }
   if (reset) {
-    console.log("\nCold start done. Now run again WITHOUT --reset — pass 2 must still see the probe lead.");
+    console.log(
+      "\nCold start done. Now run again WITHOUT --reset — pass 2 must still see the probe lead.",
+    );
   } else {
     console.log("\nContinuity holds across processes. The trial can run.");
   }

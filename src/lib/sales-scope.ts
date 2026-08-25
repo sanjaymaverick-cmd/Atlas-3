@@ -1,4 +1,14 @@
-import type { DailyReport, InventoryUnit, Lead, Partner, Project, Role, SalesAgent, UnitHold, User } from "@/lib/types";
+import type {
+  DailyReport,
+  InventoryUnit,
+  Lead,
+  Partner,
+  Project,
+  Role,
+  SalesAgent,
+  UnitHold,
+  User,
+} from "@/lib/types";
 
 export function isThirdParty(role: Role | string | undefined) {
   return role === "channel" || role === "channel_admin";
@@ -47,7 +57,12 @@ export function scopedProjectIds(
     .map((p) => p.id);
 }
 
-export function scopedLeads(leads: Lead[], user: User | null, agents: SalesAgent[], projectIds: string[]): Lead[] {
+export function scopedLeads(
+  leads: Lead[],
+  user: User | null,
+  agents: SalesAgent[],
+  projectIds: string[],
+): Lead[] {
   const companyId = myCompanyId(user, agents);
   const agentIds = companyAgentIds(agents, companyId);
   return leads.filter((l) => {
@@ -73,8 +88,14 @@ export function scopedUnits(
   });
 }
 
-export function scopedHolds(holds: UnitHold[], projectIds: string[], agentIds: string[]): UnitHold[] {
-  return holds.filter((h) => h.status === "held" && projectIds.includes(h.projectId) && agentIds.includes(h.agentId));
+export function scopedHolds(
+  holds: UnitHold[],
+  projectIds: string[],
+  agentIds: string[],
+): UnitHold[] {
+  return holds.filter(
+    (h) => h.status === "held" && projectIds.includes(h.projectId) && agentIds.includes(h.agentId),
+  );
 }
 
 export function scopedDailyReports(reports: DailyReport[], agentIds: string[]): DailyReport[] {

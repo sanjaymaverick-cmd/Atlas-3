@@ -1,0 +1,14 @@
+# Generated and lockfiles. Super-Linter also skips these.
+package-lock.json
+src/routeTree.gen.ts
+.vercel
+.nitro
+.tanstack
+dist
+.output
+node_modules
+screenshots
+catboost_info
+data/portal-journal.json
+services/scoring/.venv
+services/scoring/__pycache__

@@ -32,8 +32,11 @@ export default {
 
         const approvals = await api.read("approvals");
         const pend = (approvals ?? []).filter((a) => a.status === "pending");
-        api.note("did", `Approvals queue after booking: ${pend.length}`,
-          pend.map((a) => `${a.kind} → ${a.waitingOn}`).join(" · ") || "empty");
+        api.note(
+          "did",
+          `Approvals queue after booking: ${pend.length}`,
+          pend.map((a) => `${a.kind} → ${a.waitingOn}`).join(" · ") || "empty",
+        );
 
         // Unit lock is strict — the held/booked unit must not be re-holdable.
         await api.act("Lock probe: try to hold the same unit again", () => {
@@ -41,7 +44,12 @@ export default {
           const me = s.agents.find((a) => a.userId === s.user?.id);
           const h = (s.holds ?? [])[0];
           if (!h || !me) return "no hold to probe";
-          return s.holdUnit({ unitId: h.unitId, agentId: me.id, customer: "Probe buyer", until: "2026-09-05" });
+          return s.holdUnit({
+            unitId: h.unitId,
+            agentId: me.id,
+            customer: "Probe buyer",
+            until: "2026-09-05",
+          });
         });
       },
     },
@@ -50,8 +58,14 @@ export default {
       note: "Pink City weekly scorecard",
       async run(page, api) {
         const reports = await api.read("dailyReports");
-        api.note("did", `Daily reports on file: ${(reports ?? []).length}`,
-          (reports ?? []).slice(0, 6).map((r) => `${r.date}:${r.agentId}:${r.calls}c/${r.visits}v`).join(" · "));
+        api.note(
+          "did",
+          `Daily reports on file: ${(reports ?? []).length}`,
+          (reports ?? [])
+            .slice(0, 6)
+            .map((r) => `${r.date}:${r.agentId}:${r.calls}c/${r.visits}v`)
+            .join(" · "),
+        );
       },
     },
     {
@@ -73,8 +87,11 @@ export default {
         }
 
         const commissions = await api.read("commissions");
-        api.note("did", `Commissions: ${(commissions ?? []).length}`,
-          (commissions ?? []).map((c) => `${c.id}:${c.status}`).join(" · ") || "none");
+        api.note(
+          "did",
+          `Commissions: ${(commissions ?? []).length}`,
+          (commissions ?? []).map((c) => `${c.id}:${c.status}`).join(" · ") || "none",
+        );
 
         // Commission must accrue only — never self-pay.
         await api.act("Self-pay probe: request commission payout", () => {

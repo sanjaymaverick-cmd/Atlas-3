@@ -8,7 +8,9 @@ export function adaptHousing(payload: unknown): IngestRequest | { error: string 
   const phone = pickString(row, ["phone_number", "phone", "mobile", "Mobile"]);
   if (!name || !phone) return { error: "Housing.com payload needs lead_name and phone_number." };
   return {
-    projectId: mapProject(pickString(row, ["project_code", "project_id", "project", "project_name"])),
+    projectId: mapProject(
+      pickString(row, ["project_code", "project_id", "project", "project_name"]),
+    ),
     name,
     phone,
     source: "housing",

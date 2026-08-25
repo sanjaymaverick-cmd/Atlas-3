@@ -10,13 +10,19 @@ import { join } from "node:path";
 const BASE = process.env.ERPNEXT_URL || "http://127.0.0.1:8000";
 const OUT = join("screenshots", "review", "erpnext-desk");
 mkdirSync(OUT, { recursive: true });
-const FINANCE = { user: "finance@dukia.local", password: process.env.ERPNEXT_FINANCE_PASSWORD || "DukiaBooks-FL" };
+const FINANCE = {
+  user: "finance@dukia.local",
+  password: process.env.ERPNEXT_FINANCE_PASSWORD || "DukiaBooks-FL",
+};
 const MD = { user: "md@dukia.local", password: process.env.ERPNEXT_MD_PASSWORD || "DukiaBooks-MD" };
 
 async function login(page, { user, password }) {
   await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("input", { timeout: 20000 });
-  const email = (await page.$("#login_email")) || (await page.$('input[type="email"]')) || (await page.$('input[type="text"]'));
+  const email =
+    (await page.$("#login_email")) ||
+    (await page.$('input[type="email"]')) ||
+    (await page.$('input[type="text"]'));
   const pass = (await page.$("#login_password")) || (await page.$('input[type="password"]'));
   await email.fill(user);
   await pass.fill(password);
@@ -41,7 +47,8 @@ try {
     await page.screenshot({ path: join(OUT, `phase1-${seat.user.split("@")[0]}-home.png`) });
     const text = await bodyText(page);
     const url = page.url();
-    const books = /DUKIA Books/i.test(text) || /dukia-books/i.test(url) || /New voucher/i.test(text);
+    const books =
+      /DUKIA Books/i.test(text) || /dukia-books/i.test(url) || /New voucher/i.test(text);
     const zoo = /Subcontract/i.test(text) && /Manufactur/i.test(text) && /Quality/i.test(text);
     let je = {};
     if (seat.user.startsWith("finance")) {

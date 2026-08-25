@@ -10,19 +10,19 @@ Testers ran Playwright against `http://127.0.0.1:8080` with the real passwords. 
 
 Ratings: **E** Easy · **A** Acceptable · **P** Painful · **B** Broken. Worst cell in the row drives go-live risk.
 
-| Seat | Command | Core desk | Nav / IA | Isolation | Mobile | Worst P0/P1 |
-|------|---------|-----------|----------|-----------|--------|-------------|
-| **MD** | P | A (Approvals) | P (30 links) | A (should see all) | P | Duplicate Command; nav scroll |
-| **PD** | P | A (Projects/Changes) | B (“All phases” = sitemap) | A (entity switch works) | P | Programme not findable |
-| **SM** | P | P (Pipeline/Handover) | P (12 sales items + CRM twin) | A (Desert Reach **should** show) | P | Two funnels; 8 actions/lead; approvals `canAct` omits sales |
-| **Channel Admin** | P | E (Company/Desk) | B (Phases backdoor) | **B** | P | **CRM shows Desert Reach** |
-| **Channel Agent** | P | P (7-field report) | B (Phases + Projects ₹) | **B** | **P** | Same CRM leak; phone chrome |
-| **SE / SV** | P | **E** (Site diary) | P (Land chip) | A | P | Snags on sales route; Command→Land |
-| **Finance Lead** | P | E (Tally) | A | A | P | Approve MD’s PO; no collections aging |
-| **Commercial** | P | A | B (unguarded capital/customers) | A | A | Deep-link mutations |
-| **Land & Legal** | P | A (Land cards) | P | B (Approvals URL) | P | Cannot add parcel; filed w/o evidence |
-| **Docs** | P | A (register) | B | **B** | P | **Mutates Land via URL**; no file input |
-| **Stores / QS** | P | P/B (Issue qty) | B | B (Commercial URL) | A targets | Issue doesn’t apply; Command is engineer’s |
+| Seat              | Command | Core desk             | Nav / IA                        | Isolation                        | Mobile    | Worst P0/P1                                                 |
+| ----------------- | ------- | --------------------- | ------------------------------- | -------------------------------- | --------- | ----------------------------------------------------------- |
+| **MD**            | P       | A (Approvals)         | P (30 links)                    | A (should see all)               | P         | Duplicate Command; nav scroll                               |
+| **PD**            | P       | A (Projects/Changes)  | B (“All phases” = sitemap)      | A (entity switch works)          | P         | Programme not findable                                      |
+| **SM**            | P       | P (Pipeline/Handover) | P (12 sales items + CRM twin)   | A (Desert Reach **should** show) | P         | Two funnels; 8 actions/lead; approvals `canAct` omits sales |
+| **Channel Admin** | P       | E (Company/Desk)      | B (Phases backdoor)             | **B**                            | P         | **CRM shows Desert Reach**                                  |
+| **Channel Agent** | P       | P (7-field report)    | B (Phases + Projects ₹)         | **B**                            | **P**     | Same CRM leak; phone chrome                                 |
+| **SE / SV**       | P       | **E** (Site diary)    | P (Land chip)                   | A                                | P         | Snags on sales route; Command→Land                          |
+| **Finance Lead**  | P       | E (Tally)             | A                               | A                                | P         | Approve MD’s PO; no collections aging                       |
+| **Commercial**    | P       | A                     | B (unguarded capital/customers) | A                                | A         | Deep-link mutations                                         |
+| **Land & Legal**  | P       | A (Land cards)        | P                               | B (Approvals URL)                | P         | Cannot add parcel; filed w/o evidence                       |
+| **Docs**          | P       | A (register)          | B                               | **B**                            | P         | **Mutates Land via URL**; no file input                     |
+| **Stores / QS**   | P       | P/B (Issue qty)       | B                               | B (Commercial URL)               | A targets | Issue doesn’t apply; Command is engineer’s                  |
 
 **Isolation headline:** Pink City **does not** see Desert Reach on Channel desk / Company / Inventory. Pink City **does** see Desert Reach on `/app/crm` (and walks there from All phases). That is the only P0 data leak testers proved.
 
@@ -34,23 +34,23 @@ Ratings: **E** Easy · **A** Acceptable · **P** Painful · **B** Broken. Worst 
 
 Ranked for a team that is **almost finished**. Impact 1–5, ease 1–5 (5 = easy). Score = impact × ease.
 
-| # | Change | Impact | Ease | Score | Fixes |
-|---|--------|--------|------|-------|-------|
-| 1 | **`RoleGate` on every `/app/*` route** + Phases links use the same allowlist | 5 | 5 | 25 | CA/AG CRM leak; DC land mutate; Stores PO mutate |
-| 2 | **Approve only if `waitingOn` matches seat** (`canDecideApprovals` ∧ waitingOn) | 5 | 5 | 25 | FL four-eyes; SM view-only vs sales bookings |
-| 3 | **Command: drop duplicate KPI row** (keep QueueStrip + one money KPI + linked exceptions) | 4 | 5 | 20 | MD/PD/FL/SM cognitive load |
-| 4 | **CRM stops being a second pipeline** (KYC + commission only) | 4 | 5 | 20 | SM double-entry; shrinks leak surface |
-| 5 | **Pipeline: one jade Advance + `⋯` menu**; collapse CatBoost chrome | 4 | 4 | 16 | SM P1 |
-| 6 | **Channel phone: 3-step desk, hide entity selects, “Local only” full text** | 5 | 3 | 15 | AG P1 |
-| 7 | **Inventory primary = Hold**; tower chips / 2D stack; Dispute in overflow | 4 | 3 | 12 | SM/AG |
-| 8 | **Handover horizontal stepper**; booking docs = stage 0 | 4 | 3 | 12 | SM/MD |
-| 9 | **Open snags section on Site** (`closeSnag` already exists) | 4 | 5 | 20 | SE/SV gap |
-| 10 | **Customers: Collect = jade; aging chips 0–30/60/90** | 4 | 4 | 16 | FL |
-| 11 | **MD/PD nav groups (Today/Build/Sell/Books) + cmdk** | 3 | 3 | 9 | MD/PD |
-| 12 | **Seat-specific Command queues** (Legal=statutory, Stores=materials, Channel=unfiled/holds, Site=no Land link) | 4 | 3 | 12 | 6 seats |
-| 13 | **Fix Stores Issue qty update** + per-line qty | 4 | 4 | 16 | Stores Broken |
-| 14 | **Land: Mark filed requires acknowledgement**; add parcel/obligation disclosure | 4 | 3 | 12 | Legal P1 |
-| 15 | **Docs: file input or honest “hash-only demo” banner** | 3 | 4 | 12 | DC P1 |
+| #   | Change                                                                                                         | Impact | Ease | Score | Fixes                                            |
+| --- | -------------------------------------------------------------------------------------------------------------- | ------ | ---- | ----- | ------------------------------------------------ |
+| 1   | **`RoleGate` on every `/app/*` route** + Phases links use the same allowlist                                   | 5      | 5    | 25    | CA/AG CRM leak; DC land mutate; Stores PO mutate |
+| 2   | **Approve only if `waitingOn` matches seat** (`canDecideApprovals` ∧ waitingOn)                                | 5      | 5    | 25    | FL four-eyes; SM view-only vs sales bookings     |
+| 3   | **Command: drop duplicate KPI row** (keep QueueStrip + one money KPI + linked exceptions)                      | 4      | 5    | 20    | MD/PD/FL/SM cognitive load                       |
+| 4   | **CRM stops being a second pipeline** (KYC + commission only)                                                  | 4      | 5    | 20    | SM double-entry; shrinks leak surface            |
+| 5   | **Pipeline: one jade Advance + `⋯` menu**; collapse CatBoost chrome                                            | 4      | 4    | 16    | SM P1                                            |
+| 6   | **Channel phone: 3-step desk, hide entity selects, “Local only” full text**                                    | 5      | 3    | 15    | AG P1                                            |
+| 7   | **Inventory primary = Hold**; tower chips / 2D stack; Dispute in overflow                                      | 4      | 3    | 12    | SM/AG                                            |
+| 8   | **Handover horizontal stepper**; booking docs = stage 0                                                        | 4      | 3    | 12    | SM/MD                                            |
+| 9   | **Open snags section on Site** (`closeSnag` already exists)                                                    | 4      | 5    | 20    | SE/SV gap                                        |
+| 10  | **Customers: Collect = jade; aging chips 0–30/60/90**                                                          | 4      | 4    | 16    | FL                                               |
+| 11  | **MD/PD nav groups (Today/Build/Sell/Books) + cmdk**                                                           | 3      | 3    | 9     | MD/PD                                            |
+| 12  | **Seat-specific Command queues** (Legal=statutory, Stores=materials, Channel=unfiled/holds, Site=no Land link) | 4      | 3    | 12    | 6 seats                                          |
+| 13  | **Fix Stores Issue qty update** + per-line qty                                                                 | 4      | 4    | 16    | Stores Broken                                    |
+| 14  | **Land: Mark filed requires acknowledgement**; add parcel/obligation disclosure                                | 4      | 3    | 12    | Legal P1                                         |
+| 15  | **Docs: file input or honest “hash-only demo” banner**                                                         | 3      | 4    | 12    | DC P1                                            |
 
 Items 1, 2, 3, 4, 9, 13 are **this week**. 6–8, 10–12, 14 are a focused sprint. 15 depends on whether UAT expects real files.
 
@@ -60,17 +60,17 @@ Items 1, 2, 3, 4, 9, 13 are **this week**. 6–8, 10–12, 14 are a focused spri
 
 From `design-engineer.md`. Stay on jade/limestone. **Reject** ui-ux-pro-max Cinzel/teal rebrand.
 
-| Add | Purpose |
-|-----|---------|
-| `RoleGate` | Route-level allowlist |
-| waitingOn-aware `DecisionCard` actions | Four-eyes |
-| Nav groups + badge as sibling | “Approvals5” |
-| Bottom nav (4 slots) + vaul More | Channel/Site phones |
-| shadcn `Command` on existing `cmdk` | MD jump-to |
-| Stack-plan unit grid | Inventory find |
-| `Stepper` | Handover + channel wizard |
-| Aging chips | Collections |
-| File field + demo GateBanner | Docs/Land |
+| Add                                    | Purpose                   |
+| -------------------------------------- | ------------------------- |
+| `RoleGate`                             | Route-level allowlist     |
+| waitingOn-aware `DecisionCard` actions | Four-eyes                 |
+| Nav groups + badge as sibling          | “Approvals5”              |
+| Bottom nav (4 slots) + vaul More       | Channel/Site phones       |
+| shadcn `Command` on existing `cmdk`    | MD jump-to                |
+| Stack-plan unit grid                   | Inventory find            |
+| `Stepper`                              | Handover + channel wizard |
+| Aging chips                            | Collections               |
+| File field + demo GateBanner           | Docs/Land                 |
 
 **Not added:** GSAP, Lottie, Rive, Three.js, Aceternity beams, new fonts, @dnd-kit (unless UAT demands drag).
 
@@ -119,7 +119,7 @@ These already work; rewriting them is a regression:
 
 - **Site diary** — one jade Seal, 48px, Pass/Fail, fail→NCR
 - **Local login** — seat chips, passwords on-host, Local only badge
-- **DecisionCard anatomy** and RAG *tone* (warn/ok/danger). Chip *labels* are plain English as of 24 Aug 2026 — see `DESIGN.md`, not the old codes.
+- **DecisionCard anatomy** and RAG _tone_ (warn/ok/danger). Chip _labels_ are plain English as of 24 Aug 2026 — see `DESIGN.md`, not the old codes.
 - **Jade + limestone + Newsreader/Figtree**
 - **Channel isolation on Channel desk, Company, Inventory** (Pink City ≠ Desert Reach there)
 - **Books never-posts** copy and the deny page for non-finance seats (ERPNext at D:\ERPNext)
@@ -133,17 +133,17 @@ These already work; rewriting them is a regression:
 
 ## How to read the seat files
 
-| File | Seat |
-|------|------|
-| `role-md.md` | Managing Director |
-| `role-pd.md` | Project Director |
-| `role-sm.md` | Sales Manager |
-| `role-ca.md` | Channel Admin |
-| `role-ag.md` | Channel Agent |
-| `role-site.md` | Site Engineer / Supervisor |
-| `role-finance.md` | Finance Lead / Commercial |
-| `role-legal.md` | Land & Legal / Docs |
-| `role-stores.md` | Stores / QS |
+| File                 | Seat                             |
+| -------------------- | -------------------------------- |
+| `role-md.md`         | Managing Director                |
+| `role-pd.md`         | Project Director                 |
+| `role-sm.md`         | Sales Manager                    |
+| `role-ca.md`         | Channel Admin                    |
+| `role-ag.md`         | Channel Agent                    |
+| `role-site.md`       | Site Engineer / Supervisor       |
+| `role-finance.md`    | Finance Lead / Commercial        |
+| `role-legal.md`      | Land & Legal / Docs              |
+| `role-stores.md`     | Stores / QS                      |
 | `design-engineer.md` | Patterns, libs, difficulty, deps |
 
 Go-live is blocked on **RoleGate (P0 leak)** and **waitingOn-scoped approvals (P1 four-eyes)**. Everything else is clarity on a product that already has the right objects.

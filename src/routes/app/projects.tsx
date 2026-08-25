@@ -106,14 +106,14 @@ function Projects() {
             <dl className="mt-5 grid grid-cols-2 gap-3 text-sm">
               {isThirdParty(user?.role) ? null : (
                 <>
-              <div>
-                <dt className="text-muted">Budget</dt>
-                <dd className="tabular-nums">{inr(p.budget, true)}</dd>
-              </div>
-              <div>
-                <dt className="text-muted">Spent</dt>
-                <dd className="tabular-nums">{inr(p.spent, true)}</dd>
-              </div>
+                  <div>
+                    <dt className="text-muted">Budget</dt>
+                    <dd className="tabular-nums">{inr(p.budget, true)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted">Spent</dt>
+                    <dd className="tabular-nums">{inr(p.spent, true)}</dd>
+                  </div>
                 </>
               )}
               <div>

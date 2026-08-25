@@ -21,12 +21,19 @@ function Org() {
           <h2 className="font-display text-xl">People</h2>
           <ul className="mt-3 space-y-3">
             {users.map((u) => (
-              <li key={u.id} className="flex items-center justify-between gap-3 border-b border-line pb-3 last:border-0">
+              <li
+                key={u.id}
+                className="flex items-center justify-between gap-3 border-b border-line pb-3 last:border-0"
+              >
                 <div>
                   <p className="font-medium">{u.name}</p>
                   <p className="text-xs text-muted">{u.title}</p>
                 </div>
-                {user?.id === u.id ? <Status value="active" /> : <span className="text-xs text-muted">{u.role}</span>}
+                {user?.id === u.id ? (
+                  <Status value="active" />
+                ) : (
+                  <span className="text-xs text-muted">{u.role}</span>
+                )}
               </li>
             ))}
           </ul>
@@ -38,7 +45,8 @@ function Org() {
               <li key={e.id}>
                 <p className="font-medium">{e.name}</p>
                 <p className="font-mono text-xs text-muted">
-                  {e.kind} · {e.gstin} · {projects.filter((p) => p.entityId === e.id).length} projects
+                  {e.kind} · {e.gstin} · {projects.filter((p) => p.entityId === e.id).length}{" "}
+                  projects
                 </p>
               </li>
             ))}
@@ -51,12 +59,16 @@ function Org() {
           <Card key={h.id} className="flex items-center justify-between gap-3 p-4">
             <div>
               <p className="font-medium">{h.name}</p>
-              <p className="text-xs text-muted">{h.city} · {h.role}</p>
+              <p className="text-xs text-muted">
+                {h.city} · {h.role}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <Status value={h.status} />
               {h.status !== "ready" ? (
-                <Button size="sm" variant="outline" onClick={() => markHostReady(h.id)}>Mark ready</Button>
+                <Button size="sm" variant="outline" onClick={() => markHostReady(h.id)}>
+                  Mark ready
+                </Button>
               ) : null}
             </div>
           </Card>

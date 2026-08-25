@@ -14,7 +14,10 @@ test("matched IC receivable/payable elim uses two offsetting lines", () => {
     : [];
   assert.equal(lines.length, 2);
   assert.equal(lines[0].debit, lines[1].credit);
-  assert.equal(lines.reduce((s, l) => s + l.debit - l.credit, 0), 0);
+  assert.equal(
+    lines.reduce((s, l) => s + l.debit - l.credit, 0),
+    0,
+  );
 });
 
 test("mismatch does not elim — fix entity books first", () => {

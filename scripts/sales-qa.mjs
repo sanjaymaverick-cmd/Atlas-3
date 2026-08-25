@@ -41,7 +41,8 @@ async function main() {
 
   await login(page, "sm@atlas.local", "AtlasLocal-SM");
   log.push(`sales home ${page.url()}`);
-  if (!page.url().includes("/app/sales")) errors.push(`sales did not land on /app/sales, got ${page.url()}`);
+  if (!page.url().includes("/app/sales"))
+    errors.push(`sales did not land on /app/sales, got ${page.url()}`);
   await page.waitForTimeout(400);
   const salesText = await page.locator("body").innerText();
   if (!/Third-party now/i.test(salesText)) errors.push("Sales hub missing title");
@@ -63,8 +64,16 @@ async function main() {
 
   await page.goto(`${BASE}/app/sales/pipeline`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(400);
-  await page.locator("label").filter({ hasText: /^Name$/ }).locator("input").fill("QA Ingest");
-  await page.locator("label").filter({ hasText: /^Phone$/ }).locator("input").fill("99xxxx8801");
+  await page
+    .locator("label")
+    .filter({ hasText: /^Name$/ })
+    .locator("input")
+    .fill("QA Ingest");
+  await page
+    .locator("label")
+    .filter({ hasText: /^Phone$/ })
+    .locator("input")
+    .fill("99xxxx8801");
   await page.getByRole("button", { name: /ingest & score/i }).click();
   await page.waitForTimeout(500);
   const pipe = await page.locator("body").innerText();
@@ -76,7 +85,8 @@ async function main() {
 
   await login(page, "ag@atlas.local", "AtlasLocal-AG");
   log.push(`channel home ${page.url()}`);
-  if (!page.url().includes("/app/sales/channel")) errors.push(`channel did not land on channel desk, got ${page.url()}`);
+  if (!page.url().includes("/app/sales/channel"))
+    errors.push(`channel did not land on channel desk, got ${page.url()}`);
   await page.waitForTimeout(400);
   const ch = await page.locator("body").innerText();
   if (/L\. Bhati/i.test(ch)) errors.push("Channel desk leaked Desert Reach hold");
@@ -89,7 +99,11 @@ async function main() {
   await page.getByRole("button", { name: /place hold/i }).click();
   await page.waitForTimeout(600);
   const afterHold = await page.locator("body").innerText();
-  if (!/QA Hold/i.test(afterHold) && !/locked on hold/i.test(afterHold) && !/hold refused/i.test(afterHold)) {
+  if (
+    !/QA Hold/i.test(afterHold) &&
+    !/locked on hold/i.test(afterHold) &&
+    !/hold refused/i.test(afterHold)
+  ) {
     errors.push("Hold action produced no visible result");
   }
   await shot(page, "channel-hold");

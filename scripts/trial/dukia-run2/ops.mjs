@@ -6,7 +6,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { closeTrial, go, openTrial, signIn, signOut, setTrialDate } from "../session.mjs";
 
-const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "docs", "trial", "dukia-run2");
+const OUT = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "..",
+  "docs",
+  "trial",
+  "dukia-run2",
+);
 mkdirSync(OUT, { recursive: true });
 mkdirSync(join(OUT, "agents"), { recursive: true });
 
@@ -36,21 +44,47 @@ try {
   await signIn(page, "md");
   const ceo = await (async () => {
     await go(page, "/app/ceo");
-    const heading = await page.getByRole("heading", { name: /group pulse/i }).waitFor({ timeout: 15000 }).then(() => true).catch(() => false);
+    const heading = await page
+      .getByRole("heading", { name: /group pulse/i })
+      .waitFor({ timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
     const text = await page.locator("body").innerText();
     return {
       heading,
-      threeCards: /SATYAM BUILDCOM/.test(text) && /SATYAM CONSTRUCTION/.test(text) && /MGB PRIME ESTATES LLP/.test(text),
-      notElim: /not a consolidated P&L after intercompany elimination|ops, not post-elim|not post-elim/i.test(text),
+      threeCards:
+        /SATYAM BUILDCOM/.test(text) &&
+        /SATYAM CONSTRUCTION/.test(text) &&
+        /MGB PRIME ESTATES LLP/.test(text),
+      notElim:
+        /not a consolidated P&L after intercompany elimination|ops, not post-elim|not post-elim/i.test(
+          text,
+        ),
       snippet: text.slice(0, 400),
     };
   })();
   artefacts.ceo = ceo;
-  score("md", "CEO pulse three LLP cards", ceo.heading && ceo.threeCards ? 1 : 3, JSON.stringify({ threeCards: ceo.threeCards, notElim: ceo.notElim }));
+  score(
+    "md",
+    "CEO pulse three LLP cards",
+    ceo.heading && ceo.threeCards ? 1 : 3,
+    JSON.stringify({ threeCards: ceo.threeCards, notElim: ceo.notElim }),
+  );
   log("md", "group", {
     work: ["Opened CEO pulse", "Confirmed group is ops not post-elim P&L"],
     erpnext: "none (ops)",
-    friction: ceo.threeCards ? [] : [{ id: "ceo-cards", screen: "/app/ceo", issue: "Sister cards missing", severity: "P1", effort: "S", type: "Atlas UI" }],
+    friction: ceo.threeCards
+      ? []
+      : [
+          {
+            id: "ceo-cards",
+            screen: "/app/ceo",
+            issue: "Sister cards missing",
+            severity: "P1",
+            effort: "S",
+            type: "Atlas UI",
+          },
+        ],
     hire: "Y — MD desk is English and large type.",
   });
   await signOut(page);
@@ -77,14 +111,29 @@ try {
         title: `RERA QPR 2026-06 — ${p?.rera ?? pid}`,
         due: "2026-07-15",
       });
-      const row = g().obligations.find((o) => o.projectId === pid && o.title.includes("RERA QPR 2026-06"));
+      const row = g().obligations.find(
+        (o) => o.projectId === pid && o.title.includes("RERA QPR 2026-06"),
+      );
       const filed = row ? g().fileObligation(row.id, `RERA/${pid}/2026/Q1`) : "no row";
-      out.push({ pid, acquire: err, status: p?.status, consideration: p?.considerationInr, deed: p?.saleDeedNo, rera, filed });
+      out.push({
+        pid,
+        acquire: err,
+        status: p?.status,
+        consideration: p?.considerationInr,
+        deed: p?.saleDeedNo,
+        rera,
+        filed,
+      });
     }
     return out;
   }, LAND);
   artefacts.land = land;
-  score("ll", "Land deed + RERA QPR ×3", land.every((r) => r.status === "acquired" && r.filed == null) ? 2 : 3, JSON.stringify(land));
+  score(
+    "ll",
+    "Land deed + RERA QPR ×3",
+    land.every((r) => r.status === "acquired" && r.filed == null) ? 2 : 3,
+    JSON.stringify(land),
+  );
   log("ll", "all projects", {
     work: land.map((r) => `${r.pid} acquire=${r.acquire ?? "ok"} rera=${r.filed ?? "filed"}`),
     erpnext: "none",
@@ -119,9 +168,18 @@ try {
         last = g().advanceVendor(v.id);
         if (last) break;
       }
-      if (g().vendors.find((x) => x.id === v.id)?.stage === "approval") last = g().advanceVendor(v.id) ?? last;
-      const card = g().approvals.find((a) => a.kind === "Vendor" && a.refId === v.id && a.status === "pending");
-      out.push({ projectId: p.id, vendorId: v?.id, stage: g().vendors.find((x) => x.id === v.id)?.stage, cardId: card?.id, last });
+      if (g().vendors.find((x) => x.id === v.id)?.stage === "approval")
+        last = g().advanceVendor(v.id) ?? last;
+      const card = g().approvals.find(
+        (a) => a.kind === "Vendor" && a.refId === v.id && a.status === "pending",
+      );
+      out.push({
+        projectId: p.id,
+        vendorId: v?.id,
+        stage: g().vendors.find((x) => x.id === v.id)?.stage,
+        cardId: card?.id,
+        last,
+      });
     }
     return out;
   });
@@ -131,14 +189,24 @@ try {
   const act = await page.evaluate((cards) => {
     const g = () => window.__atlasStore.getState();
     return cards.map((c) => {
-      g().setEntity(c.projectId === "p_av" ? "le_sbc" : c.projectId === "p_sf" ? "le_scn" : "le_mgb");
+      g().setEntity(
+        c.projectId === "p_av" ? "le_sbc" : c.projectId === "p_sf" ? "le_scn" : "le_mgb",
+      );
       const err = c.cardId ? g().decideApproval(c.cardId, "approved") : "no card";
       const v = g().vendors.find((x) => x.id === c.vendorId);
       return { ...c, activate: err, stageAfter: v?.stage };
     });
   }, proc);
-  score("md", "Vendor activation ×3", act.every((a) => a.stageAfter === "active") ? 1 : 3, JSON.stringify(act.map((a) => a.stageAfter)));
-  log("md", "group", { work: [`Activated vendors: ${act.map((a) => a.stageAfter).join(", ")}`], hire: "Y — Approvals is one big yes button." });
+  score(
+    "md",
+    "Vendor activation ×3",
+    act.every((a) => a.stageAfter === "active") ? 1 : 3,
+    JSON.stringify(act.map((a) => a.stageAfter)),
+  );
+  log("md", "group", {
+    work: [`Activated vendors: ${act.map((a) => a.stageAfter).join(", ")}`],
+    hire: "Y — Approvals is one big yes button.",
+  });
   await signOut(page);
 
   await signIn(page, "cm");
@@ -146,7 +214,8 @@ try {
     const g = () => window.__atlasStore.getState();
     const out = [];
     for (const v of vendors) {
-      const entity = v.projectId === "p_av" ? "le_sbc" : v.projectId === "p_sf" ? "le_scn" : "le_mgb";
+      const entity =
+        v.projectId === "p_av" ? "le_sbc" : v.projectId === "p_sf" ? "le_scn" : "le_mgb";
       g().setEntity(entity);
       g().setProject(v.projectId);
       const rfqErr = g().createRfq({
@@ -156,12 +225,19 @@ try {
         due: g().simDate ?? "2026-08-25",
         required: true,
       });
-      const rfq = g().rfqs.find((r) => r.title === `Run2 civil ${v.projectId}` && r.status === "open");
+      const rfq = g().rfqs.find(
+        (r) => r.title === `Run2 civil ${v.projectId}` && r.status === "open",
+      );
       const qErr = rfq
         ? g().submitQuote({
             rfqId: rfq.id,
             vendorId: v.vendorId,
-            amount: v.projectId === "p_av" ? 42_00_00_000 : v.projectId === "p_sf" ? 9_50_00_000 : 72_00_00_000,
+            amount:
+              v.projectId === "p_av"
+                ? 42_00_00_000
+                : v.projectId === "p_sf"
+                  ? 9_50_00_000
+                  : 72_00_00_000,
             validity: "2026-12-31",
             exclusions: "as per spec",
             source: "paper",
@@ -172,13 +248,25 @@ try {
       const sel = q ? g().selectQuote(q.id) : "no quote";
       const poErr = q ? g().createPOFromQuote(q.id) : "no quote";
       const po = g().pos.find((p) => p.quoteId === q?.id);
-      out.push({ projectId: v.projectId, rfqErr, qErr, sel, poErr, po: po ? { id: po.id, amount: po.amount, status: po.status } : null });
+      out.push({
+        projectId: v.projectId,
+        rfqErr,
+        qErr,
+        sel,
+        poErr,
+        po: po ? { id: po.id, amount: po.amount, status: po.status } : null,
+      });
     }
     return out;
   }, act);
   artefacts.pos = pos;
   const poOk = pos.filter((p) => p.po?.id).length;
-  score("cm", "RFQ → paper quote → PO ×3", poOk >= 1 ? 2 : 4, JSON.stringify(pos.map((p) => p.poErr || p.po?.id)));
+  score(
+    "cm",
+    "RFQ → paper quote → PO ×3",
+    poOk >= 1 ? 2 : 4,
+    JSON.stringify(pos.map((p) => p.poErr || p.po?.id)),
+  );
   log("cm", "all", {
     work: pos.map((p) => `${p.projectId} PO ${p.po?.id ?? p.poErr}`),
     hire: "N — RFQ/quote/select/PO is too many screens for a first-week hire without a buddy.",
@@ -188,7 +276,9 @@ try {
   await signIn(page, "md");
   const poApprove = await page.evaluate(() => {
     const g = () => window.__atlasStore.getState();
-    const pending = g().approvals.filter((a) => a.status === "pending" && a.kind === "Purchase order");
+    const pending = g().approvals.filter(
+      (a) => a.status === "pending" && a.kind === "Purchase order",
+    );
     return pending.map((a) => ({ id: a.id, err: g().decideApproval(a.id, "approved") }));
   });
   score("md", "Approve POs", poApprove.length ? 1 : 2, `${poApprove.length} cards`);
@@ -241,7 +331,10 @@ try {
       return { err, received: row?.received, issued: row?.issued };
     }, seat);
     score(seat.id, "Receive/issue materials", m.err ? 3 : 1, JSON.stringify(m));
-    log(seat.id, seat.entity, { work: [`Receive 20 issue 5 → ${m.issued}/${m.received}`], hire: "Y — two buttons." });
+    log(seat.id, seat.entity, {
+      work: [`Receive 20 issue 5 → ${m.issued}/${m.received}`],
+      hire: "Y — two buttons.",
+    });
     await signOut(page);
   }
 
@@ -257,14 +350,27 @@ try {
       g().setProject(s.project);
       const errs = [];
       for (const who of ["Run2 buyer A", "Run2 buyer B"]) {
-        errs.push(g().bookNextAvailable(s.project, { prefix: s.prefix, customer: `${who} ${s.prefix}` }) ?? "ok");
+        errs.push(
+          g().bookNextAvailable(s.project, { prefix: s.prefix, customer: `${who} ${s.prefix}` }) ??
+            "ok",
+        );
       }
-      const books = g().bookings.filter((x) => x.projectId === s.project && String(x.customer).includes("Run2"));
+      const books = g().bookings.filter(
+        (x) => x.projectId === s.project && String(x.customer).includes("Run2"),
+      );
       return { errs, booked: books.map((x) => x.unit) };
     }, seat);
     artefacts.bookings.push({ seat: seat.id, ...b });
-    score(seat.id, "Book-next 2 units", b.errs.filter((e) => e === "ok").length >= 1 ? 2 : 4, JSON.stringify(b));
-    log(seat.id, seat.project, { work: [`Booked ${b.booked.join(", ") || "none"}`], hire: "Y if the unit list is filtered; N if they must type prefixes." });
+    score(
+      seat.id,
+      "Book-next 2 units",
+      b.errs.filter((e) => e === "ok").length >= 1 ? 2 : 4,
+      JSON.stringify(b),
+    );
+    log(seat.id, seat.project, {
+      work: [`Booked ${b.booked.join(", ") || "none"}`],
+      hire: "Y if the unit list is filtered; N if they must type prefixes.",
+    });
     await signOut(page);
   }
 
@@ -274,15 +380,30 @@ try {
     const user = s.user;
     const me = s.agents.find((a) => a.userId === user?.id);
     const companyId = me?.companyId;
-    const projectIds = s.projects.filter((p) => !p.exclusivePartnerId || p.exclusivePartnerId === companyId).map((p) => p.id);
+    const projectIds = s.projects
+      .filter((p) => !p.exclusivePartnerId || p.exclusivePartnerId === companyId)
+      .map((p) => p.id);
     const blob = projectIds.map((id) => s.projects.find((p) => p.id === id)?.name).join(" | ");
-    const hits = ["Sunflower", "Acropolis", "Square and Yard", "SBG Sales Group"].filter((n) => blob.includes(n));
+    const hits = ["Sunflower", "Acropolis", "Square and Yard", "SBG Sales Group"].filter((n) =>
+      blob.includes(n),
+    );
     s.setEntity("le_sbc");
-    const report = s.fileDailyReport({ agentId: me.id, calls: 9, visits: 2, leads: 3, notes: "Run2 Aadhaar desk" });
+    const report = s.fileDailyReport({
+      agentId: me.id,
+      calls: 9,
+      visits: 2,
+      leads: 3,
+      notes: "Run2 Aadhaar desk",
+    });
     return { companyId, projectIds, hits, report };
   });
   artefacts.isolation.push(iso);
-  score("agap1", "Channel isolation + daily report", iso.hits.length === 0 && !iso.report ? 1 : iso.hits.length ? 4 : 2, JSON.stringify(iso));
+  score(
+    "agap1",
+    "Channel isolation + daily report",
+    iso.hits.length === 0 && !iso.report ? 1 : iso.hits.length ? 4 : 2,
+    JSON.stringify(iso),
+  );
   log("agap1", "Aadhaar Prime", {
     work: ["Daily report", "Scoped projects only"],
     hire: "Y — as long as they never see another firm’s name.",
@@ -294,7 +415,13 @@ try {
     const r = await page.evaluate(() => {
       const s = window.__atlasStore.getState();
       const me = s.agents.find((a) => a.userId === s.user?.id);
-      const err = s.fileDailyReport({ agentId: me.id, calls: 6, visits: 1, leads: 2, notes: "Run2 channel" });
+      const err = s.fileDailyReport({
+        agentId: me.id,
+        calls: 6,
+        visits: 1,
+        leads: 2,
+        notes: "Run2 channel",
+      });
       return { companyId: me?.companyId, err };
     });
     score(seat, "Daily report", r.err ? 2 : 1, r.err ?? "ok");
@@ -302,7 +429,24 @@ try {
     await signOut(page);
   }
 
-  for (const seat of ["dir1", "dir2", "fl", "fl2", "dc", "pdav", "pdac", "pdsf", "seav", "seac", "sesf", "caap", "casy", "casbg", "agap2", "sm"]) {
+  for (const seat of [
+    "dir1",
+    "dir2",
+    "fl",
+    "fl2",
+    "dc",
+    "pdav",
+    "pdac",
+    "pdsf",
+    "seav",
+    "seac",
+    "sesf",
+    "caap",
+    "casy",
+    "casbg",
+    "agap2",
+    "sm",
+  ]) {
     await signIn(page, seat);
     const snap = await page.evaluate(() => {
       const s = window.__atlasStore.getState();
@@ -320,6 +464,14 @@ try {
   await closeTrial(context);
 }
 
-writeFileSync(join(OUT, "ops-artefacts.json"), JSON.stringify({ artefacts, scores, logs }, null, 2));
+writeFileSync(
+  join(OUT, "ops-artefacts.json"),
+  JSON.stringify({ artefacts, scores, logs }, null, 2),
+);
 console.log("ops seats logged", new Set(scores.map((s) => s.seat)).size, "scores", scores.length);
-console.log("POs", artefacts.pos?.filter((p) => p.po?.id).length, "isolation hits", artefacts.isolation[0]?.hits);
+console.log(
+  "POs",
+  artefacts.pos?.filter((p) => p.po?.id).length,
+  "isolation hits",
+  artefacts.isolation[0]?.hits,
+);

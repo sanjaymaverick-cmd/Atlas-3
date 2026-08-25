@@ -21,8 +21,11 @@ export default {
       async run(page, api) {
         const approvals = await api.read("approvals");
         const pending = (approvals ?? []).filter((a) => a.status === "pending");
-        api.note("did", `Approvals queue: ${pending.length} pending`,
-          pending.map((a) => `${a.kind} → ${a.waitingOn}`).join(" · ") || "empty");
+        api.note(
+          "did",
+          `Approvals queue: ${pending.length} pending`,
+          pending.map((a) => `${a.kind} → ${a.waitingOn}`).join(" · ") || "empty",
+        );
 
         // Four-eyes probe: is anything waiting on someone else actionable by MD?
         const notMine = pending.filter((a) => !/managing director|md/i.test(a.waitingOn ?? ""));
@@ -37,20 +40,32 @@ export default {
           }, target.id);
 
           if (!out.err && out.after === "approved") {
-            api.note("blocked", "FOUR-EYES BYPASS — MD approved an item waiting on another seat",
-              `${target.kind} · waitingOn "${target.waitingOn}" · ${out.before} → ${out.after}`);
+            api.note(
+              "blocked",
+              "FOUR-EYES BYPASS — MD approved an item waiting on another seat",
+              `${target.kind} · waitingOn "${target.waitingOn}" · ${out.before} → ${out.after}`,
+            );
           } else {
-            api.note("did", "Four-eyes held — MD could not act on another seat's item",
-              out.err ?? `status stayed ${out.after}`);
+            api.note(
+              "did",
+              "Four-eyes held — MD could not act on another seat's item",
+              out.err ?? `status stayed ${out.after}`,
+            );
           }
         }
 
         const projects = await api.read("projects");
-        api.note("did", "Portfolio read",
-          (projects ?? []).map((p) => `${p.code} ${p.status} ${p.progress}%`).join(" · "));
+        api.note(
+          "did",
+          "Portfolio read",
+          (projects ?? []).map((p) => `${p.code} ${p.status} ${p.progress}%`).join(" · "),
+        );
 
-        api.note("jargon", "Nav label 'Waiting for a yes'",
-          "MD reads it fine, but it replaced 'Approvals' — an MD who learned the old label loses the word they search for");
+        api.note(
+          "jargon",
+          "Nav label 'Waiting for a yes'",
+          "MD reads it fine, but it replaced 'Approvals' — an MD who learned the old label loses the word they search for",
+        );
       },
     },
 
@@ -61,8 +76,14 @@ export default {
       async run(page, api) {
         const changes = await api.read("changes");
         const open = (changes ?? []).filter((c) => c.status !== "closed");
-        api.note("did", `Change register: ${open.length} open`,
-          open.map((c) => `${c.kind}:${c.title}`).slice(0, 4).join(" · ") || "none");
+        api.note(
+          "did",
+          `Change register: ${open.length} open`,
+          open
+            .map((c) => `${c.kind}:${c.title}`)
+            .slice(0, 4)
+            .join(" · ") || "none",
+        );
 
         await api.act("Raise VO — Tower A lobby granite upgrade", () => {
           const s = window.__atlasStore.getState();
@@ -130,8 +151,11 @@ export default {
       note: "Receive TMT against PO, issue to Tower B",
       async run(page, api) {
         const before = await api.read("materials");
-        api.note("did", "Material position",
-          (before ?? []).map((m) => `${m.name} ${m.issued}/${m.received}${m.unit}`).join(" · "));
+        api.note(
+          "did",
+          "Material position",
+          (before ?? []).map((m) => `${m.name} ${m.issued}/${m.received}${m.unit}`).join(" · "),
+        );
 
         await api.act("Receive 20t TMT 12mm", () => {
           const s = window.__atlasStore.getState();
@@ -154,8 +178,11 @@ export default {
           return m ? s.issueMaterial(m.id, 9999) : "no TMT line";
         });
 
-        api.note("jargon", "'GRN' and 'QS' on the stores desk",
-          "A storekeeper says 'gate entry' and 'measurement'; GRN/QS are the accountant's words");
+        api.note(
+          "jargon",
+          "'GRN' and 'QS' on the stores desk",
+          "A storekeeper says 'gate entry' and 'measurement'; GRN/QS are the accountant's words",
+        );
       },
     },
 
@@ -177,8 +204,11 @@ export default {
 
         const vendors = await api.read("vendors");
         const notActive = (vendors ?? []).filter((v) => v.stage !== "active");
-        api.note("did", `Vendor pipeline: ${notActive.length} not yet active`,
-          notActive.map((v) => `${v.name}:${v.stage}`).join(" · ") || "all active");
+        api.note(
+          "did",
+          `Vendor pipeline: ${notActive.length} not yet active`,
+          notActive.map((v) => `${v.name}:${v.stage}`).join(" · ") || "all active",
+        );
 
         // KYC gate probe — a vendor must not jump straight to active.
         if (notActive.length) {
@@ -198,8 +228,11 @@ export default {
       async run(page, api) {
         const leads = await api.read("leads");
         const live = (leads ?? []).filter((l) => l.stage !== "lost" && l.stage !== "booked");
-        api.note("did", `Live pipeline: ${live.length}`,
-          live.map((l) => `${l.name}:${l.stage}:${l.band ?? "-"}`).join(" · "));
+        api.note(
+          "did",
+          `Live pipeline: ${live.length}`,
+          live.map((l) => `${l.name}:${l.stage}:${l.band ?? "-"}`).join(" · "),
+        );
 
         await api.act("Log a walk-in at Kanakpura sales lounge", () =>
           window.__atlasStore.getState().addLead({
@@ -215,8 +248,11 @@ export default {
         );
 
         const handovers = await api.read("handovers");
-        api.note("did", `Handover files: ${(handovers ?? []).length}`,
-          (handovers ?? []).map((h) => `${h.unit ?? h.id}:oc=${h.oc ?? "-"}`).join(" · ") || "none");
+        api.note(
+          "did",
+          `Handover files: ${(handovers ?? []).length}`,
+          (handovers ?? []).map((h) => `${h.unit ?? h.id}:oc=${h.oc ?? "-"}`).join(" · ") || "none",
+        );
       },
     },
 
@@ -260,8 +296,11 @@ export default {
           `mine=${probe.myCompany} · other agents=[${probe.otherAgentNames.join(", ")}] · other leads=[${probe.otherLeadNames.join(", ")}]`,
         );
 
-        api.note("jargon", "'Band' on a lead card",
-          "Field agent reads hot/warm/cold fine, but 'band' itself means nothing to them");
+        api.note(
+          "jargon",
+          "'Band' on a lead card",
+          "Field agent reads hot/warm/cold fine, but 'band' itself means nothing to them",
+        );
       },
     },
 
@@ -272,8 +311,11 @@ export default {
       async run(page, api) {
         const agents = await api.read("agents");
         const mine = (agents ?? []).filter((a) => a.companyId);
-        api.note("did", `Roster visible: ${mine.length}`,
-          mine.map((a) => `${a.name}:${a.companyId}:${a.status}`).join(" · "));
+        api.note(
+          "did",
+          `Roster visible: ${mine.length}`,
+          mine.map((a) => `${a.name}:${a.companyId}:${a.status}`).join(" · "),
+        );
       },
     },
 
@@ -283,8 +325,14 @@ export default {
       note: "Open MOCK ATLAS3 LLP books, reconcile — Atlas must not post",
       async run(page, api) {
         const tally = await api.read("tally");
-        api.note("did", `Tally cases in Atlas: ${(tally ?? []).length}`,
-          (tally ?? []).map((t) => `${t.id}:${t.status ?? "open"}`).slice(0, 6).join(" · "));
+        api.note(
+          "did",
+          `Tally cases in Atlas: ${(tally ?? []).length}`,
+          (tally ?? [])
+            .map((t) => `${t.id}:${t.status ?? "open"}`)
+            .slice(0, 6)
+            .join(" · "),
+        );
 
         const open = (tally ?? []).find((t) => t.status !== "reconciled");
         if (open) {
@@ -308,8 +356,14 @@ export default {
       note: "Baggad land — diligence and a statutory obligation",
       async run(page, api) {
         const dili = await api.read("diligence");
-        api.note("did", `Diligence items: ${(dili ?? []).length}`,
-          (dili ?? []).map((d) => `${d.title ?? d.id}:${d.status}`).slice(0, 5).join(" · "));
+        api.note(
+          "did",
+          `Diligence items: ${(dili ?? []).length}`,
+          (dili ?? [])
+            .map((d) => `${d.title ?? d.id}:${d.status}`)
+            .slice(0, 5)
+            .join(" · "),
+        );
 
         await api.act("Add RERA quarterly obligation for Q2", () =>
           window.__atlasStore.getState().addObligation({
@@ -339,8 +393,14 @@ export default {
       note: "Register the week's drawings, four-eyes export",
       async run(page, api) {
         const docs = await api.read("documents");
-        api.note("did", `Register: ${(docs ?? []).length} documents`,
-          (docs ?? []).map((d) => `${d.title ?? d.id}:${d.status}`).slice(0, 5).join(" · "));
+        api.note(
+          "did",
+          `Register: ${(docs ?? []).length} documents`,
+          (docs ?? [])
+            .map((d) => `${d.title ?? d.id}:${d.status}`)
+            .slice(0, 5)
+            .join(" · "),
+        );
 
         const quarantined = (docs ?? []).find((d) => d.status === "quarantine");
         if (quarantined) {
@@ -357,8 +417,11 @@ export default {
           return d ? s.requestExport(d.id) : "no documents";
         });
 
-        api.note("jargon", "'Quarantine' on the document register",
-          "Document controller expected a virus/scan word; 'quarantine' read as 'legally held'");
+        api.note(
+          "jargon",
+          "'Quarantine' on the document register",
+          "Document controller expected a virus/scan word; 'quarantine' read as 'legally held'",
+        );
       },
     },
   ],

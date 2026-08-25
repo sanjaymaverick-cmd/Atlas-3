@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { GroupStrip } from "@/components/group-strip";
 import { canSeeBooks, isGroupDirector, isManagingDirector } from "@/lib/roles";
-import { companyAgentIds, myCompanyId, scopedLeads, scopedProjectIds, scopedUnits } from "@/lib/sales-scope";
+import {
+  companyAgentIds,
+  myCompanyId,
+  scopedLeads,
+  scopedProjectIds,
+  scopedUnits,
+} from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
 import { inr, todayIso } from "@/lib/utils";
 
@@ -51,38 +57,61 @@ function Command() {
   const commercialDesk = role === "commercial";
   const companyId = myCompanyId(user, agents);
   const agentIds = companyAgentIds(agents, companyId);
-  const list = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
+  const list = projects.filter(
+    (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+  );
   const budget = list.filter((p) => !p.concept).reduce((s, p) => s + p.budget, 0);
   const spent = list.filter((p) => !p.concept).reduce((s, p) => s + p.spent, 0);
-  const pending = approvals.filter((a) => a.status === "pending" && list.some((p) => p.id === a.projectId));
+  const pending = approvals.filter(
+    (a) => a.status === "pending" && list.some((p) => p.id === a.projectId),
+  );
   const oldest = pending.length ? Math.max(...pending.map((a) => a.agingDays)) : 0;
   const oldestRow = pending.slice().sort((a, b) => b.agingDays - a.agingDays)[0];
   const scopedBookings = bookings.filter((b) => list.some((p) => p.id === b.projectId));
   const collections = scopedBookings.reduce((s, b) => s + b.collected, 0);
   const receivable = scopedBookings.reduce((s, b) => s + (b.value - b.collected), 0);
-  const failed = inspections.filter((i) => i.result === "fail" && list.some((p) => p.id === i.projectId));
+  const failed = inspections.filter(
+    (i) => i.result === "fail" && list.some((p) => p.id === i.projectId),
+  );
   const openNcr = changes.filter(
     (c) => c.kind === "ncr" && c.status !== "closed" && list.some((p) => p.id === c.projectId),
   );
-  const openTally = tally.filter((t) => (t.status === "open" || t.status === "review") && t.entityId === entityId);
-  const obsOpen = obligations.filter((o) => list.some((p) => p.id === o.projectId) && o.status !== "filed").length;
+  const openTally = tally.filter(
+    (t) => (t.status === "open" || t.status === "review") && t.entityId === entityId,
+  );
   const overdueObs = obligations.filter(
-    (o) => list.some((p) => p.id === o.projectId) && (o.status === "overdue" || o.status === "open"),
+    (o) =>
+      list.some((p) => p.id === o.projectId) && (o.status === "overdue" || o.status === "open"),
   );
   const channelProjectIds = scopedProjectIds(user, agents, projects, entityId, projectId);
   const salesScope = channelDesk ? projects.filter((p) => channelProjectIds.includes(p.id)) : list;
-  const pipeline = scopedLeads(leads, user, agents, salesScope.map((p) => p.id)).filter(
-    (l) => l.stage !== "lost" && l.stage !== "won",
-  );
+  const pipeline = scopedLeads(
+    leads,
+    user,
+    agents,
+    salesScope.map((p) => p.id),
+  ).filter((l) => l.stage !== "lost" && l.stage !== "won");
   const hot = pipeline.filter((l) => l.band === "hot");
-  const available = scopedUnits(units, salesScope.map((p) => p.id)).filter((u) => u.status === "available");
-  const held = holds.filter((h) => h.status === "held" && salesScope.some((p) => p.id === h.projectId) && agentIds.includes(h.agentId));
-  const todayRep = dailyReports.filter((d) => d.date === todayIso() && agentIds.includes(d.agentId));
-  const unfiled = (companyId ? agents.filter((a) => a.companyId === companyId && a.status === "active") : []).filter(
-    (a) => !todayRep.some((d) => d.agentId === a.id),
+  const available = scopedUnits(
+    units,
+    salesScope.map((p) => p.id),
+  ).filter((u) => u.status === "available");
+  const held = holds.filter(
+    (h) =>
+      h.status === "held" &&
+      salesScope.some((p) => p.id === h.projectId) &&
+      agentIds.includes(h.agentId),
   );
+  const todayRep = dailyReports.filter(
+    (d) => d.date === todayIso() && agentIds.includes(d.agentId),
+  );
+  const unfiled = (
+    companyId ? agents.filter((a) => a.companyId === companyId && a.status === "active") : []
+  ).filter((a) => !todayRep.some((d) => d.agentId === a.id));
   const spendPct = budget ? Math.round((spent / budget) * 100) : 0;
-  const variance = quantities.filter((q) => q.status === "variance" && list.some((p) => p.id === q.projectId));
+  const variance = quantities.filter(
+    (q) => q.status === "variance" && list.some((p) => p.id === q.projectId),
+  );
   const tightStock = materials.filter(
     (m) => list.some((p) => p.id === m.projectId) && m.received > 0 && m.issued / m.received >= 0.9,
   );
@@ -96,11 +125,20 @@ function Command() {
     const parcel = parcels.find((x) => x.id === e.parcelId);
     return parcel ? list.some((p) => p.id === parcel.projectId) : false;
   });
-  const quarantine = documents.filter((d) => d.status === "quarantine" && list.some((p) => p.id === d.projectId));
+  const quarantine = documents.filter(
+    (d) => d.status === "quarantine" && list.some((p) => p.id === d.projectId),
+  );
   const exportLive = exports.filter((e) => e.status === "pending" || e.status === "granted");
-  const poReview = pos.filter((p) => (p.status === "review" || p.status === "submitted") && list.some((x) => x.id === p.projectId));
+  const poReview = pos.filter(
+    (p) =>
+      (p.status === "review" || p.status === "submitted") && list.some((x) => x.id === p.projectId),
+  );
   const openRfq = rfqs.filter((r) => r.status === "open" && list.some((p) => p.id === r.projectId));
-  const zeroCall = agents.filter((a) => !a.inHouse).filter((a) => dailyReports.filter((d) => d.agentId === a.id).reduce((s, d) => s + d.calls, 0) === 0);
+  const zeroCall = agents
+    .filter((a) => !a.inHouse)
+    .filter(
+      (a) => dailyReports.filter((d) => d.agentId === a.id).reduce((s, d) => s + d.calls, 0) === 0,
+    );
 
   const queue = channelDesk
     ? [
@@ -121,7 +159,11 @@ function Command() {
             { to: "/app/controls", label: "Quantity variance", count: variance.length },
             { to: "/app/controls", label: "Near stock-out", count: tightStock.length },
             { to: "/app/site", label: "Failed inspections", count: failed.length },
-            { to: "/app/controls", label: "Material lines", count: materials.filter((m) => list.some((p) => p.id === m.projectId)).length },
+            {
+              to: "/app/controls",
+              label: "Material lines",
+              count: materials.filter((m) => list.some((p) => p.id === m.projectId)).length,
+            },
           ]
         : siteDesk
           ? [
@@ -150,22 +192,64 @@ function Command() {
                     { to: "/app/site", label: "Failed inspections", count: failed.length },
                     { to: "/app/changes", label: "Failed work still open", count: openNcr.length },
                     ...(canSeeBooks(role)
-                      ? [{ to: "/app/finance", label: "Account mismatches", count: openTally.length }]
+                      ? [
+                          {
+                            to: "/app/finance",
+                            label: "Account mismatches",
+                            count: openTally.length,
+                          },
+                        ]
                       : overdueObs.length
-                        ? [{ to: "/app/land", label: "Late government filings", count: overdueObs.filter((o) => o.status === "overdue").length }]
-                        : [{ to: "/app/customers", label: "Receivable", count: inr(receivable, true) }]),
+                        ? [
+                            {
+                              to: "/app/land",
+                              label: "Late government filings",
+                              count: overdueObs.filter((o) => o.status === "overdue").length,
+                            },
+                          ]
+                        : [
+                            {
+                              to: "/app/customers",
+                              label: "Receivable",
+                              count: inr(receivable, true),
+                            },
+                          ]),
                   ];
 
   const exceptionLinks: Array<{ to: string; label: string }> = [];
   if (!channelDesk && !storesDesk && !legalDesk && !docsDesk && !commercialDesk) {
-    if (failed.length) exceptionLinks.push({ to: "/app/site", label: `${failed.length} failed inspection${failed.length === 1 ? "" : "s"}` });
-    if (openNcr.length) exceptionLinks.push({ to: "/app/changes", label: `${openNcr.length} failed work still open` });
-    if (pending.length) exceptionLinks.push({ to: "/app/approvals", label: `${pending.length} approvals · oldest ${oldest}d` });
-    if (canSeeBooks(role) && openTally.length) exceptionLinks.push({ to: "/app/finance", label: `${openTally.length} account mismatches` });
-    if (role !== "engineer" && role !== "supervisor" && overdueObs.some((o) => o.status === "overdue")) {
-      exceptionLinks.push({ to: "/app/land", label: `${overdueObs.filter((o) => o.status === "overdue").length} late government filings` });
+    if (failed.length)
+      exceptionLinks.push({
+        to: "/app/site",
+        label: `${failed.length} failed inspection${failed.length === 1 ? "" : "s"}`,
+      });
+    if (openNcr.length)
+      exceptionLinks.push({
+        to: "/app/changes",
+        label: `${openNcr.length} failed work still open`,
+      });
+    if (pending.length)
+      exceptionLinks.push({
+        to: "/app/approvals",
+        label: `${pending.length} approvals · oldest ${oldest}d`,
+      });
+    if (canSeeBooks(role) && openTally.length)
+      exceptionLinks.push({ to: "/app/finance", label: `${openTally.length} account mismatches` });
+    if (
+      role !== "engineer" &&
+      role !== "supervisor" &&
+      overdueObs.some((o) => o.status === "overdue")
+    ) {
+      exceptionLinks.push({
+        to: "/app/land",
+        label: `${overdueObs.filter((o) => o.status === "overdue").length} late government filings`,
+      });
     }
-    if (salesDesk && receivable > 0) exceptionLinks.push({ to: "/app/customers", label: `Collections still open ${inr(receivable, true)}` });
+    if (salesDesk && receivable > 0)
+      exceptionLinks.push({
+        to: "/app/customers",
+        label: `Collections still open ${inr(receivable, true)}`,
+      });
   }
   if (legalDesk && overdueObs.filter((o) => o.status === "overdue").length) {
     exceptionLinks.push({
@@ -174,9 +258,11 @@ function Command() {
     });
   }
 
-  const showMoney = !siteDesk && !storesDesk && !channelDesk && !legalDesk && !docsDesk && !commercialDesk;
+  const showMoney =
+    !siteDesk && !storesDesk && !channelDesk && !legalDesk && !docsDesk && !commercialDesk;
   const showSalesLine = role === "owner" || role === "pm";
-  const capitalParcels = role === "owner" ? parcels : parcels.filter((p) => list.some((x) => x.id === p.projectId));
+  const capitalParcels =
+    role === "owner" ? parcels : parcels.filter((p) => list.some((x) => x.id === p.projectId));
   const capitalDeployed = capitalParcels
     .filter((p) => p.status === "acquired")
     .reduce((s, p) => s + (p.considerationInr ?? 0), 0);

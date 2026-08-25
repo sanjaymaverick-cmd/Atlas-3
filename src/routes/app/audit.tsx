@@ -15,8 +15,13 @@ export function Audit() {
       />
       <ol className="space-y-2">
         {audit.map((a) => (
-          <li key={a.id} className="grid gap-1 rounded-xl border border-line bg-surface px-4 py-3 sm:grid-cols-[11rem_1fr]">
-            <p className="font-mono text-[11px] tabular-nums text-muted">{a.at.replace("T", " ").slice(0, 19)}</p>
+          <li
+            key={a.id}
+            className="grid gap-1 rounded-xl border border-line bg-surface px-4 py-3 sm:grid-cols-[11rem_1fr]"
+          >
+            <p className="font-mono text-[11px] tabular-nums text-muted">
+              {a.at.replace("T", " ").slice(0, 19)}
+            </p>
             <div>
               <p className="text-sm">
                 <span className="font-medium">{a.actor}</span> {a.action}

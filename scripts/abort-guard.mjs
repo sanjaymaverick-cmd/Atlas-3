@@ -5,7 +5,13 @@
  * must not take the dev server down.
  */
 
-const ABORT_CODES = new Set(["ECONNRESET", "EPIPE", "ECONNABORTED", "ABORT_ERR", "ERR_STREAM_PREMATURE_CLOSE"]);
+const ABORT_CODES = new Set([
+  "ECONNRESET",
+  "EPIPE",
+  "ECONNABORTED",
+  "ABORT_ERR",
+  "ERR_STREAM_PREMATURE_CLOSE",
+]);
 
 export function isAbortNoise(err) {
   if (err == null || err === false) return false;

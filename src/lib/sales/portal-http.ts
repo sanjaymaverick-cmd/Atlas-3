@@ -1,7 +1,13 @@
 import { createHash } from "node:crypto";
 import { adaptPortal, portalExternalId, type PortalId } from "@/lib/sales/adapters";
 import { normalizePhone, type IngestResult } from "@/lib/sales/ingest";
-import { appendJournal, findJournal, pendingJournal, ackJournal, type JournalEvent } from "@/lib/sales/portal-journal";
+import {
+  appendJournal,
+  findJournal,
+  pendingJournal,
+  ackJournal,
+  type JournalEvent,
+} from "@/lib/sales/portal-journal";
 import { ingestSecret, verifyIngestAuth } from "@/lib/sales/portal-secret";
 
 const PORTALS: PortalId[] = ["99acres", "magicbricks", "housing", "email"];
@@ -23,7 +29,12 @@ function portalFromPath(pathname: string): PortalId | "config" | "journal" | "ac
   return null;
 }
 
-function idempotencyKey(portal: PortalId, ingest: { phone: string; projectId: string }, externalId: string, headerKey: string) {
+function idempotencyKey(
+  portal: PortalId,
+  ingest: { phone: string; projectId: string },
+  externalId: string,
+  headerKey: string,
+) {
   if (headerKey.trim()) return `${portal}:${headerKey.trim()}`;
   const phone = normalizePhone(ingest.phone);
   const basis = externalId || `${phone}:${ingest.projectId}`;
@@ -31,7 +42,11 @@ function idempotencyKey(portal: PortalId, ingest: { phone: string; projectId: st
   return `${portal}:${hash}`;
 }
 
-export async function handlePortalPost(portal: PortalId, raw: string, headers: Headers): Promise<Response> {
+export async function handlePortalPost(
+  portal: PortalId,
+  raw: string,
+  headers: Headers,
+): Promise<Response> {
   const auth = verifyIngestAuth(headers, raw);
   if (auth) return json(401, { ok: false, error: auth });
 

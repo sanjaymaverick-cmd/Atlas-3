@@ -37,7 +37,8 @@ async function main() {
     headers: { "X-Atlas-Ingest-Secret": SECRET },
     body: payload,
   });
-  if (first.status !== 200 || !first.json.ok) errors.push(`99acres first ${first.status} ${JSON.stringify(first.json)}`);
+  if (first.status !== 200 || !first.json.ok)
+    errors.push(`99acres first ${first.status} ${JSON.stringify(first.json)}`);
   if (first.json.ingest?.source !== "99acres") errors.push("adapter source not 99acres");
 
   const retry = await call("/api/ingest/99acres", {

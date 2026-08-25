@@ -42,7 +42,10 @@ async function login(page) {
 }
 
 async function shot(page, name) {
-  await page.locator("h1").waitFor({ timeout: 12000 }).catch(() => {});
+  await page
+    .locator("h1")
+    .waitFor({ timeout: 12000 })
+    .catch(() => {});
   await page.waitForTimeout(250);
   await page.screenshot({ path: join(OUT, `${name}.png`), fullPage: true });
 }
@@ -61,7 +64,9 @@ async function collectOverflow(page, screen) {
     const jade = [...document.querySelectorAll("button, a, [role='button']")].filter((el) => {
       const s = getComputedStyle(el);
       const bg = s.backgroundColor;
-      return bg.includes("29, 79, 66") || bg.includes("31, 79") || el.className.includes("bg-primary");
+      return (
+        bg.includes("29, 79, 66") || bg.includes("31, 79") || el.className.includes("bg-primary")
+      );
     });
     if (jade.length > 3) {
       notes.push({
@@ -91,7 +96,8 @@ async function findTime(page, needle, screen, question) {
 async function navLabels(page, dest) {
   const labels = await page.evaluate(() => {
     const aside = document.querySelector("aside nav");
-    if (aside) return [...aside.querySelectorAll("a")].map((a) => a.textContent.trim()).filter(Boolean);
+    if (aside)
+      return [...aside.querySelectorAll("a")].map((a) => a.textContent.trim()).filter(Boolean);
     const drawer = [...document.querySelectorAll("a")].filter((a) =>
       (a.getAttribute("href") || "").startsWith("/app"),
     );
@@ -113,18 +119,40 @@ async function tourDesktop(page) {
   const home = await bodyText(page);
   await findTime(page, "TMT 12mm|OPC 53|Waterproof", "controls", "What materials are on site?");
   await findTime(page, "Issued .* / received", "controls", "What is GRN'd / received vs issued?");
-  await findTime(page, "Quantity verification|Tower B raft|variance", "controls", "What QS measurement is waiting?");
-  await findTime(page, "GRN|challan|delivery", "controls", "Is there a GRN / delivery challan number?");
-  await findTime(page, "wastage|waste|remaining|on hand|stock", "controls", "Wastage / remaining stock?");
+  await findTime(
+    page,
+    "Quantity verification|Tower B raft|variance",
+    "controls",
+    "What QS measurement is waiting?",
+  );
+  await findTime(
+    page,
+    "GRN|challan|delivery",
+    "controls",
+    "Is there a GRN / delivery challan number?",
+  );
+  await findTime(
+    page,
+    "wastage|waste|remaining|on hand|stock",
+    "controls",
+    "Wastage / remaining stock?",
+  );
   await findTime(page, "BOQ|bill of quant", "controls", "BOQ reconciliation?");
   await findTime(page, "Purchase order|PO ", "controls", "Can I see commercial POs from Controls?");
 
-  if (!/TMT 12mm/i.test(home)) note("controls", "Broken", "Seed TMT 12mm not visible on Controls home.");
+  if (!/TMT 12mm/i.test(home))
+    note("controls", "Broken", "Seed TMT 12mm not visible on Controls home.");
   if (!/Issued 61 \/ received 86/i.test(home) && !/Issued .* \/ received/i.test(home)) {
     note("controls", "Painful", "Received vs issued ledger not obvious in first glance.");
   }
-  if (/GRN/i.test(home)) note("controls", "Acceptable", "GRN label present (unexpected from source).");
-  else note("controls", "Painful", "Receive is a qty bump, not a GRN. No challan, vendor, PO, date, or remaining-on-hand.");
+  if (/GRN/i.test(home))
+    note("controls", "Acceptable", "GRN label present (unexpected from source).");
+  else
+    note(
+      "controls",
+      "Painful",
+      "Receive is a qty bump, not a GRN. No challan, vendor, PO, date, or remaining-on-hand.",
+    );
 
   if (/Tower B raft/i.test(home) && /Approve quantity/i.test(home)) {
     note("controls", "Acceptable", "Variance (Tower B raft) is visible with Approve quantity.");
@@ -132,17 +160,34 @@ async function tourDesktop(page) {
 
   const labels = await navLabels(page, navDesktop);
   for (const forbidden of ["Commercial", "Quotations", "Tally"]) {
-    if (labels.includes(forbidden)) note("nav", "Broken", `${forbidden} unexpectedly in Stores nav.`);
+    if (labels.includes(forbidden))
+      note("nav", "Broken", `${forbidden} unexpectedly in Stores nav.`);
   }
-  for (const expected of ["Command", "All phases", "Projects", "Site & quality", "Controls", "Audit", "Assistant"]) {
+  for (const expected of [
+    "Command",
+    "All phases",
+    "Projects",
+    "Site & quality",
+    "Controls",
+    "Audit",
+    "Assistant",
+  ]) {
     if (!labels.some((l) => l.includes(expected) || expected.includes(l))) {
       note("nav", "Painful", `Expected nav item missing: ${expected}. Saw: ${labels.join(" | ")}`);
     }
   }
   if (labels.includes("Change control")) {
-    note("nav", "Acceptable", "Change control visible to stores (NAV_ROLES.changes excludes stores — unexpected).");
+    note(
+      "nav",
+      "Acceptable",
+      "Change control visible to stores (NAV_ROLES.changes excludes stores — unexpected).",
+    );
   } else {
-    note("nav", "Painful", "Stores cannot open Change control from nav, but Command queue still links Open NCRs there.");
+    note(
+      "nav",
+      "Painful",
+      "Stores cannot open Change control from nav, but Command queue still links Open NCRs there.",
+    );
   }
 
   // Primary actions on Controls
@@ -161,10 +206,16 @@ async function tourDesktop(page) {
   }
 
   // Real action: issue 10 TMT (within receipts)
-  const tmtCard = page.locator("div").filter({ hasText: /^TMT 12mm/ }).first();
+  const _tmtCard = page
+    .locator("div")
+    .filter({ hasText: /^TMT 12mm/ })
+    .first();
   const tmtInput = page.getByLabel("Quantity for TMT 12mm");
   await tmtInput.fill("10");
-  await page.getByRole("button", { name: /^Issue$/ }).first().click();
+  await page
+    .getByRole("button", { name: /^Issue$/ })
+    .first()
+    .click();
   await page.waitForTimeout(500);
   const afterIssue = await bodyText(page);
   if (!/Issued 71 \/ received 86/i.test(afterIssue) && !/Issued 71/i.test(afterIssue)) {
@@ -176,13 +227,26 @@ async function tourDesktop(page) {
 
   // Over-issue should refuse
   await tmtInput.fill("10000");
-  await page.getByRole("button", { name: /^Issue$/ }).first().click();
+  await page
+    .getByRole("button", { name: /^Issue$/ })
+    .first()
+    .click();
   await page.waitForTimeout(600);
-  const toast = await page.locator("[data-sonner-toast], [data-sonner-toaster], li[data-type], [role='status']").allInnerTexts().catch(() => []);
+  const toast = await page
+    .locator("[data-sonner-toast], [data-sonner-toaster], li[data-type], [role='status']")
+    .allInnerTexts()
+    .catch(() => []);
   const toastJoin = toast.join(" ");
   const afterOver = await bodyText(page);
-  if (!/Cannot issue more than accepted receipts/i.test(toastJoin) && !/Cannot issue/i.test(afterOver)) {
-    note("controls-overissue", "Painful", `Over-issue toast not obvious. Toasts: ${toastJoin.slice(0, 200)}`);
+  if (
+    !/Cannot issue more than accepted receipts/i.test(toastJoin) &&
+    !/Cannot issue/i.test(afterOver)
+  ) {
+    note(
+      "controls-overissue",
+      "Painful",
+      `Over-issue toast not obvious. Toasts: ${toastJoin.slice(0, 200)}`,
+    );
   } else {
     note("controls-overissue", "Easy", "Issue past receipts refused with explicit reason.");
   }
@@ -190,18 +254,32 @@ async function tourDesktop(page) {
 
   // Receive 5 (same shared field — friction)
   await tmtInput.fill("5");
-  await page.getByRole("button", { name: /^Receive$/ }).first().click();
+  await page
+    .getByRole("button", { name: /^Receive$/ })
+    .first()
+    .click();
   await page.waitForTimeout(400);
   const afterRecv = await bodyText(page);
   if (!/received 91/i.test(afterRecv)) {
-    note("controls-receive", "Painful", "Receive 5 did not bump received 86→91 (or label is unclear).");
+    note(
+      "controls-receive",
+      "Painful",
+      "Receive 5 did not bump received 86→91 (or label is unclear).",
+    );
   } else {
-    note("controls-receive", "Acceptable", "Receive works but is not a GRN: no vendor, PO, challan, or date.");
+    note(
+      "controls-receive",
+      "Acceptable",
+      "Receive works but is not a GRN: no vendor, PO, challan, or date.",
+    );
   }
   await shot(page, "04-desktop-controls-after-receive");
 
   // Approve raft variance
-  const raft = page.locator("div").filter({ hasText: /Tower B raft/ }).first();
+  const raft = page
+    .locator("div")
+    .filter({ hasText: /Tower B raft/ })
+    .first();
   if (await raft.getByRole("button", { name: /Approve quantity/i }).count()) {
     await raft.getByRole("button", { name: /Approve quantity/i }).click();
     await page.waitForTimeout(400);
@@ -218,13 +296,20 @@ async function tourDesktop(page) {
       note("controls-qty", "Easy", "Approve quantity path completed.");
     }
   } else {
-    note("controls-qty", "Acceptable", "No pending Approve quantity on Tower B raft (already approved?).");
+    note(
+      "controls-qty",
+      "Acceptable",
+      "No pending Approve quantity on Tower B raft (already approved?).",
+    );
   }
   await shot(page, "05-desktop-controls-qty-approved");
 
   // Site grading provisional — can QS enter site qty? Source says no.
   if (/Site grading/i.test(afterRecv) || /Site grading/i.test(home)) {
-    const grading = page.locator("div").filter({ hasText: /Site grading/ }).first();
+    const grading = page
+      .locator("div")
+      .filter({ hasText: /Site grading/ })
+      .first();
     const gText = await grading.innerText().catch(() => "");
     if (/site 0/i.test(gText) && /Approve quantity/i.test(gText)) {
       note(
@@ -247,8 +332,16 @@ async function tourDesktop(page) {
   await go(page, "/app");
   await shot(page, "06-desktop-command");
   const cmd = await bodyText(page);
-  await findTime(page, "Failed inspections|Open NCRs|Statutory", "command", "Does Command answer stores questions?");
-  if (/Failed inspections/i.test(cmd) && !/material|GRN|quantity|issued/i.test(cmd.split("Failed inspections")[0] + cmd.slice(0, 400))) {
+  await findTime(
+    page,
+    "Failed inspections|Open NCRs|Statutory",
+    "command",
+    "Does Command answer stores questions?",
+  );
+  if (
+    /Failed inspections/i.test(cmd) &&
+    !/material|GRN|quantity|issued/i.test(cmd.split("Failed inspections")[0] + cmd.slice(0, 400))
+  ) {
     note(
       "command",
       "Painful",
@@ -256,7 +349,11 @@ async function tourDesktop(page) {
     );
   }
   if (/Diary/i.test(cmd)) {
-    note("command", "Acceptable", "Today’s site queue chip exists but is labelled Diary (supervisor work), not Stores.");
+    note(
+      "command",
+      "Acceptable",
+      "Today’s site queue chip exists but is labelled Diary (supervisor work), not Stores.",
+    );
   }
 
   // Follow queue dead-ends
@@ -273,7 +370,11 @@ async function tourDesktop(page) {
 
   await go(page, "/app/land");
   await shot(page, "08-desktop-deeplink-land");
-  note("land-deeplink", "Painful", "Deep-link /app/land works. Stores Command KPI 'Statutory open' sends QS to Land — not a stores job, and not in nav.");
+  note(
+    "land-deeplink",
+    "Painful",
+    "Deep-link /app/land works. Stores Command KPI 'Statutory open' sends QS to Land — not a stores job, and not in nav.",
+  );
 
   // Site diary
   await go(page, "/app/site");
@@ -281,10 +382,18 @@ async function tourDesktop(page) {
   const site = await bodyText(page);
   await findTime(page, "Today’s diary|Seal diary", "site", "Can Stores see / seal diary?");
   if (/TMT 18t received|Membrane 240/i.test(site)) {
-    note("site", "Acceptable", "Recent diaries mention materials as free text, not linked to Controls receipts.");
+    note(
+      "site",
+      "Acceptable",
+      "Recent diaries mention materials as free text, not linked to Controls receipts.",
+    );
   }
   if (/See store/i.test(site)) {
-    note("site", "Painful", "Diary materials field is a hardcoded 'See store.' — no live stock from Controls.");
+    note(
+      "site",
+      "Painful",
+      "Diary materials field is a hardcoded 'See store.' — no live stock from Controls.",
+    );
   }
   if (/Seal diary/i.test(site) && /Pass/i.test(site)) {
     note(
@@ -295,15 +404,21 @@ async function tourDesktop(page) {
   }
   const diaryMaterials = /materials/i.test(site);
   if (!diaryMaterials) {
-    note("site", "Acceptable", "Diary cards do not surface the materials line (only work + safety). Stores cannot answer 'what was consumed today' from the list.");
+    note(
+      "site",
+      "Acceptable",
+      "Diary cards do not surface the materials line (only work + safety). Stores cannot answer 'what was consumed today' from the list.",
+    );
   }
 
   // Projects
   await go(page, "/app/projects");
   await shot(page, "10-desktop-projects");
   const proj = await bodyText(page);
-  if (/New project/i.test(proj)) note("projects", "Broken", "Stores can create projects (should be owner/pm).");
-  if (!/Kanakpura|Mansarovar|Baggad/i.test(proj)) note("projects", "Painful", "Project list empty or names not visible.");
+  if (/New project/i.test(proj))
+    note("projects", "Broken", "Stores can create projects (should be owner/pm).");
+  if (!/Kanakpura|Mansarovar|Baggad/i.test(proj))
+    note("projects", "Painful", "Project list empty or names not visible.");
   await findTime(page, "Kanakpura", "projects", "Find a live project");
 
   await go(page, "/app/projects/p_kanak");
@@ -380,7 +495,11 @@ async function tourDesktop(page) {
   await shot(page, "17-desktop-assistant");
   const ast = await bodyText(page);
   if (/Fail-closed/i.test(ast)) {
-    note("assistant", "Acceptable", "Assistant fail-closed until owner records AI hosting. Default prompt is raft variance — relevant to QS but unreachable.");
+    note(
+      "assistant",
+      "Acceptable",
+      "Assistant fail-closed until owner records AI hosting. Default prompt is raft variance — relevant to QS but unreachable.",
+    );
   }
 
   // Entity / project switch
@@ -389,7 +508,11 @@ async function tourDesktop(page) {
   const projectSelect = page.locator("header.sticky select").nth(1);
   const entityOptions = await entitySelect.locator("option").allInnerTexts();
   const projectOptions = await projectSelect.locator("option").allInnerTexts();
-  note("scope", "Easy", `Entity switcher present: ${entityOptions.join(" / ")}. Project: ${projectOptions.join(" / ")}`);
+  note(
+    "scope",
+    "Easy",
+    `Entity switcher present: ${entityOptions.join(" / ")}. Project: ${projectOptions.join(" / ")}`,
+  );
 
   await entitySelect.selectOption({ index: 0 }).catch(() => {});
   await page.waitForTimeout(400);
@@ -433,7 +556,11 @@ async function tourDesktop(page) {
     await shot(page, "19-desktop-project-filter");
     const scoped = await bodyText(page);
     if (/Touch-up paint/i.test(scoped) && /KPR/i.test(projectOptions.join(" "))) {
-      note("scope", "Painful", "Project filter still showing Mansarovar paint on a Kanakpura selection.");
+      note(
+        "scope",
+        "Painful",
+        "Project filter still showing Mansarovar paint on a Kanakpura selection.",
+      );
     }
   }
 }
@@ -456,7 +583,11 @@ async function tourMobile(page) {
   } else if (/Local only · not live/i.test(localBadge)) {
     note("mobile-chrome", "Easy", "Full Local only copy on phone.");
   } else {
-    note("mobile-chrome", "Acceptable", "Phone header shortens to 'Local' — DESIGN.md allows this.");
+    note(
+      "mobile-chrome",
+      "Acceptable",
+      "Phone header shortens to 'Local' — DESIGN.md allows this.",
+    );
   }
 
   // Material row targets
@@ -464,28 +595,54 @@ async function tourMobile(page) {
   if (await issueBtn.count()) {
     const box = await issueBtn.boundingBox();
     if (box && box.height < 44) {
-      note("controls-mobile", "Painful", `Issue button height ${Math.round(box.height)}px — site density wants ~48px.`);
+      note(
+        "controls-mobile",
+        "Painful",
+        `Issue button height ${Math.round(box.height)}px — site density wants ~48px.`,
+      );
     } else if (box) {
-      note("controls-mobile", "Easy", `Issue button height ${Math.round(box.height)}px meets site target.`);
+      note(
+        "controls-mobile",
+        "Easy",
+        `Issue button height ${Math.round(box.height)}px meets site target.`,
+      );
     }
   } else {
-    note("controls-mobile", "Painful", "No Issue button on mobile Controls — materials empty after entity switch?");
+    note(
+      "controls-mobile",
+      "Painful",
+      "No Issue button on mobile Controls — materials empty after entity switch?",
+    );
   }
 
   const tmtQty = page.getByLabel("Quantity for TMT 12mm");
   if (await tmtQty.count()) {
     const qtyBox = await tmtQty.boundingBox();
     if (qtyBox && qtyBox.height < 40) {
-      note("controls-mobile", "Painful", `Qty input ${Math.round(qtyBox.height)}px — too small with gloves.`);
+      note(
+        "controls-mobile",
+        "Painful",
+        `Qty input ${Math.round(qtyBox.height)}px — too small with gloves.`,
+      );
     }
   } else {
-    note("controls-mobile", "Painful", "TMT qty field missing on mobile — stock not in current entity/project scope.");
+    note(
+      "controls-mobile",
+      "Painful",
+      "TMT qty field missing on mobile — stock not in current entity/project scope.",
+    );
   }
 
   // Two-select header on 390
-  const headerH = await page.locator("header.sticky").evaluate((el) => el.getBoundingClientRect().height);
+  const headerH = await page
+    .locator("header.sticky")
+    .evaluate((el) => el.getBoundingClientRect().height);
   if (headerH > 80) {
-    note("mobile-chrome", "Acceptable", `Sticky header is ${Math.round(headerH)}px with two selects + menu — eats a dusty-phone viewport.`);
+    note(
+      "mobile-chrome",
+      "Acceptable",
+      `Sticky header is ${Math.round(headerH)}px with two selects + menu — eats a dusty-phone viewport.`,
+    );
   }
 
   await page.getByRole("button", { name: "Open menu" }).click();
@@ -493,7 +650,15 @@ async function tourMobile(page) {
   await shot(page, "21-mobile-nav");
   const drawerText = await page.locator("body").innerText();
   const mobileNav = [];
-  for (const label of ["Command", "All phases", "Projects", "Site & quality", "Controls", "Audit", "Assistant"]) {
+  for (const label of [
+    "Command",
+    "All phases",
+    "Projects",
+    "Site & quality",
+    "Controls",
+    "Audit",
+    "Assistant",
+  ]) {
     if (drawerText.includes(label)) mobileNav.push(label);
   }
   navMobile.splice(0, navMobile.length, ...mobileNav);
@@ -503,7 +668,10 @@ async function tourMobile(page) {
   if (!drawerText.includes("H. Singh") && !drawerText.includes("Stores")) {
     note("mobile-nav", "Acceptable", "Drawer may omit seat name (desktop footer has H. Singh).");
   }
-  await page.locator("body").click({ position: { x: 350, y: 20 } }).catch(() => {});
+  await page
+    .locator("body")
+    .click({ position: { x: 350, y: 20 } })
+    .catch(() => {});
   await page.waitForTimeout(200);
 
   await go(page, "/app");
@@ -528,7 +696,11 @@ async function tourMobile(page) {
   const seal = page.getByRole("button", { name: /Seal diary/i });
   const sealBox = await seal.boundingBox();
   if (sealBox && sealBox.height >= 44) {
-    note("site-mobile", "Easy", `Seal diary is ${Math.round(sealBox.height)}px full-width — site density OK, but the action is not stores' job.`);
+    note(
+      "site-mobile",
+      "Easy",
+      `Seal diary is ${Math.round(sealBox.height)}px full-width — site density OK, but the action is not stores' job.`,
+    );
   }
 
   await go(page, "/app/projects");
@@ -598,7 +770,20 @@ async function main() {
     pageErrors,
   };
   writeFileSync(join(OUT, "findings.json"), JSON.stringify(report, null, 2));
-  console.log(JSON.stringify({ ok: true, shots: OUT, findings: findings.length, timings, navDesktop, errors: consoleErrors.length + pageErrors.length }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        ok: true,
+        shots: OUT,
+        findings: findings.length,
+        timings,
+        navDesktop,
+        errors: consoleErrors.length + pageErrors.length,
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 main().catch((err) => {

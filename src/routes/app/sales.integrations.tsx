@@ -82,7 +82,11 @@ function Integrations() {
     const body = await res.json();
     if (!res.ok) return toast(body.error ?? `HTTP ${res.status}`);
     const pull = await pullPortalJournal();
-    toast(body.duplicate ? "Duplicate webhook accepted (idempotent)." : `Queued. ${pull.pulled} applied to pipeline.`);
+    toast(
+      body.duplicate
+        ? "Duplicate webhook accepted (idempotent)."
+        : `Queued. ${pull.pulled} applied to pipeline.`,
+    );
   }
 
   async function postEmail() {
@@ -95,7 +99,11 @@ function Integrations() {
     const body = await res.json();
     if (!res.ok) return toast(body.error ?? `HTTP ${res.status}`);
     const pull = await pullPortalJournal();
-    toast(body.duplicate ? "Duplicate email accepted." : `Email parsed. ${pull.pulled} applied to pipeline.`);
+    toast(
+      body.duplicate
+        ? "Duplicate email accepted."
+        : `Email parsed. ${pull.pulled} applied to pipeline.`,
+    );
   }
 
   return (
@@ -106,7 +114,8 @@ function Integrations() {
         description="99acres, MagicBricks and Housing.com POST into ingest → dedup → score → pipeline. Email is the fallback. Meta Lead Ads, Google Lead Forms, WhatsApp Business, Razorpay, and e-sign stay designed-only — no live API on this host. Atlas never posts ERPNext. Local only."
       />
       <GateBanner>
-        Give Account Managers the URL + secret below. Same payload retried is idempotent. Docs: docs/sales/connectors/.
+        Give Account Managers the URL + secret below. Same payload retried is idempotent. Docs:
+        docs/sales/connectors/.
       </GateBanner>
 
       <h2 className="mb-3 font-display text-2xl">Connectors</h2>
@@ -130,7 +139,12 @@ function Integrations() {
               <div key={k} className="flex flex-wrap items-center justify-between gap-2">
                 <code className="text-xs break-all">{cfg.urls[k]}</code>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="h-11" onClick={() => copy(cfg.urls[k], `${k} URL`)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-11"
+                    onClick={() => copy(cfg.urls[k], `${k} URL`)}
+                  >
                     Copy URL
                   </Button>
                   <Button size="sm" className="h-11" onClick={() => void postSample(k)}>
@@ -143,14 +157,19 @@ function Integrations() {
               <p className="text-sm">
                 Header <span className="font-mono">{cfg.secretHeader}</span>
               </p>
-              <Button size="sm" variant="outline" className="h-11" onClick={() => copy(cfg.secret, "Secret")}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-11"
+                onClick={() => copy(cfg.secret, "Secret")}
+              >
                 Copy secret
               </Button>
             </div>
             <p className="font-mono text-xs text-muted">{cfg.secret}</p>
             <p className="text-xs text-muted">
-              HMAC alternative: {cfg.signatureHeader} = sha256=HMAC_SHA256(secret, raw body). Override secret with
-              ATLAS_INGEST_SECRET.
+              HMAC alternative: {cfg.signatureHeader} = sha256=HMAC_SHA256(secret, raw body).
+              Override secret with ATLAS_INGEST_SECRET.
             </p>
           </>
         ) : (
@@ -185,10 +204,18 @@ function Integrations() {
             </div>
             {row.status === "queued" ? (
               <div className="mt-3 flex flex-wrap gap-2">
-                <Button className="h-11" onClick={() => toast(acceptInbound(row.id) ?? "Applied. Audit recorded.")}>
+                <Button
+                  className="h-11"
+                  onClick={() => toast(acceptInbound(row.id) ?? "Applied. Audit recorded.")}
+                >
                   Apply
                 </Button>
-                <Button size="sm" variant="outline" className="h-11" onClick={() => toast(rejectInbound(row.id) ?? "Rejected.")}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-11"
+                  onClick={() => toast(rejectInbound(row.id) ?? "Rejected.")}
+                >
                   Reject
                 </Button>
               </div>

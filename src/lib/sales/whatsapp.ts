@@ -4,7 +4,11 @@ export function fillTemplate(body: string, values: string[]) {
   return body.replace(/\{\{(\d+)\}\}/g, (_, n) => values[Number(n) - 1] ?? "");
 }
 
-export function refuseSend(tpl: WaTemplate | undefined, lead: Lead | undefined, marketingConsent: boolean) {
+export function refuseSend(
+  tpl: WaTemplate | undefined,
+  lead: Lead | undefined,
+  marketingConsent: boolean,
+) {
   if (!tpl) return "Template not found.";
   if (tpl.status !== "approved") return "Template is not Meta-approved (local registry).";
   if (tpl.quality === "low") return "Quality-rating protection — this template is paused.";
@@ -23,7 +27,9 @@ export function leadValues(lead: Lead, extra: string[] = []): string[] {
 }
 
 export function templateByTrigger(templates: WaTemplate[], trigger: WaTemplate["trigger"]) {
-  return templates.find((t) => t.trigger === trigger && t.status === "approved" && t.quality !== "low");
+  return templates.find(
+    (t) => t.trigger === trigger && t.status === "approved" && t.quality !== "low",
+  );
 }
 
 /** Lightweight WhatsApp qualifier — not a live chatbot. */

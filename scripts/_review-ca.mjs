@@ -11,9 +11,9 @@ const BASE = process.env.ATLAS_URL || "http://127.0.0.1:8080";
 const OUT = join(process.cwd(), "screenshots", "review", "ca");
 mkdirSync(OUT, { recursive: true });
 
-const LEAK =
+const _LEAK =
   /Desert Reach|L\. Bhati|R\. Shekhawat|Shekhawat|C-512|Mansar C stack|pt3\b|08AADCD3300F1Z1/i;
-const SHOULD = {
+const _SHOULD = {
   agents: /V\. Meena|S\. Qureshi|K\. Pink/,
   hold: /S-12|R\. Soni/,
   firm: /Pink City/,
@@ -92,10 +92,23 @@ async function snapshot(page, screen) {
   const findMs = Date.now() - started;
   const url = page.url();
   const path = new URL(url).pathname;
-  const title = await page.locator("h1").first().innerText().catch(() => "");
-  const body = await page.locator("main").innerText().catch(() => "");
-  const nav = await page.locator("aside nav").innerText().catch(() => "");
-  const header = await page.locator("header").innerText().catch(() => "");
+  const title = await page
+    .locator("h1")
+    .first()
+    .innerText()
+    .catch(() => "");
+  const body = await page
+    .locator("main")
+    .innerText()
+    .catch(() => "");
+  const nav = await page
+    .locator("aside nav")
+    .innerText()
+    .catch(() => "");
+  const header = await page
+    .locator("header")
+    .innerText()
+    .catch(() => "");
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > window.innerWidth + 8,
   );
@@ -127,7 +140,10 @@ async function snapshot(page, screen) {
     hasShekhawat: /Shekhawat/.test(body),
     hasBhati: /L\. Bhati/.test(body),
     bodyPreview: body.slice(0, 1800),
-    nav: nav.split("\n").map((s) => s.trim()).filter(Boolean),
+    nav: nav
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean),
   };
 }
 
@@ -166,8 +182,21 @@ async function main() {
   report.screens.push(homeSnap);
 
   const navText = await page.locator("aside nav").innerText();
-  report.navDesktop = navText.split("\n").map((s) => s.trim()).filter(Boolean);
-  const unexpectedNav = ["Pipeline", "Handover", "Customer 360", "Sales analytics", "Inbound", "Tally", "Approvals", "CRM", "Customers"];
+  report.navDesktop = navText
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const unexpectedNav = [
+    "Pipeline",
+    "Handover",
+    "Customer 360",
+    "Sales analytics",
+    "Inbound",
+    "Tally",
+    "Approvals",
+    "CRM",
+    "Customers",
+  ];
   report.navLeaks = unexpectedNav.filter((n) => navText.includes(n));
 
   for (const [path, name, needle] of ALLOWED) {
@@ -245,13 +274,17 @@ async function main() {
     const snap = await snapshot(page, name);
     await shot(page, name);
     const blocked =
-      snap.path !== path ||
-      /does not post books|View only is not offered/i.test(snap.bodyPreview);
+      snap.path !== path || /does not post books|View only is not offered/i.test(snap.bodyPreview);
     snap.blocked = blocked || snap.path !== path;
     snap.requested = path;
     report.screens.push(snap);
     if (snap.leak.length) {
-      report.isolation.push({ severity: "p0", screen: path, hits: snap.leak, blocked: snap.blocked });
+      report.isolation.push({
+        severity: "p0",
+        screen: path,
+        hits: snap.leak,
+        blocked: snap.blocked,
+      });
     } else {
       report.isolation.push({
         severity: snap.path === path && !blocked ? "p1" : "info",
@@ -311,7 +344,7 @@ async function main() {
   });
 
   await gotoWait(page, "/app/sales/channel");
-  const agentSelect = page.locator("select").filter({ hasText: "K. Pink" }).first();
+  const _agentSelect = page.locator("select").filter({ hasText: "K. Pink" }).first();
   const agentOptions = await page
     .locator("label")
     .filter({ hasText: /^Agent$/ })
@@ -369,7 +402,10 @@ async function main() {
   // WhatsApp: lead list + log
   await gotoWait(page, "/app/sales/whatsapp");
   const wa = await page.locator("main").innerText();
-  const waLeads = await page.locator("select option").allInnerTexts().catch(() => []);
+  const waLeads = await page
+    .locator("select option")
+    .allInnerTexts()
+    .catch(() => []);
   report.actions.push({
     name: "whatsapp",
     leads: waLeads,
@@ -412,8 +448,15 @@ async function main() {
   await mpage.getByRole("button", { name: /open menu/i }).click();
   await mpage.waitForTimeout(300);
   await mpage.screenshot({ path: join(OUT, "m-nav.png") });
-  const mobileNav = await mpage.locator(".fixed .space-y-1, [class*='bg-sidebar']").last().innerText().catch(() => "");
-  report.navMobile = mobileNav.split("\n").map((s) => s.trim()).filter(Boolean);
+  const mobileNav = await mpage
+    .locator(".fixed .space-y-1, [class*='bg-sidebar']")
+    .last()
+    .innerText()
+    .catch(() => "");
+  report.navMobile = mobileNav
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
   await mobile.close();
 
   writeFileSync(join(OUT, "report.json"), JSON.stringify(report, null, 2));

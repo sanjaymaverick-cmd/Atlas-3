@@ -148,7 +148,8 @@ try {
     s.setEntity("le_sbc");
     s.registerDocument({
       projectId: "p_av",
-      title: "Funding picture — Aerovista land equity + construction 60% SBI / 40% partner+advances",
+      title:
+        "Funding picture — Aerovista land equity + construction 60% SBI / 40% partner+advances",
       kind: "Report",
       classification: "confidential",
       fileName: "aerovista-funding-2024-06-03.pdf",

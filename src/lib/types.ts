@@ -29,22 +29,9 @@ export type WorkflowStatus =
   | "cancelled";
 
 export type VendorStage =
-  | "invited"
-  | "kyc"
-  | "verified"
-  | "bank"
-  | "compliance"
-  | "approval"
-  | "active"
-  | "suspended";
+  "invited" | "kyc" | "verified" | "bank" | "compliance" | "approval" | "active" | "suspended";
 
-export type DecisionId =
-  | "ai_hosting"
-  | "kms"
-  | "rto_rpo"
-  | "break_glass"
-  | "warm_standby"
-  | "crm";
+export type DecisionId = "ai_hosting" | "kms" | "rto_rpo" | "break_glass" | "warm_standby" | "crm";
 
 export type DocKind = "Drawing" | "Statutory" | "Report" | "Spec" | "Contract";
 
@@ -429,14 +416,7 @@ export type LeadStage =
   | "nurture";
 
 export type LeadSource =
-  | "walk-in"
-  | "website"
-  | "partner"
-  | "99acres"
-  | "magicbricks"
-  | "housing"
-  | "meta"
-  | "google";
+  "walk-in" | "website" | "partner" | "99acres" | "magicbricks" | "housing" | "meta" | "google";
 
 export type ScoreBand = "hot" | "warm" | "cold";
 export type ScoreModelKind = "hybrid" | "xgboost" | "lightgbm" | "catboost";

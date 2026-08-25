@@ -33,7 +33,10 @@ async function main() {
   await dpage.waitForTimeout(600);
   await dpage.screenshot({ path: join(OUT, "d-projects-aravalli.png"), fullPage: true });
   const projText = await dpage.locator("main").innerText();
-  console.log("projects-aravalli", { bytesHint: projText.slice(0, 200), hasMansar: /Mansarovar/.test(projText) });
+  console.log("projects-aravalli", {
+    bytesHint: projText.slice(0, 200),
+    hasMansar: /Mansarovar/.test(projText),
+  });
   await desk.close();
 
   const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -52,7 +55,9 @@ async function main() {
     await mpage.waitForTimeout(400);
     await mpage.screenshot({ path: join(OUT, `${name}.png`) });
     const t = await mpage.locator("h1").innerText();
-    const overflow = await mpage.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 8);
+    const overflow = await mpage.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth + 8,
+    );
     console.log(name, t, "overflow", overflow);
   }
   await mpage.getByRole("button", { name: /open menu/i }).click();

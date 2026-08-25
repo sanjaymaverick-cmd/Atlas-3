@@ -8,11 +8,16 @@ import { useAtlas } from "@/lib/store";
 export const Route = createFileRoute("/app/portfolio")({ component: Portfolio });
 
 function Portfolio() {
-  const { projects, entityId, projectId, approvals, changes, exports, inspections, user } = useAtlas();
-  const list = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
+  const { projects, entityId, projectId, approvals, changes, exports, inspections, user } =
+    useAtlas();
+  const list = projects.filter(
+    (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+  );
   const ids = list.map((p) => p.id);
   const myApprovals = approvals.filter((a) => a.status === "pending" && ids.includes(a.projectId));
-  const ncr = changes.filter((c) => c.kind === "ncr" && c.status !== "closed" && ids.includes(c.projectId));
+  const ncr = changes.filter(
+    (c) => c.kind === "ncr" && c.status !== "closed" && ids.includes(c.projectId),
+  );
   const grants = exports.filter((e) => e.status === "pending" || e.status === "granted");
 
   return (
@@ -60,7 +65,9 @@ function Portfolio() {
               <td className="px-4 py-3 tabular-nums">{inr(p.budget, true)}</td>
               <td className="px-4 py-3 tabular-nums">{inr(p.spent, true)}</td>
               <td className="px-4 py-3">
-                <Status value={risk === "elevated" ? "fail" : risk === "watch" ? "review" : "approved"} />
+                <Status
+                  value={risk === "elevated" ? "fail" : risk === "watch" ? "review" : "approved"}
+                />
               </td>
             </tr>
           );

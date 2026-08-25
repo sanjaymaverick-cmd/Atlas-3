@@ -7,8 +7,14 @@ export default {
       note: "Select the Baggad quote and raise the PO",
       async run(page, api) {
         const quotes = await api.read("quotes");
-        api.note("did", `Quotes on file: ${(quotes ?? []).length}`,
-          (quotes ?? []).map((q) => `${q.id}:${q.amount}:${q.status ?? "-"}`).slice(0, 5).join(" · ") || "none");
+        api.note(
+          "did",
+          `Quotes on file: ${(quotes ?? []).length}`,
+          (quotes ?? [])
+            .map((q) => `${q.id}:${q.amount}:${q.status ?? "-"}`)
+            .slice(0, 5)
+            .join(" · ") || "none",
+        );
 
         await api.act("Select the Marwar quote", () => {
           const s = window.__atlasStore.getState();
@@ -37,8 +43,11 @@ export default {
         });
 
         const tally = await api.read("tally");
-        api.note("did", `Tally cases: ${(tally ?? []).length}`,
-          (tally ?? []).map((t) => `${t.id}:${t.status ?? "open"}`).join(" · "));
+        api.note(
+          "did",
+          `Tally cases: ${(tally ?? []).length}`,
+          (tally ?? []).map((t) => `${t.id}:${t.status ?? "open"}`).join(" · "),
+        );
       },
     },
     {
@@ -46,8 +55,11 @@ export default {
       note: "Complete a four-eyes export end to end",
       async run(page, api) {
         const grants = await api.read("exportGrants");
-        api.note("did", `Export grants: ${(grants ?? []).length}`,
-          (grants ?? []).map((g) => `${g.id}:${g.status}`).join(" · ") || "none");
+        api.note(
+          "did",
+          `Export grants: ${(grants ?? []).length}`,
+          (grants ?? []).map((g) => `${g.id}:${g.status}`).join(" · ") || "none",
+        );
 
         await api.act("Consume an approved export grant", () => {
           const s = window.__atlasStore.getState();

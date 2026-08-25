@@ -48,7 +48,11 @@ function CeoDesk() {
           store,
           { entityId: c.entityId },
           books
-            ? { configured: books.configured, reachable: books.reachable, posted: books.posted?.length ?? 0 }
+            ? {
+                configured: books.configured,
+                reachable: books.reachable,
+                posted: books.posted?.length ?? 0,
+              }
             : undefined,
           entityId,
         ),
@@ -95,7 +99,8 @@ function CeoDesk() {
                 {sr.kpis.booked} booked · {inr(sr.kpis.bookedInr, true)}
               </p>
               <p className="text-sm tabular-nums text-muted">
-                Collections {inr(sr.kpis.collectionsMtd, true)} · land {sr.kpis.capitalDeployed ? inr(sr.kpis.capitalDeployed, true) : "₹ —"}
+                Collections {inr(sr.kpis.collectionsMtd, true)} · land{" "}
+                {sr.kpis.capitalDeployed ? inr(sr.kpis.capitalDeployed, true) : "₹ —"}
               </p>
             </Card>
           ))}
@@ -103,8 +108,9 @@ function CeoDesk() {
       ) : null}
       {scope === "group" ? (
         <p className="mb-6 text-sm text-muted">
-          Each card is that LLP’s ops. Adding them does not eliminate due-from/due-to. Statutory books live in ERPNext
-          Desk (DUKIA Books) — not this screen. Group pack after elim is a worksheet, not these three cards.{" "}
+          Each card is that LLP’s ops. Adding them does not eliminate due-from/due-to. Statutory
+          books live in ERPNext Desk (DUKIA Books) — not this screen. Group pack after elim is a
+          worksheet, not these three cards.{" "}
           <Link to="/app/finance" className="underline-offset-4 hover:underline">
             Company accounts (ops hint)
           </Link>
@@ -113,27 +119,46 @@ function CeoDesk() {
       ) : null}
 
       {report.mdWaiting > 0 ? (
-        <Link to="/app/approvals" className="mb-6 block rounded-xl border border-primary/40 bg-surface p-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Waiting on the Managing Director</p>
-          <p className="font-display text-2xl">{report.mdWaiting} approval{report.mdWaiting === 1 ? "" : "s"}</p>
+        <Link
+          to="/app/approvals"
+          className="mb-6 block rounded-xl border border-primary/40 bg-surface p-4"
+        >
+          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
+            Waiting on the Managing Director
+          </p>
+          <p className="font-display text-2xl">
+            {report.mdWaiting} approval{report.mdWaiting === 1 ? "" : "s"}
+          </p>
         </Link>
       ) : null}
 
       <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Link to="/app/sales/inventory">
-          <Kpi label="Available" value={String(k.available)} vs={k.availableInr ? inr(k.availableInr, true) : undefined} />
+          <Kpi
+            label="Available"
+            value={String(k.available)}
+            vs={k.availableInr ? inr(k.availableInr, true) : undefined}
+          />
         </Link>
         <Link to="/app/sales/channel">
           <Kpi label="Held" value={String(k.held)} />
         </Link>
         <Link to="/app/customers">
-          <Kpi label="Booked / sold" value={String(k.booked)} vs={k.bookedInr ? inr(k.bookedInr, true) : undefined} />
+          <Kpi
+            label="Booked / sold"
+            value={String(k.booked)}
+            vs={k.bookedInr ? inr(k.bookedInr, true) : undefined}
+          />
         </Link>
         <Link to="/app/sales/handover">
           <Kpi label="Possessed" value={String(k.possessed)} />
         </Link>
         <Link to="/app/customers">
-          <Kpi label="Collections this month" value={inr(k.collectionsMtd, true)} hint="Instalments due this month that have a paid amount" />
+          <Kpi
+            label="Collections this month"
+            value={inr(k.collectionsMtd, true)}
+            hint="Instalments due this month that have a paid amount"
+          />
         </Link>
         <Link to="/app/customers">
           <Kpi
@@ -143,16 +168,31 @@ function CeoDesk() {
           />
         </Link>
         <Link to="/app/land">
-          <Kpi label="Open gates" value={String(k.openDiligence + k.reraDue + k.snagsOpen)} vs={`title ${k.openDiligence} · RERA ${k.reraDue} · defects ${k.snagsOpen}`} />
+          <Kpi
+            label="Open gates"
+            value={String(k.openDiligence + k.reraDue + k.snagsOpen)}
+            vs={`title ${k.openDiligence} · RERA ${k.reraDue} · defects ${k.snagsOpen}`}
+          />
         </Link>
         <Link to="/app/crm">
-          <Kpi label="Commission accrued" value={inr(k.commissionAccrued, true)} hint="Never paid from Atlas" />
+          <Kpi
+            label="Commission accrued"
+            value={inr(k.commissionAccrued, true)}
+            hint="Never paid from Atlas"
+          />
         </Link>
         <Link to="/app/land">
-          <Kpi label="Capital deployed (land)" value={k.capitalDeployed ? inr(k.capitalDeployed, true) : "₹ —"} />
+          <Kpi
+            label="Capital deployed (land)"
+            value={k.capitalDeployed ? inr(k.capitalDeployed, true) : "₹ —"}
+          />
         </Link>
         <Link to="/app/commercial">
-          <Kpi label="Open PO exposure" value={inr(k.openPoInr, true)} vs={k.vendorsApproval ? `${k.vendorsApproval} vendor(s) in approval` : "vendors Active"} />
+          <Kpi
+            label="Open PO exposure"
+            value={inr(k.openPoInr, true)}
+            vs={k.vendorsApproval ? `${k.vendorsApproval} vendor(s) in approval` : "vendors Active"}
+          />
         </Link>
         <Kpi
           label="Weeks to sellout"
@@ -162,7 +202,9 @@ function CeoDesk() {
         <Link to="/app/finance">
           <Kpi
             label="Books health"
-            value={!books ? "…" : !books.configured ? "Not set" : books.reachable ? "Reachable" : "Down"}
+            value={
+              !books ? "…" : !books.configured ? "Not set" : books.reachable ? "Reachable" : "Down"
+            }
             vs={books?.detail}
             hint="Atlas posted nothing unless posting is on"
           />
@@ -178,8 +220,13 @@ function CeoDesk() {
             <ul className="mt-3 space-y-2">
               {report.risks.map((r) => (
                 <li key={r.id}>
-                  <Link to={r.to} className="block rounded-md border border-line px-3 py-2 text-sm hover:bg-chip">
-                    <span className="mr-2 text-[10px] uppercase tracking-[0.12em] text-muted">{r.severity}</span>
+                  <Link
+                    to={r.to}
+                    className="block rounded-md border border-line px-3 py-2 text-sm hover:bg-chip"
+                  >
+                    <span className="mr-2 text-[10px] uppercase tracking-[0.12em] text-muted">
+                      {r.severity}
+                    </span>
                     {r.label}
                   </Link>
                 </li>
@@ -189,7 +236,9 @@ function CeoDesk() {
         </Card>
         <Card className="p-5">
           <h2 className="font-display text-2xl">Brief</h2>
-          <p className="mt-1 text-xs text-muted">Five bullets from these numbers. No external model.</p>
+          <p className="mt-1 text-xs text-muted">
+            Five bullets from these numbers. No external model.
+          </p>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
             {report.brief.map((b) => (
               <li key={b}>{b}</li>
@@ -201,11 +250,20 @@ function CeoDesk() {
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <Card className="p-5">
           <h2 className="font-display text-xl">Funnel</h2>
-          <p className="text-xs text-muted">Available → held → booked → possessed. Ops inventory, not books after elim.</p>
+          <p className="text-xs text-muted">
+            Available → held → booked → possessed. Ops inventory, not books after elim.
+          </p>
           <ul className="mt-3 space-y-2 text-sm">
             {report.funnel.map((f) => {
               const max = Math.max(1, ...report.funnel.map((x) => x.count));
-              const label = f.stage === "available" ? "Available" : f.stage === "held" ? "Held" : f.stage === "booked" ? "Booked" : "Possessed";
+              const label =
+                f.stage === "available"
+                  ? "Available"
+                  : f.stage === "held"
+                    ? "Held"
+                    : f.stage === "booked"
+                      ? "Booked"
+                      : "Possessed";
               return (
                 <li key={f.stage}>
                   <div className="flex justify-between gap-2">
@@ -213,7 +271,10 @@ function CeoDesk() {
                     <span className="tabular-nums">{f.count}</span>
                   </div>
                   <div className="mt-1 h-2 overflow-hidden rounded-full bg-chip">
-                    <div className="h-full bg-primary" style={{ width: `${Math.round((f.count / max) * 100)}%` }} />
+                    <div
+                      className="h-full bg-primary"
+                      style={{ width: `${Math.round((f.count / max) * 100)}%` }}
+                    />
                   </div>
                 </li>
               );
@@ -229,7 +290,9 @@ function CeoDesk() {
               style={{ width: `${Math.min(100, Math.round(report.weeklyVelocity * 10))}%` }}
             />
           </div>
-          <p className="mt-3 text-sm tabular-nums">Collections this month {inr(k.collectionsMtd, true)}</p>
+          <p className="mt-3 text-sm tabular-nums">
+            Collections this month {inr(k.collectionsMtd, true)}
+          </p>
           <div className="mt-1 h-2 overflow-hidden rounded-full bg-chip">
             <div
               className="h-full bg-primary"
@@ -238,12 +301,22 @@ function CeoDesk() {
               }}
             />
           </div>
-          <p className="mt-3 text-sm tabular-nums">Aging 61–90d {k.overdue61} · 90d+ {k.overdue90}</p>
+          <p className="mt-3 text-sm tabular-nums">
+            Aging 61–90d {k.overdue61} · 90d+ {k.overdue90}
+          </p>
           <div className="mt-1 flex h-2 overflow-hidden rounded-full bg-chip">
-            <div className="h-full bg-warn" style={{ width: `${Math.min(50, k.overdue61 * 8)}%` }} />
-            <div className="h-full bg-danger" style={{ width: `${Math.min(50, k.overdue90 * 8)}%` }} />
+            <div
+              className="h-full bg-warn"
+              style={{ width: `${Math.min(50, k.overdue61 * 8)}%` }}
+            />
+            <div
+              className="h-full bg-danger"
+              style={{ width: `${Math.min(50, k.overdue90 * 8)}%` }}
+            />
           </div>
-          <p className="mt-2 text-xs text-muted">Not P&L after intercompany elimination. Books sit in ERPNext.</p>
+          <p className="mt-2 text-xs text-muted">
+            Not P&L after intercompany elimination. Books sit in ERPNext.
+          </p>
         </Card>
         <Card className="p-5">
           <h2 className="font-display text-xl">Inventory by BHK</h2>

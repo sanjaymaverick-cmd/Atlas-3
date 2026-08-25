@@ -11,7 +11,18 @@ import { inr } from "@/lib/utils";
 export const Route = createFileRoute("/app/approvals")({ component: Approvals });
 
 function Approvals() {
-  const { approvals, projects, entityId, projectId, decideApproval, user, vendors, pos, quotes, rfqs } = useAtlas();
+  const {
+    approvals,
+    projects,
+    entityId,
+    projectId,
+    decideApproval,
+    user,
+    vendors,
+    pos,
+    quotes,
+    rfqs,
+  } = useAtlas();
   const rows = approvals.filter((a) => {
     const p = projects.find((x) => x.id === a.projectId);
     if (!p || p.entityId !== entityId) return false;
@@ -46,7 +57,9 @@ function Approvals() {
             const vendor = po ? vendors.find((v) => v.id === po.vendorId) : undefined;
             const quote = po?.quoteId ? quotes.find((q) => q.id === po.quoteId) : undefined;
             const rfq = po?.rfqId ? rfqs.find((r) => r.id === po.rfqId) : undefined;
-            const others = rfq ? Math.max(0, quotes.filter((q) => q.rfqId === rfq.id).length - 1) : 0;
+            const others = rfq
+              ? Math.max(0, quotes.filter((q) => q.rfqId === rfq.id).length - 1)
+              : 0;
             const quoteLine =
               vendor && quote
                 ? `Selected quote · ${vendor.name} · ${inr(quote.amount, true)} · vs ${others} other quote${others === 1 ? "" : "s"}`
@@ -54,56 +67,61 @@ function Approvals() {
                   (vendor ? `${vendor.name} · ${project?.code ?? ""}` : project?.name) ||
                   undefined;
             return (
-            <DecisionCard
-              key={a.id}
-              kind={a.kind}
-              title={a.title}
-              waitingOn={a.waitingOn}
-              agingDays={a.agingDays}
-              amount={a.amount ? inr(a.amount, true) : undefined}
-              context={
-                <>
-                  {quoteLine}
-                  {rfq ? (
-                    <>
-                      {" "}
-                      <Link to="/app/quotations" className="text-primary underline-offset-4 hover:underline">
-                        Compare quotes
-                      </Link>
-                    </>
-                  ) : null}
-                </>
-              }
-              actions={
-                canActOnApproval(role, a.waitingOn, a.kind, user) ? (
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        const err = decideApproval(a.id, "rejected");
-                        toast(err ?? "Rejected — recorded on the audit chain.");
-                      }}
-                    >
-                      Reject
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        const err = decideApproval(a.id, "approved");
-                        toast(err ?? "Approved — recorded on the audit chain.");
-                      }}
-                    >
-                      Approve
-                    </Button>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted">
-                    Waiting on {a.waitingOn}
-                    {user?.grade === "director" && a.waitingOn === "Managing Director" ? " — Directors cannot activate. Ask the MD." : "."}
-                  </p>
-                )
-              }
-            />
-          );
+              <DecisionCard
+                key={a.id}
+                kind={a.kind}
+                title={a.title}
+                waitingOn={a.waitingOn}
+                agingDays={a.agingDays}
+                amount={a.amount ? inr(a.amount, true) : undefined}
+                context={
+                  <>
+                    {quoteLine}
+                    {rfq ? (
+                      <>
+                        {" "}
+                        <Link
+                          to="/app/quotations"
+                          className="text-primary underline-offset-4 hover:underline"
+                        >
+                          Compare quotes
+                        </Link>
+                      </>
+                    ) : null}
+                  </>
+                }
+                actions={
+                  canActOnApproval(role, a.waitingOn, a.kind, user) ? (
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          const err = decideApproval(a.id, "rejected");
+                          toast(err ?? "Rejected — recorded on the audit chain.");
+                        }}
+                      >
+                        Reject
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          const err = decideApproval(a.id, "approved");
+                          toast(err ?? "Approved — recorded on the audit chain.");
+                        }}
+                      >
+                        Approve
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted">
+                      Waiting on {a.waitingOn}
+                      {user?.grade === "director" && a.waitingOn === "Managing Director"
+                        ? " — Directors cannot activate. Ask the MD."
+                        : "."}
+                    </p>
+                  )
+                }
+              />
+            );
           })}
         </div>
       )}
@@ -112,7 +130,10 @@ function Approvals() {
           <summary className="cursor-pointer font-display text-2xl">Closed ({done.length})</summary>
           <div className="mt-3 space-y-2">
             {done.map((a) => (
-              <div key={a.id} className="flex items-center justify-between rounded-md border border-line px-4 py-3 text-sm">
+              <div
+                key={a.id}
+                className="flex items-center justify-between rounded-md border border-line px-4 py-3 text-sm"
+              >
                 <span className="truncate">{a.title}</span>
                 <span className="text-muted">{a.status}</span>
               </div>

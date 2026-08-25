@@ -130,7 +130,8 @@ export function mainCostCenter(company: string): string {
   return abbr ? `Main - ${abbr}` : "";
 }
 
-const PNL_HINT = /expense|income|sales|rent|depreciation|commission|cost of goods|administrative|marketing|legal|entertainment|miscellaneous expenses|bank charges|interest expense|office maintenance/i;
+const PNL_HINT =
+  /expense|income|sales|rent|depreciation|commission|cost of goods|administrative|marketing|legal|entertainment|miscellaneous expenses|bank charges|interest expense|office maintenance/i;
 const STOCK_HINT = /stock in hand|stock adjustment|stock received/i;
 
 export function looksLikePnlAccount(account: string): boolean {

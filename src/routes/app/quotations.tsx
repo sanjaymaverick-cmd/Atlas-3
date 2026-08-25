@@ -39,7 +39,10 @@ function Quotations() {
   } = useAtlas();
 
   const scopedProjects = useMemo(
-    () => projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId)),
+    () =>
+      projects.filter(
+        (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+      ),
     [projects, entityId, projectId],
   );
   const projectIds = scopedProjects.map((p) => p.id);
@@ -47,7 +50,10 @@ function Quotations() {
 
   const [step, setStep] = useState(1);
   const [compareId, setCompareId] = useState<string | null>(
-    scopedRfqs.find((r) => r.status === "open")?.id ?? scopedRfqs.find((r) => r.status === "awarded")?.id ?? scopedRfqs[0]?.id ?? null,
+    scopedRfqs.find((r) => r.status === "open")?.id ??
+      scopedRfqs.find((r) => r.status === "awarded")?.id ??
+      scopedRfqs[0]?.id ??
+      null,
   );
   const [pid, setPid] = useState(projectIds[0] ?? "");
   const [title, setTitle] = useState("");
@@ -83,7 +89,9 @@ function Quotations() {
             <button
               type="button"
               className={`flex h-11 w-full items-center gap-2 rounded-md border px-3 text-left text-sm ${
-                step === s.n ? "border-primary bg-primary text-primary-fg" : "border-line bg-surface"
+                step === s.n
+                  ? "border-primary bg-primary text-primary-fg"
+                  : "border-line bg-surface"
               }`}
               onClick={() => go(s.n)}
             >
@@ -96,7 +104,9 @@ function Quotations() {
 
       {step === 1 ? (
         <Card className="grid gap-3 p-5 sm:grid-cols-2">
-          <p className="sm:col-span-2 text-sm text-muted">Name the package. You will attach the vendor’s paper quote in the next step.</p>
+          <p className="sm:col-span-2 text-sm text-muted">
+            Name the package. You will attach the vendor’s paper quote in the next step.
+          </p>
           <div className="sm:col-span-2">
             <EntityChip projectId={pid} />
           </div>
@@ -114,10 +124,18 @@ function Quotations() {
             </select>
           </Field>
           <Field label="Package">
-            <Input value={pkg} onChange={(e) => setPkg(e.target.value)} placeholder="Structure / civil" />
+            <Input
+              value={pkg}
+              onChange={(e) => setPkg(e.target.value)}
+              placeholder="Structure / civil"
+            />
           </Field>
           <Field label="What are you buying?">
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Podium membrane supply" />
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Podium membrane supply"
+            />
           </Field>
           <Field label="Need prices by">
             <Input type="date" value={due} onChange={(e) => setDue(e.target.value)} />
@@ -155,7 +173,9 @@ function Quotations() {
                   required: true,
                 });
                 if (err) return toast(err);
-                const created = useAtlas.getState().rfqs.find((r) => r.projectId === pid && r.title === title);
+                const created = useAtlas
+                  .getState()
+                  .rfqs.find((r) => r.projectId === pid && r.title === title);
                 if (created) setCompareId(created.id);
                 toast("Price request saved. Attach the paper or WhatsApp quote next.");
                 setTitle("");
@@ -175,7 +195,8 @@ function Quotations() {
           ) : (
             <>
               <p className="sm:col-span-2 text-sm text-muted">
-                Photograph the paper quote or WhatsApp screenshot. Type the amount. Keep the file — it stays with this request.
+                Photograph the paper quote or WhatsApp screenshot. Type the amount. Keep the file —
+                it stays with this request.
               </p>
               <p className="sm:col-span-2 font-display text-xl">{active.title}</p>
               <Field label="Vendor">
@@ -223,7 +244,9 @@ function Quotations() {
               <Field label="What is not included (optional)">
                 <Input value={exclusions} onChange={(e) => setExclusions(e.target.value)} />
               </Field>
-              {paperFile ? <p className="sm:col-span-2 text-xs text-muted">Attached: {paperFile.name}</p> : null}
+              {paperFile ? (
+                <p className="sm:col-span-2 text-xs text-muted">Attached: {paperFile.name}</p>
+              ) : null}
               <div className="flex flex-wrap gap-2 sm:col-span-2">
                 <Button variant="outline" onClick={() => go(1)}>
                   Back
@@ -232,7 +255,13 @@ function Quotations() {
                   className="h-12"
                   onClick={async () => {
                     if (active.status !== "open") return toast("This price request is closed.");
-                    let meta: { fileName?: string; fileKind?: string; fileSize?: number; fileDataUrl?: string; sha256?: string } = {};
+                    let meta: {
+                      fileName?: string;
+                      fileKind?: string;
+                      fileSize?: number;
+                      fileDataUrl?: string;
+                      sha256?: string;
+                    } = {};
                     if (paperFile) {
                       const read = await readAttachment(paperFile);
                       if ("error" in read) return toast(read.error);
@@ -268,7 +297,9 @@ function Quotations() {
           ) : (
             <>
               <h2 className="mb-3 font-display text-2xl">Pick one quote · {active.title}</h2>
-              {activeQuotes.some((q) => vendors.find((v) => v.id === q.vendorId)?.stage !== "active") ? (
+              {activeQuotes.some(
+                (q) => vendors.find((v) => v.id === q.vendorId)?.stage !== "active",
+              ) ? (
                 <GateBanner>
                   {PO_VENDOR_NOT_ACTIVE}{" "}
                   <Link to="/app/approvals" className="underline-offset-4 hover:underline">
@@ -276,17 +307,24 @@ function Quotations() {
                   </Link>
                 </GateBanner>
               ) : (
-                <GateBanner>Only an Active vendor can be picked. Picking a price does not pay anyone.</GateBanner>
+                <GateBanner>
+                  Only an Active vendor can be picked. Picking a price does not pay anyone.
+                </GateBanner>
               )}
               <div className="mb-4 space-y-2">
                 {activeQuotes.length === 0 ? (
-                  <Card className="p-4 text-sm text-muted">No quotes yet. Attach one in step 2.</Card>
+                  <Card className="p-4 text-sm text-muted">
+                    No quotes yet. Attach one in step 2.
+                  </Card>
                 ) : (
                   activeQuotes.map((q) => {
                     const v = vendors.find((x) => x.id === q.vendorId);
                     const canSelect = q.status === "submitted" && active.status === "open";
                     return (
-                      <Card key={q.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+                      <Card
+                        key={q.id}
+                        className="flex flex-wrap items-center justify-between gap-3 p-4"
+                      >
                         <div>
                           <p className="font-medium">{v?.name}</p>
                           <p className="text-xs text-muted">
@@ -345,9 +383,13 @@ function Quotations() {
                   </Link>
                 </GateBanner>
               ) : poExists ? (
-                <p className="text-sm text-muted">Purchase order already raised. Waiting in Approvals.</p>
+                <p className="text-sm text-muted">
+                  Purchase order already raised. Waiting in Approvals.
+                </p>
               ) : (
-                <p className="text-sm text-muted">This sends the order to Approvals. Atlas does not pay from here.</p>
+                <p className="text-sm text-muted">
+                  This sends the order to Approvals. Atlas does not pay from here.
+                </p>
               )}
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" onClick={() => go(3)}>

@@ -82,7 +82,12 @@ export async function health(cfg = readErpnextConfig()) {
     let companyOk = true;
     let detail = `${cfg.company} reachable`;
     try {
-      await erpnextFetch(cfg, `/api/resource/Company/${encodeURIComponent(cfg.company)}`, {}, ERP_SLOW_TIMEOUT_MS);
+      await erpnextFetch(
+        cfg,
+        `/api/resource/Company/${encodeURIComponent(cfg.company)}`,
+        {},
+        ERP_SLOW_TIMEOUT_MS,
+      );
     } catch {
       companyOk = false;
       detail = `ERPNext answered but company "${cfg.company}" was not found`;
@@ -119,10 +124,14 @@ export async function health(cfg = readErpnextConfig()) {
  */
 export function journalSubmitPayload(doc) {
   if (!doc || typeof doc !== "object") {
-    throw new Error("GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.");
+    throw new Error(
+      "GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.",
+    );
   }
   if (!doc.name || doc.doctype !== "Journal Entry" || !Array.isArray(doc.accounts)) {
-    throw new Error("GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.");
+    throw new Error(
+      "GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.",
+    );
   }
   return { doc };
 }
@@ -131,10 +140,15 @@ export async function submitJournalEntry(cfg, name) {
   const fresh = await erpnextFetch(cfg, `/api/resource/Journal Entry/${encodeURIComponent(name)}`);
   const doc = fresh.json?.data;
   const payload = journalSubmitPayload(doc);
-  return erpnextFetch(cfg, "/api/method/frappe.client.submit", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  }, ERP_CREATE_TIMEOUT_MS);
+  return erpnextFetch(
+    cfg,
+    "/api/method/frappe.client.submit",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    ERP_CREATE_TIMEOUT_MS,
+  );
 }
 
 export async function refusePost(cfg = readErpnextConfig()) {
@@ -142,7 +156,8 @@ export async function refusePost(cfg = readErpnextConfig()) {
     return {
       ok: false,
       posted: [],
-      detail: "Posting is off (ERPNEXT_POSTING_ENABLED=false). Atlas never posts uncontrolled vouchers.",
+      detail:
+        "Posting is off (ERPNEXT_POSTING_ENABLED=false). Atlas never posts uncontrolled vouchers.",
     };
   }
   return { ok: false, posted: [], detail: "operator scripts do not post" };

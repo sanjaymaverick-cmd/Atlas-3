@@ -41,14 +41,23 @@ try {
     const g = () => window.__atlasStore.getState();
     g().setEntity("le_sbc");
     g().setProject("p_av");
-    const before = g().bookings.filter((b) => b.projectId === "p_av" && b.status !== "cancelled").length;
+    const before = g().bookings.filter(
+      (b) => b.projectId === "p_av" && b.status !== "cancelled",
+    ).length;
     const errs = [];
     for (const customer of ["Slice buyer A", "Slice buyer B", "Slice buyer C"]) {
       errs.push(g().bookNextAvailable("p_av", { prefix: "AVA", customer }) ?? "ok");
     }
     const after = g().bookings.filter((b) => b.projectId === "p_av" && b.status !== "cancelled");
-    const newOnes = after.filter((b) => ["Slice buyer A", "Slice buyer B", "Slice buyer C"].includes(b.customer));
-    return { before, errs, booked: newOnes.map((b) => `${b.unit}:${b.customer}`), total: after.length };
+    const newOnes = after.filter((b) =>
+      ["Slice buyer A", "Slice buyer B", "Slice buyer C"].includes(b.customer),
+    );
+    return {
+      before,
+      errs,
+      booked: newOnes.map((b) => `${b.unit}:${b.customer}`),
+      total: after.length,
+    };
   });
   const bookedOk = books.booked.length >= 2 && books.errs.filter((e) => e === "ok").length >= 2;
   line("bookings-2-3", bookedOk, JSON.stringify(books));
@@ -65,7 +74,9 @@ try {
       title: "RERA QPR 2024-09 — RAJ/P/2024/2144",
       due: "2024-10-15",
     });
-    const row = g().obligations.find((o) => o.title.includes("RERA QPR 2024-09") && o.projectId === "p_av");
+    const row = g().obligations.find(
+      (o) => o.title.includes("RERA QPR 2024-09") && o.projectId === "p_av",
+    );
     const filed = row ? g().fileObligation(row.id, "RERA/AV/2024/Q2-SLICE") : "missing";
     const after = g().obligations.find((o) => o.id === row?.id);
     return { add, filed, status: after?.status, ref: after?.filedRef };

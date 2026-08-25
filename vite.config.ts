@@ -165,7 +165,14 @@ function booksApiPlugin(): Plugin {
           if (isAbortNoise(err) || res.writableEnded || res.destroyed) return;
           res.statusCode = 500;
           res.setHeader("content-type", "application/json; charset=utf-8");
-          res.end(JSON.stringify({ ok: false, live: false, name: "erpnext", detail: String((err as Error)?.message || err) }));
+          res.end(
+            JSON.stringify({
+              ok: false,
+              live: false,
+              name: "erpnext",
+              detail: String((err as Error)?.message || err),
+            }),
+          );
         }
       });
     },
@@ -193,7 +200,8 @@ function tallyGonePlugin(): Plugin {
             retired: true,
             name: "erpnext",
             posted: [],
-            detail: "Tally transport retired. Books of record are ERPNext at D:\\ERPNext via /api/books.",
+            detail:
+              "Tally transport retired. Books of record are ERPNext at D:\\ERPNext via /api/books.",
             next: "/api/books",
           }),
         );

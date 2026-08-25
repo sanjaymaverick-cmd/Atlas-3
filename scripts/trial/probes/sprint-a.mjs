@@ -31,7 +31,9 @@ try {
     }
     const v = g().vendors.find((x) => x.id === "v_civ");
     if (v?.stage === "approval") g().advanceVendor("v_civ");
-    const card = g().approvals.find((a) => a.kind === "Vendor" && a.refId === "v_civ" && a.status === "pending");
+    const card = g().approvals.find(
+      (a) => a.kind === "Vendor" && a.refId === "v_civ" && a.status === "pending",
+    );
     return {
       stage: v?.stage,
       card: card ? `${card.id} · ${card.waitingOn} · ${card.title}` : "missing",
@@ -82,15 +84,24 @@ try {
     const q = g().quotes.find((x) => x.rfqId === rfq?.id && x.vendorId === "v_civ");
     const sel = q && q.status !== "selected" ? g().selectQuote(q.id) : q ? null : "quote missing";
     const poErr = q ? g().createPOFromQuote(q.id) : "no quote";
-    const row = g().pos.find((p) => p.quoteId === q?.id) ?? g().pos.find((p) => p.vendorId === "v_civ" && p.projectId === "p_av");
-    const bookFallback = g().bookNextAvailable("p_av", { prefix: "ZZZ", customer: "Sprint-A fallback 3BHK" });
+    const row =
+      g().pos.find((p) => p.quoteId === q?.id) ??
+      g().pos.find((p) => p.vendorId === "v_civ" && p.projectId === "p_av");
+    const bookFallback = g().bookNextAvailable("p_av", {
+      prefix: "ZZZ",
+      customer: "Sprint-A fallback 3BHK",
+    });
     const av = g().parcels.find((p) => p.id === "lp_av");
     return {
       select: sel,
       poErr,
-      po: row ? { id: row.id, vendorId: row.vendorId, amount: row.amount, status: row.status } : null,
+      po: row
+        ? { id: row.id, vendorId: row.vendorId, amount: row.amount, status: row.status }
+        : null,
       bookFallback,
-      land: av ? { status: av.status, considerationInr: av.considerationInr, saleDeedNo: av.saleDeedNo } : null,
+      land: av
+        ? { status: av.status, considerationInr: av.considerationInr, saleDeedNo: av.saleDeedNo }
+        : null,
       shakti: g().vendors.find((v) => v.id === "v_civ")?.stage,
     };
   });

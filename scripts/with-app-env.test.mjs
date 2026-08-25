@@ -33,7 +33,10 @@ test("uses shell:true on win32 so npm.cmd can spawn", () => {
   assert.equal(childSpawnOptions("win32").shell, true);
   assert.equal(childSpawnOptions("linux").shell, false);
   assert.equal(childSpawnOptions("darwin").shell, false);
-  assert.equal(spawnCommand("C:\\Program Files\\nodejs\\node.exe", "win32"), '"C:\\Program Files\\nodejs\\node.exe"');
+  assert.equal(
+    spawnCommand("C:\\Program Files\\nodejs\\node.exe", "win32"),
+    '"C:\\Program Files\\nodejs\\node.exe"',
+  );
   assert.equal(spawnCommand("vite", "win32"), "vite");
 });
 

@@ -1,4 +1,4 @@
-import type { InventoryUnit, Lead, LeadActivity, ScoreModelKind, ScoringModel } from "@/lib/types";
+import type { InventoryUnit, Lead, LeadActivity, ScoringModel } from "@/lib/types";
 import { scoreLead as runHybrid, extractFeatures, modelLabel, bandTone } from "@/lib/sales-score";
 import type { ScoreResult } from "@/lib/sales-score";
 
@@ -31,7 +31,14 @@ export type { ScoreResult };
 export interface CatBoostPayload {
   cat_features: typeof CAT_FEATURES;
   categoricals: { source: string; stage: string; kind: string };
-  numerics: { budget: number; unit_price: number; wa: number; call: number; brochure: number; visit: number };
+  numerics: {
+    budget: number;
+    unit_price: number;
+    wa: number;
+    call: number;
+    brochure: number;
+    visit: number;
+  };
 }
 
 export function catBoostPayload(req: ScoreRequest): CatBoostPayload {
@@ -101,10 +108,12 @@ async function scoreCatBoostNative(base: string, req: ScoreRequest): Promise<Sco
     const score = body.score ?? Math.round(probability * 100);
     const band = body.band ?? (score >= 70 ? "hot" : score >= 45 ? "warm" : "cold");
     const shapValues = body.shap_values ?? {};
-    const reasons = body.top_reasons ?? Object.entries(shapValues)
-      .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
-      .slice(0, 4)
-      .map(([k, v]) => `${k} ${v >= 0 ? "+" : ""}${Math.round(v)}`);
+    const reasons =
+      body.top_reasons ??
+      Object.entries(shapValues)
+        .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+        .slice(0, 4)
+        .map(([k, v]) => `${k} ${v >= 0 ? "+" : ""}${Math.round(v)}`);
     return {
       score,
       band,

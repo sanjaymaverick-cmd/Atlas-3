@@ -23,7 +23,10 @@ function WhatsAppDesk() {
   });
   const [leadId, setLeadId] = useState(live[0]?.id ?? "");
   const [reply, setReply] = useState("Yes, Sunday works. Budget around 80L.");
-  const thread = waSends.filter((s) => s.leadId === leadId).slice().sort((a, b) => a.at.localeCompare(b.at));
+  const thread = waSends
+    .filter((s) => s.leadId === leadId)
+    .slice()
+    .sort((a, b) => a.at.localeCompare(b.at));
   const marketingOk = !isThirdParty(user?.role);
   const visible = waTemplates.filter((t) => (marketingOk ? true : t.category === "utility"));
 
@@ -35,8 +38,8 @@ function WhatsAppDesk() {
         description="Visit scheduled auto-sends the utility confirm. Inbound replies re-score and can qualify. Live WhatsApp Business API is an owner TODO. Local only."
       />
       <GateBanner>
-        Meta rules on this desk: sequential variables with samples, no promotional copy in Utility, full URL in brochure, no
-        sequential blast without consent.
+        Meta rules on this desk: sequential variables with samples, no promotional copy in Utility,
+        full URL in brochure, no sequential blast without consent.
       </GateBanner>
 
       <Card className="mb-6 p-5">
@@ -60,9 +63,15 @@ function WhatsAppDesk() {
           {thread.map((s) => (
             <li
               key={s.id}
-              className={s.direction === "in" ? "rounded-md bg-chip px-3 py-2" : "rounded-md border border-line px-3 py-2"}
+              className={
+                s.direction === "in"
+                  ? "rounded-md bg-chip px-3 py-2"
+                  : "rounded-md border border-line px-3 py-2"
+              }
             >
-              <span className="text-[11px] uppercase tracking-[0.12em] text-muted">{s.direction}</span>
+              <span className="text-[11px] uppercase tracking-[0.12em] text-muted">
+                {s.direction}
+              </span>
               <p>{s.body}</p>
             </li>
           ))}

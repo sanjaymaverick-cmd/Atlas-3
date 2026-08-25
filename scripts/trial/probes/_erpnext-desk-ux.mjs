@@ -31,8 +31,7 @@ async function login(page, user, password, label) {
     (await page.$("#login_email")) ||
     (await page.$('input[type="text"]')) ||
     (await page.$('input[type="email"]'));
-  const pass =
-    (await page.$("#login_password")) || (await page.$('input[type="password"]'));
+  const pass = (await page.$("#login_password")) || (await page.$('input[type="password"]'));
   if (!email || !pass) throw new Error("login fields missing");
   await email.fill(user);
   await pass.fill(password);
@@ -67,9 +66,14 @@ async function awesomeSearch(page, query) {
   await page.waitForTimeout(800);
   const items = await page.evaluate(() => {
     const nodes = [
-      ...document.querySelectorAll(".awesomplete li, .dropdown-menu li, .search-results .result, [data-doctype]"),
+      ...document.querySelectorAll(
+        ".awesomplete li, .dropdown-menu li, .search-results .result, [data-doctype]",
+      ),
     ];
-    return nodes.slice(0, 20).map((n) => (n.innerText || "").trim()).filter(Boolean);
+    return nodes
+      .slice(0, 20)
+      .map((n) => (n.innerText || "").trim())
+      .filter(Boolean);
   });
   note("search", { query, ms: Date.now() - t0, items: items.slice(0, 12) });
   return { ms: Date.now() - t0, items };
@@ -98,10 +102,8 @@ async function sidebarLabels(page) {
 async function companySwitcher(page, name) {
   const t0 = Date.now();
   // navbar company dropdown
-  const clicked = await page.evaluate((want) => {
-    const candidates = [
-      ...document.querySelectorAll("button, a, .dropdown-toggle, .nav-link"),
-    ];
+  const clicked = await page.evaluate((_want) => {
+    const candidates = [...document.querySelectorAll("button, a, .dropdown-toggle, .nav-link")];
     const btn = candidates.find((el) => {
       const t = (el.innerText || "").trim();
       return /SATYAM|MGB|MOCK|DUKIA|Company/i.test(t) && t.length < 80;
@@ -133,7 +135,9 @@ async function visibleFields(page) {
     document.querySelectorAll(".form-group, .frappe-control").forEach((el) => {
       const style = getComputedStyle(el);
       if (style.display === "none" || style.visibility === "hidden") return;
-      const label = (el.querySelector("label, .control-label, .label-area")?.innerText || "").trim();
+      const label = (
+        el.querySelector("label, .control-label, .label-area")?.innerText || ""
+      ).trim();
       const req = !!el.querySelector(".reqd, .bold");
       if (label) rows.push({ label, req, text: (el.innerText || "").slice(0, 80) });
     });
@@ -183,7 +187,11 @@ const report = {
   // try click first result containing Journal Entry
   const clickedJe = await page.evaluate(() => {
     const nodes = [...document.querySelectorAll("a, li, .result, .awesomplete li, div")];
-    const hit = nodes.find((n) => /^Journal Entry$/m.test((n.innerText || "").trim()) || (n.innerText || "").includes("Journal Entry"));
+    const hit = nodes.find(
+      (n) =>
+        /^Journal Entry$/m.test((n.innerText || "").trim()) ||
+        (n.innerText || "").includes("Journal Entry"),
+    );
     if (hit) {
       hit.click();
       return (hit.innerText || "").slice(0, 80);
@@ -244,8 +252,7 @@ const report = {
 
   // 6. Stock account refusal is API-captured; also try picking Stock In Hand in the UI if grid exists
   report.stockRefuse = {
-    apiException:
-      "Account: Stock In Hand - SBC can only be updated via Stock Transactions",
+    apiException: "Account: Stock In Hand - SBC can only be updated via Stock Transactions",
     groupDraftException:
       "Account Stock Assets - SBC is a Group Account and group accounts cannot be used in transactions",
     humanSentence: false,
@@ -285,7 +292,18 @@ const report = {
   report.clutter.push({
     hotspot: "Sidebar workspaces",
     labels: report.sidebar,
-    noise: ["Stock", "Manufacturing", "CRM", "Selling", "Buying", "Quality", "Support", "Website", "Subcontracting", "Assets"],
+    noise: [
+      "Stock",
+      "Manufacturing",
+      "CRM",
+      "Selling",
+      "Buying",
+      "Quality",
+      "Support",
+      "Website",
+      "Subcontracting",
+      "Assets",
+    ],
   });
 
   // extra: Financial Reports + Invoicing
@@ -307,6 +325,9 @@ const report = {
   await browser.close();
 })().catch((err) => {
   console.error(err);
-  writeFileSync(join(OUT, "notes.json"), JSON.stringify({ error: String(err), NOTES, report }, null, 2));
+  writeFileSync(
+    join(OUT, "notes.json"),
+    JSON.stringify({ error: String(err), NOTES, report }, null, 2),
+  );
   process.exit(1);
 });

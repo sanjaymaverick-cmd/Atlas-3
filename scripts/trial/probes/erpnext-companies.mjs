@@ -5,7 +5,13 @@
  *   node scripts/trial/probes/erpnext-companies.mjs
  */
 import { TRADING_COMPANIES } from "../../erpnext/companies.mjs";
-import { ERP_SLOW_TIMEOUT_MS, erpnextFetch, health, loadDotEnv, readErpnextConfig } from "../../erpnext/lib.mjs";
+import {
+  ERP_SLOW_TIMEOUT_MS,
+  erpnextFetch,
+  health,
+  loadDotEnv,
+  readErpnextConfig,
+} from "../../erpnext/lib.mjs";
 
 loadDotEnv();
 const cfg = readErpnextConfig();
@@ -34,5 +40,9 @@ const mock = names.has("MOCK ATLAS3 LLP");
 console.log(mock ? "PASS" : "FAIL", "MOCK ATLAS3 LLP", mock ? "smoke company" : "missing");
 if (!mock) failed += 1;
 const group = names.has("DUKIA GROUP");
-console.log(group ? "PASS" : "INFO", "DUKIA GROUP", group ? "optional parent" : "optional — not created");
+console.log(
+  group ? "PASS" : "INFO",
+  "DUKIA GROUP",
+  group ? "optional parent" : "optional — not created",
+);
 if (failed) process.exitCode = 1;

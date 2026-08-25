@@ -61,7 +61,11 @@ async function login(page, seat) {
 
 async function shot(page, name) {
   const path = join(OUT, `${name}.png`);
-  await page.locator("h1").first().waitFor({ state: "visible", timeout: 8000 }).catch(() => {});
+  await page
+    .locator("h1")
+    .first()
+    .waitFor({ state: "visible", timeout: 8000 })
+    .catch(() => {});
   await page.waitForTimeout(150);
   await page.screenshot({ path, fullPage: true, animations: "disabled" });
   return path;
@@ -73,7 +77,8 @@ async function inspect(page, seat, screen) {
       const overflow = document.documentElement.scrollWidth > window.innerWidth + 8;
       const title = document.querySelector("h1")?.textContent?.trim() || "";
       const desc = document.querySelector("h1")?.nextElementSibling?.textContent?.trim() || "";
-      const kicker = document.querySelector("h1")?.previousElementSibling?.textContent?.trim() || "";
+      const kicker =
+        document.querySelector("h1")?.previousElementSibling?.textContent?.trim() || "";
       const body = document.body.innerText;
       const nav = Array.from(document.querySelectorAll("aside nav a, aside nav span"))
         .map((el) => el.textContent?.trim())
@@ -81,10 +86,12 @@ async function inspect(page, seat, screen) {
       const mobileNav = Array.from(document.querySelectorAll(".fixed.inset-0 a, .fixed.z-40 a"))
         .map((el) => el.textContent?.trim())
         .filter(Boolean);
-      const primaries = Array.from(document.querySelectorAll("button, a")).filter((el) =>
-        (el.className || "").includes("bg-primary"),
-      ).map((el) => (el.textContent || "").trim().slice(0, 80));
-      const tallyNav = [...nav, ...mobileNav, body.slice(0, 400)].some((t) => /\bTally\b/i.test(t || ""));
+      const primaries = Array.from(document.querySelectorAll("button, a"))
+        .filter((el) => (el.className || "").includes("bg-primary"))
+        .map((el) => (el.textContent || "").trim().slice(0, 80));
+      const tallyNav = [...nav, ...mobileNav, body.slice(0, 400)].some((t) =>
+        /\bTally\b/i.test(t || ""),
+      );
       const postHits = (body.match(/post[^\n.]{0,80}/gi) || []).slice(0, 12);
       const voucherHits = (body.match(/voucher[^\n.]{0,80}/gi) || []).slice(0, 8);
       const localOnly = /Local only|Local\b/.test(body);
@@ -155,12 +162,19 @@ async function captureScreen(page, seat, slug, path, extra = {}) {
     if (path) await gotoPath(page, path);
   } catch (err) {
     note(report.errors, `${seat} ${slug} nav: ${err?.message || err}`);
-    await page.goto(`${BASE}${path || "/app"}`, { waitUntil: "domcontentloaded", timeout: 30000 }).catch(() => {});
+    await page
+      .goto(`${BASE}${path || "/app"}`, { waitUntil: "domcontentloaded", timeout: 30000 })
+      .catch(() => {});
     await page.waitForTimeout(600);
   }
   const data = await inspect(page, seat, slug);
   if (data.overflow) note(report.overflow, { seat, screen: slug, viewport: extra.viewport });
-  note(report.primaryCounts, { seat, screen: slug, count: data.primaryCount, labels: data.primaries });
+  note(report.primaryCounts, {
+    seat,
+    screen: slug,
+    count: data.primaryCount,
+    labels: data.primaries,
+  });
   if (data.postHits.length || data.voucherHits.length) {
     note(report.tallyLanguage, {
       seat,
@@ -201,7 +215,10 @@ async function runFinanceLead(browser) {
   const home = new URL(page.url()).pathname;
   const identity = await page.locator("aside").innerText();
   const navText = await page.locator("aside nav").innerText();
-  report.nav.fl = navText.split("\n").map((s) => s.trim()).filter(Boolean);
+  report.nav.fl = navText
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
   report.seats.fl = {
     home,
     homeOk: home === "/app/finance" || home.startsWith("/app/finance"),
@@ -216,7 +233,9 @@ async function runFinanceLead(browser) {
   // Home: Tally
   await findTime(page, "ERP invoice missing in Tally", "FL open Tally exception");
   await findTime(page, "Atlas never posts", "FL never-posts copy");
-  const finHome = await captureScreen(page, "FL", "fl-desktop-finance", null, { viewport: "1280x800" });
+  const finHome = await captureScreen(page, "FL", "fl-desktop-finance", null, {
+    viewport: "1280x800",
+  });
   note(report.actions, {
     seat: "FL",
     action: "landed finance home",
@@ -227,7 +246,11 @@ async function runFinanceLead(browser) {
   });
 
   // Reconcile open case — must not invent a Tally post
-  const toastPromise = page.locator("[data-sonner-toast], [data-sonner-toaster]").first().waitFor({ timeout: 4000 }).catch(() => null);
+  const toastPromise = page
+    .locator("[data-sonner-toast], [data-sonner-toaster]")
+    .first()
+    .waitFor({ timeout: 4000 })
+    .catch(() => null);
   await page.getByRole("button", { name: "Reconcile" }).first().click();
   await toastPromise;
   await page.waitForTimeout(400);
@@ -267,7 +290,12 @@ async function runFinanceLead(browser) {
     await page.waitForTimeout(350);
     note(report.actions, { seat: "FL", action: "Accept exception", ok: true });
   } else {
-    note(report.actions, { seat: "FL", action: "Accept exception", ok: false, reason: "no open/review case on Aravalli after reconcile" });
+    note(report.actions, {
+      seat: "FL",
+      action: "Accept exception",
+      ok: false,
+      reason: "no open/review case on Aravalli after reconcile",
+    });
   }
 
   await (await entitySelect(page)).selectOption({ label: "Kanakpura Developers LLP" });
@@ -310,7 +338,9 @@ async function runFinanceLead(browser) {
     action: "approvals visible",
     canApprove: await page.getByRole("button", { name: /approve/i }).count(),
     raWaitingOnFinance: /RA-07/i.test(approvalsText) && /Finance Lead/i.test(approvalsText),
-    poWaitingOnMdAlsoActionable: /PO-1042/i.test(approvalsText) && (await page.getByRole("button", { name: /approve/i }).count()) > 0,
+    poWaitingOnMdAlsoActionable:
+      /PO-1042/i.test(approvalsText) &&
+      (await page.getByRole("button", { name: /approve/i }).count()) > 0,
   });
 
   await captureScreen(page, "FL", "fl-desktop-projects", "/app/projects");
@@ -341,7 +371,10 @@ async function runFinanceLead(browser) {
   await findTime(page, "Podium waterproofing", "FL open RFQ");
   const compareBtn = page.getByRole("button", { name: "Compare" });
   if (await compareBtn.count()) {
-    await compareBtn.nth(1).click().catch(() => compareBtn.first().click());
+    await compareBtn
+      .nth(1)
+      .click()
+      .catch(() => compareBtn.first().click());
     await page.waitForTimeout(300);
   }
   await shot(page, "fl-desktop-quotations-compare");
@@ -357,7 +390,10 @@ async function runFinanceLead(browser) {
     hasNextUnpaid: /next unpaid/i.test(agingHints),
     receiptMatch: /unmatched receipt|bank statement/i.test(agingHints),
   });
-  await page.getByRole("button", { name: /Collect next installment/i }).first().click();
+  await page
+    .getByRole("button", { name: /Collect next installment/i })
+    .first()
+    .click();
   await page.waitForTimeout(500);
   const collectAfter = await page.locator("body").innerText();
   note(report.actions, {
@@ -402,17 +438,27 @@ async function runFinanceLead(browser) {
   report.navFlags.flMobileHasTally = /\bTally\b/i.test(mobileNav);
   await shot(page, "fl-mobile-menu");
   await page.keyboard.press("Escape").catch(() => {});
-  await page.locator("body").click({ position: { x: 350, y: 20 } }).catch(() => {});
+  await page
+    .locator("body")
+    .click({ position: { x: 350, y: 20 } })
+    .catch(() => {});
   await page.waitForTimeout(200);
   // close overlay if still open
   const overlay = page.locator(".fixed.inset-0");
   if (await overlay.count()) {
-    await overlay.first().click({ position: { x: 380, y: 10 } }).catch(() => {});
+    await overlay
+      .first()
+      .click({ position: { x: 380, y: 10 } })
+      .catch(() => {});
   }
   await captureScreen(page, "FL", "fl-mobile-customers", "/app/customers", { viewport: "390x844" });
   await captureScreen(page, "FL", "fl-mobile-capital", "/app/capital", { viewport: "390x844" });
-  await captureScreen(page, "FL", "fl-mobile-commercial", "/app/commercial", { viewport: "390x844" });
-  await captureScreen(page, "FL", "fl-mobile-quotations", "/app/quotations", { viewport: "390x844" });
+  await captureScreen(page, "FL", "fl-mobile-commercial", "/app/commercial", {
+    viewport: "390x844",
+  });
+  await captureScreen(page, "FL", "fl-mobile-quotations", "/app/quotations", {
+    viewport: "390x844",
+  });
 
   report.seats.fl.console = consoleErr;
   report.console.push(...consoleErr);
@@ -432,7 +478,10 @@ async function runCommercial(browser) {
   const home = new URL(page.url()).pathname;
   const identity = await page.locator("aside").innerText();
   const navText = await page.locator("aside nav").innerText();
-  report.nav.cm = navText.split("\n").map((s) => s.trim()).filter(Boolean);
+  report.nav.cm = navText
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
   report.seats.cm = {
     home,
     homeOk: home === "/app/commercial" || home.startsWith("/app/commercial"),
@@ -447,7 +496,7 @@ async function runCommercial(browser) {
   await findTime(page, "Invite vendor", "CM invite vendor form");
   await findTime(page, "Issue purchase order", "CM issue PO");
   await findTime(page, "Orders & contracts", "CM PO status");
-  const commHome = await captureScreen(page, "CM", "cm-desktop-commercial", null);
+  await captureScreen(page, "CM", "cm-desktop-commercial", null);
 
   // Invite vendor (GSTIN in form, not prompt)
   await page.getByLabel("Vendor name").fill("Jaipur Tile Works");
@@ -464,7 +513,12 @@ async function runCommercial(browser) {
 
   // GSTIN via window.prompt on Aravalli Waterproofing
   page.once("dialog", async (d) => {
-    note(report.actions, { seat: "CM", action: "GSTIN prompt", type: d.type(), message: d.message() });
+    note(report.actions, {
+      seat: "CM",
+      action: "GSTIN prompt",
+      type: d.type(),
+      message: d.message(),
+    });
     await d.accept("08AAAWP7788G1Z9");
   });
   const gstBtn = page.getByRole("button", { name: "GSTIN" });
@@ -483,7 +537,11 @@ async function runCommercial(browser) {
   if (await advanceBtns.count()) {
     await advanceBtns.first().click();
     await page.waitForTimeout(350);
-    note(report.actions, { seat: "CM", action: "Advance vendor", after: (await page.locator("body").innerText()).slice(0, 200) });
+    note(report.actions, {
+      seat: "CM",
+      action: "Advance vendor",
+      after: (await page.locator("body").innerText()).slice(0, 200),
+    });
   }
 
   // Submit PO with inactive vendor if selectable
@@ -520,7 +578,7 @@ async function runCommercial(browser) {
   await captureScreen(page, "CM", "cm-desktop-quotations", "/app/quotations");
   await findTime(page, "Compare", "CM compare quotes");
   // Select podium waterproofing RFQ
-  const rfqCards = page.locator("h2:has-text('RFQs') + div").locator("button:has-text('Compare')");
+  const _rfqCards = page.locator("h2:has-text('RFQs') + div").locator("button:has-text('Compare')");
   const nCompare = await page.getByRole("button", { name: "Compare" }).count();
   if (nCompare >= 2) {
     await page.getByRole("button", { name: "Compare" }).nth(1).click();
@@ -627,16 +685,26 @@ async function runCommercial(browser) {
 
   // Mobile
   await page.setViewportSize({ width: 390, height: 844 });
-  await captureScreen(page, "CM", "cm-mobile-commercial", "/app/commercial", { viewport: "390x844" });
+  await captureScreen(page, "CM", "cm-mobile-commercial", "/app/commercial", {
+    viewport: "390x844",
+  });
   await page.getByRole("button", { name: "Open menu" }).click();
   await page.waitForTimeout(300);
   const cmMenu = await page.locator("body").innerText();
   report.navFlags.cmMobileHasTally = /\bTally\b/i.test(cmMenu);
   await shot(page, "cm-mobile-menu");
   const ov = page.locator(".fixed.inset-0");
-  if (await ov.count()) await ov.first().click({ position: { x: 380, y: 10 } }).catch(() => {});
-  await captureScreen(page, "CM", "cm-mobile-quotations", "/app/quotations", { viewport: "390x844" });
-  await captureScreen(page, "CM", "cm-mobile-finance-deeplink", "/app/finance", { viewport: "390x844" });
+  if (await ov.count())
+    await ov
+      .first()
+      .click({ position: { x: 380, y: 10 } })
+      .catch(() => {});
+  await captureScreen(page, "CM", "cm-mobile-quotations", "/app/quotations", {
+    viewport: "390x844",
+  });
+  await captureScreen(page, "CM", "cm-mobile-finance-deeplink", "/app/finance", {
+    viewport: "390x844",
+  });
 
   report.seats.cm.console = consoleErr;
   report.console.push(...consoleErr);
@@ -668,7 +736,26 @@ async function main() {
 
   const outJson = join(OUT, "report.json");
   writeFileSync(outJson, JSON.stringify(report, null, 2));
-  console.log(JSON.stringify({ ok: report.errors.length === 0, screens: report.screens.length, finds: report.finds, entitySwitch: report.entitySwitch, overflow: report.overflow, errors: report.errors, seats: report.seats, actions: report.actions, nav: report.nav, primaryCounts: report.primaryCounts, tallyLanguage: report.tallyLanguage, console: report.console }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        ok: report.errors.length === 0,
+        screens: report.screens.length,
+        finds: report.finds,
+        entitySwitch: report.entitySwitch,
+        overflow: report.overflow,
+        errors: report.errors,
+        seats: report.seats,
+        actions: report.actions,
+        nav: report.nav,
+        primaryCounts: report.primaryCounts,
+        tallyLanguage: report.tallyLanguage,
+        console: report.console,
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 main().catch((err) => {

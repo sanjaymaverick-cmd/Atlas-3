@@ -1,11 +1,7 @@
 {
   "snap": {
     "simDate": "2028-09-30",
-    "entities": [
-      "MGB PRIME ESTATES LLP",
-      "SATYAM BUILDCOM",
-      "SATYAM CONSTRUCTION"
-    ],
+    "entities": ["MGB PRIME ESTATES LLP", "SATYAM BUILDCOM", "SATYAM CONSTRUCTION"],
     "projects": [
       {
         "id": "p_av",

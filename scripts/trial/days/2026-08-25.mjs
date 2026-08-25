@@ -36,7 +36,8 @@ export default {
             holds: 1,
             bookings: 0,
             cancellations: 0,
-            notes: "West stack couple returning Thu with family. Asked about possession-linked plan.",
+            notes:
+              "West stack couple returning Thu with family. Asked about possession-linked plan.",
           });
         });
 
@@ -45,12 +46,20 @@ export default {
           const me = s.agents.find((a) => a.userId === s.user?.id);
           const u = s.units.find((x) => x.status === "available");
           if (!u || !me) return "no available unit";
-          return s.holdUnit({ unitId: u.id, agentId: me.id, customer: "R. Malhotra", until: "2026-09-01" });
+          return s.holdUnit({
+            unitId: u.id,
+            agentId: me.id,
+            customer: "R. Malhotra",
+            until: "2026-09-01",
+          });
         });
 
         const holds = await api.read("holds");
-        api.note("did", `Holds now: ${(holds ?? []).length}`,
-          (holds ?? []).map((h) => `${h.unitId}:${h.status ?? "held"}`).join(" · "));
+        api.note(
+          "did",
+          `Holds now: ${(holds ?? []).length}`,
+          (holds ?? []).map((h) => `${h.unitId}:${h.status ?? "held"}`).join(" · "),
+        );
       },
     },
     {
@@ -58,8 +67,11 @@ export default {
       note: "Quotes land against the Baggad RFQ",
       async run(page, api) {
         const rfqs = await api.read("rfqs");
-        api.note("did", `RFQs open: ${(rfqs ?? []).length}`,
-          (rfqs ?? []).map((r) => r.title).join(" · ") || "none");
+        api.note(
+          "did",
+          `RFQs open: ${(rfqs ?? []).length}`,
+          (rfqs ?? []).map((r) => r.title).join(" · ") || "none",
+        );
 
         await api.act("Record quote — Marwar Steel", () => {
           const s = window.__atlasStore.getState();

@@ -25,18 +25,90 @@ const ROLE_HOME = {
 };
 
 const USERS = [
-  { id: "u_owner", role: "owner", title: "Managing Director", email: "md@atlas.local", password: "AtlasLocal-MD" },
-  { id: "u_pm", role: "pm", title: "Project Director", email: "pd@atlas.local", password: "AtlasLocal-PD" },
-  { id: "u_eng", role: "engineer", title: "Site Engineer", email: "se@atlas.local", password: "AtlasLocal-SE" },
-  { id: "u_sup", role: "supervisor", title: "Site Supervisor", email: "sv@atlas.local", password: "AtlasLocal-SV" },
-  { id: "u_acc", role: "accountant", title: "Finance Lead", email: "fl@atlas.local", password: "AtlasLocal-FL" },
-  { id: "u_com", role: "commercial", title: "Commercial Manager", email: "cm@atlas.local", password: "AtlasLocal-CM" },
-  { id: "u_sales", role: "sales", title: "Sales Manager", email: "sm@atlas.local", password: "AtlasLocal-SM" },
-  { id: "u_legal", role: "legal", title: "Land & Legal", email: "ll@atlas.local", password: "AtlasLocal-LL" },
-  { id: "u_docs", role: "docs", title: "Document Controller", email: "dc@atlas.local", password: "AtlasLocal-DC" },
-  { id: "u_stores", role: "stores", title: "Stores / QS", email: "st@atlas.local", password: "AtlasLocal-ST" },
-  { id: "u_ch", role: "channel", title: "Channel agent (Pink City)", email: "ag@atlas.local", password: "AtlasLocal-AG" },
-  { id: "u_ca", role: "channel_admin", title: "Pink City company admin", email: "ca@atlas.local", password: "AtlasLocal-CA" },
+  {
+    id: "u_owner",
+    role: "owner",
+    title: "Managing Director",
+    email: "md@atlas.local",
+    password: "AtlasLocal-MD",
+  },
+  {
+    id: "u_pm",
+    role: "pm",
+    title: "Project Director",
+    email: "pd@atlas.local",
+    password: "AtlasLocal-PD",
+  },
+  {
+    id: "u_eng",
+    role: "engineer",
+    title: "Site Engineer",
+    email: "se@atlas.local",
+    password: "AtlasLocal-SE",
+  },
+  {
+    id: "u_sup",
+    role: "supervisor",
+    title: "Site Supervisor",
+    email: "sv@atlas.local",
+    password: "AtlasLocal-SV",
+  },
+  {
+    id: "u_acc",
+    role: "accountant",
+    title: "Finance Lead",
+    email: "fl@atlas.local",
+    password: "AtlasLocal-FL",
+  },
+  {
+    id: "u_com",
+    role: "commercial",
+    title: "Commercial Manager",
+    email: "cm@atlas.local",
+    password: "AtlasLocal-CM",
+  },
+  {
+    id: "u_sales",
+    role: "sales",
+    title: "Sales Manager",
+    email: "sm@atlas.local",
+    password: "AtlasLocal-SM",
+  },
+  {
+    id: "u_legal",
+    role: "legal",
+    title: "Land & Legal",
+    email: "ll@atlas.local",
+    password: "AtlasLocal-LL",
+  },
+  {
+    id: "u_docs",
+    role: "docs",
+    title: "Document Controller",
+    email: "dc@atlas.local",
+    password: "AtlasLocal-DC",
+  },
+  {
+    id: "u_stores",
+    role: "stores",
+    title: "Stores / QS",
+    email: "st@atlas.local",
+    password: "AtlasLocal-ST",
+  },
+  {
+    id: "u_ch",
+    role: "channel",
+    title: "Channel agent (Pink City)",
+    email: "ag@atlas.local",
+    password: "AtlasLocal-AG",
+  },
+  {
+    id: "u_ca",
+    role: "channel_admin",
+    title: "Pink City company admin",
+    email: "ca@atlas.local",
+    password: "AtlasLocal-CA",
+  },
 ];
 
 const SEAT_BUTTON = {
@@ -65,7 +137,12 @@ async function collectUx(page, seat, screen) {
     ({ seat, screen }) => {
       const notes = [];
       if (document.documentElement.scrollWidth > window.innerWidth + 8) {
-        notes.push({ seat, screen, severity: "p2", issue: "Horizontal overflow on this viewport." });
+        notes.push({
+          seat,
+          screen,
+          severity: "p2",
+          issue: "Horizontal overflow on this viewport.",
+        });
       }
       const title = document.querySelector("h1, [class*='font-display']");
       if (!title) notes.push({ seat, screen, severity: "p3", issue: "No visible page title." });
@@ -100,12 +177,25 @@ async function main() {
     serverOk = false;
   }
   if (!serverOk) {
-    console.error(JSON.stringify({ ok: false, error: `Atlas is not running at ${BASE}. Start it with npm run dev.` }));
+    console.error(
+      JSON.stringify({
+        ok: false,
+        error: `Atlas is not running at ${BASE}. Start it with npm run dev.`,
+      }),
+    );
     process.exit(2);
   }
 
   const browser = await chromium.launch({ headless: true });
-  const report = { live: false, day: 2, at: new Date().toISOString(), seats: [], ux: [], tally: null, inApp: null };
+  const report = {
+    live: false,
+    day: 2,
+    at: new Date().toISOString(),
+    seats: [],
+    ux: [],
+    tally: null,
+    inApp: null,
+  };
 
   for (const user of seats) {
     const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
@@ -120,7 +210,10 @@ async function main() {
       await page.screenshot({ path: join(OUT, `${user.role}.png`), fullPage: true });
       const ux = await collectUx(page, user.title, path);
       report.ux.push(...ux);
-      const navText = await page.locator("aside nav").innerText().catch(() => "");
+      const navText = await page
+        .locator("aside nav")
+        .innerText()
+        .catch(() => "");
       const tallyOk = user.role === "owner" || user.role === "accountant";
       const tallyLeak = !tallyOk && /\bTally\b/i.test(navText);
       let isolationOk = true;
@@ -168,7 +261,10 @@ async function main() {
       await login(page, md);
       await page.goto(`${BASE}/app/testing`, { waitUntil: "domcontentloaded" });
       await page.getByRole("button", { name: /run company day/i }).click();
-      await page.getByText(/passed|failed/i).first().waitFor({ timeout: 90000 });
+      await page
+        .getByText(/passed|failed/i)
+        .first()
+        .waitFor({ timeout: 90000 });
       await page.screenshot({ path: join(OUT, "company-day-report.png"), fullPage: true });
       report.inApp = await page.locator("body").innerText();
     } catch (err) {
@@ -185,7 +281,9 @@ async function main() {
 
   const outJson = join(OUT, "report.json");
   writeFileSync(outJson, JSON.stringify(report, null, 2));
-  const seatFails = report.seats.filter((s) => s.homeOk === false || s.tallyLeak || s.isolationOk === false || s.error);
+  const seatFails = report.seats.filter(
+    (s) => s.homeOk === false || s.tallyLeak || s.isolationOk === false || s.error,
+  );
   const booksPosted = Array.isArray(report.books?.posted) && report.books.posted.length > 0;
   const booksOk = !report.books?.configured || report.books?.ok;
   console.log(
@@ -196,7 +294,12 @@ async function main() {
         day: 2,
         seats: report.seats.length,
         uxNotes: report.ux.length,
-        books: { ok: report.books?.ok, configured: report.books?.configured, detail: report.books?.detail, posted: report.books?.posted?.length ?? 0 },
+        books: {
+          ok: report.books?.ok,
+          configured: report.books?.configured,
+          detail: report.books?.detail,
+          posted: report.books?.posted?.length ?? 0,
+        },
         report: outJson,
       },
       null,

@@ -35,8 +35,24 @@ const SEATS = {
     password: "AtlasLocal-LL",
     seatButton: "Land & Legal",
     home: "/app/land",
-    expectedNav: ["Command", "All phases", "Projects", "Documents", "Land & legal", "Audit", "Assistant"],
-    forbiddenNav: ["Land & legal", "Tally", "Approvals", "Customers", "Sales", "Site & quality", "Controls"],
+    expectedNav: [
+      "Command",
+      "All phases",
+      "Projects",
+      "Documents",
+      "Land & legal",
+      "Audit",
+      "Assistant",
+    ],
+    forbiddenNav: [
+      "Land & legal",
+      "Tally",
+      "Approvals",
+      "Customers",
+      "Sales",
+      "Site & quality",
+      "Controls",
+    ],
   },
   dc: {
     id: "dc",
@@ -47,7 +63,15 @@ const SEATS = {
     seatButton: "Document Controller",
     home: "/app/documents",
     expectedNav: ["Command", "All phases", "Projects", "Documents", "Audit", "Assistant"],
-    forbiddenNav: ["Land & legal", "Tally", "Approvals", "Customers", "Sales", "Site & quality", "Controls"],
+    forbiddenNav: [
+      "Land & legal",
+      "Tally",
+      "Approvals",
+      "Customers",
+      "Sales",
+      "Site & quality",
+      "Controls",
+    ],
   },
 };
 
@@ -108,7 +132,10 @@ async function navLabels(page, viewport) {
       await page.waitForTimeout(200);
       const drawer = page.locator("div.fixed.inset-0");
       const text = (await drawer.innerText().catch(() => "")) || "";
-      await page.locator("div.fixed.inset-0").click({ position: { x: 300, y: 20 } }).catch(() => {});
+      await page
+        .locator("div.fixed.inset-0")
+        .click({ position: { x: 300, y: 20 } })
+        .catch(() => {});
       await page.waitForTimeout(150);
       return text;
     }
@@ -118,7 +145,7 @@ async function navLabels(page, viewport) {
   return "";
 }
 
-async function entityOptions(page) {
+async function _entityOptions(page) {
   const sel = page.locator("header select").first();
   return sel.locator("option").allTextContents();
 }
@@ -158,7 +185,12 @@ async function uxNotes(page, seat, screen) {
     ({ seat, screen }) => {
       const notes = [];
       if (document.documentElement.scrollWidth > window.innerWidth + 8) {
-        notes.push({ seat, screen, severity: "p2", issue: "Horizontal overflow on this viewport." });
+        notes.push({
+          seat,
+          screen,
+          severity: "p2",
+          issue: "Horizontal overflow on this viewport.",
+        });
       }
       const title = document.querySelector("h1");
       if (!title) notes.push({ seat, screen, severity: "p3", issue: "No visible h1 title." });
@@ -201,14 +233,23 @@ async function reviewLandLegal(page, viewport) {
   };
 
   rec.home = new URL(page.url()).pathname;
-  if (rec.home !== "/app/land") addFinding(seat, "home", "p0", `Expected home /app/land, landed on ${rec.home}.`);
+  if (rec.home !== "/app/land")
+    addFinding(seat, "home", "p0", `Expected home /app/land, landed on ${rec.home}.`);
 
   rec.nav = await navLabels(page, viewport);
   for (const item of SEATS.ll.expectedNav) {
-    if (!rec.nav.includes(item)) addFinding(seat, "nav", "p1", `Missing expected nav item "${item}".`);
+    if (!rec.nav.includes(item))
+      addFinding(seat, "nav", "p1", `Missing expected nav item "${item}".`);
   }
-  if (/\bTally\b/i.test(rec.nav)) addFinding(seat, "nav", "p0", "Tally leaked into Land & Legal nav.");
-  if (/Approvals/i.test(rec.nav)) addFinding(seat, "nav", "p2", "Approvals visible — this seat cannot four-eyes its own export requests.");
+  if (/\bTally\b/i.test(rec.nav))
+    addFinding(seat, "nav", "p0", "Tally leaked into Land & Legal nav.");
+  if (/Approvals/i.test(rec.nav))
+    addFinding(
+      seat,
+      "nav",
+      "p2",
+      "Approvals visible — this seat cannot four-eyes its own export requests.",
+    );
   if (/Customers|Sales|Site & quality|Controls|Owner decisions/i.test(rec.nav)) {
     addFinding(seat, "nav", "p2", "Unexpected commercial/site/owner nav on legal desk.");
   }
@@ -217,12 +258,14 @@ async function reviewLandLegal(page, viewport) {
   const landTitle = await findTime(page, "Land & legal");
   rec.find.title = landTitle;
   addTiming(seat, "/app/land", "title", landTitle.ms);
-  if (!landTitle.found || landTitle.ms > 10000) addFinding(seat, "/app/land", "p0", "Title 'Land & legal' not found <10s.");
+  if (!landTitle.found || landTitle.ms > 10000)
+    addFinding(seat, "/app/land", "p0", "Title 'Land & legal' not found <10s.");
 
   const overdue = await findTime(page, "BOCW cess return");
   rec.find.overdue = overdue;
   addTiming(seat, "/app/land", "overdue filing", overdue.ms);
-  if (!overdue.found) addFinding(seat, "/app/land", "p1", "Overdue BOCW cess return not visible on default entity.");
+  if (!overdue.found)
+    addFinding(seat, "/app/land", "p1", "Overdue BOCW cess return not visible on default entity.");
 
   const dueDate = await findTime(page, "Due 2026-08-31");
   rec.find.dueDate = dueDate;
@@ -237,7 +280,13 @@ async function reviewLandLegal(page, viewport) {
 
   const baggadOnLlp = await page.getByText("RIICO plot 18 Baggad").count();
   rec.actions.baggadOnDefaultLlp = baggadOnLlp;
-  if (baggadOnLlp > 0) addFinding(seat, "/app/land", "p0", "Baggad parcel (Homes entity) leaked onto LLP default entity.");
+  if (baggadOnLlp > 0)
+    addFinding(
+      seat,
+      "/app/land",
+      "p0",
+      "Baggad parcel (Homes entity) leaked onto LLP default entity.",
+    );
 
   await shot(page, `${tag}-land-home`);
 
@@ -246,11 +295,26 @@ async function reviewLandLegal(page, viewport) {
   rec.actions.landHasAddObligation = /add obligation|new filing|new obligation/i.test(landText);
   rec.actions.landHasAttach = /attach|upload|evidence|acknowledgement|challan/i.test(landText);
   rec.actions.landHasSearch = (await page.locator("main input").count()) > 0;
-  rec.actions.landHasNaConversionField = /NA conversion|7\/12|sale deed|mutation|power of attorney/i.test(landText);
-  if (!rec.actions.landHasAddParcel) addFinding(seat, "/app/land", "p1", "No way to add a parcel from the land register.");
-  if (!rec.actions.landHasAddObligation) addFinding(seat, "/app/land", "p1", "No way to add a statutory obligation (RERA, NA, labour, insurance).");
-  if (!rec.actions.landHasAttach) addFinding(seat, "/app/land", "p1", "Mark filed has no evidence/challan/acknowledgement attach.");
-  if (!rec.actions.landHasSearch) addFinding(seat, "/app/land", "p2", "No search on khasra / RERA / parcel name.");
+  rec.actions.landHasNaConversionField =
+    /NA conversion|7\/12|sale deed|mutation|power of attorney/i.test(landText);
+  if (!rec.actions.landHasAddParcel)
+    addFinding(seat, "/app/land", "p1", "No way to add a parcel from the land register.");
+  if (!rec.actions.landHasAddObligation)
+    addFinding(
+      seat,
+      "/app/land",
+      "p1",
+      "No way to add a statutory obligation (RERA, NA, labour, insurance).",
+    );
+  if (!rec.actions.landHasAttach)
+    addFinding(
+      seat,
+      "/app/land",
+      "p1",
+      "Mark filed has no evidence/challan/acknowledgement attach.",
+    );
+  if (!rec.actions.landHasSearch)
+    addFinding(seat, "/app/land", "p2", "No search on khasra / RERA / parcel name.");
 
   // Mark overdue obligation
   const markFiled = page.getByRole("button", { name: /mark filed/i }).first();
@@ -259,7 +323,9 @@ async function reviewLandLegal(page, viewport) {
     await page.waitForTimeout(400);
     rec.actions.markFiled = true;
     const after = await page.locator("main").innerText();
-    rec.actions.bocwStillOverdue = /BOCW cess return[\s\S]{0,200}overdue/i.test(after.replace(/\n/g, " "));
+    rec.actions.bocwStillOverdue = /BOCW cess return[\s\S]{0,200}overdue/i.test(
+      after.replace(/\n/g, " "),
+    );
     await shot(page, `${tag}-land-filed`);
   } else {
     rec.actions.markFiled = false;
@@ -272,10 +338,22 @@ async function reviewLandLegal(page, viewport) {
   const baggad = await findTime(page, "RIICO plot 18 Baggad");
   rec.find.baggadAfterEntity = baggad;
   addTiming(seat, "/app/land", "entity switch → Baggad", baggad.ms);
-  if (!baggad.found) addFinding(seat, "/app/land", "p0", "Entity switch to Aravalli Homes did not show Baggad parcel.");
+  if (!baggad.found)
+    addFinding(
+      seat,
+      "/app/land",
+      "p0",
+      "Entity switch to Aravalli Homes did not show Baggad parcel.",
+    );
   const kanakAfterHomes = await page.getByText("Khasra 214/2 Kanakpura").count();
   rec.entitySwitch.kanakOnHomes = kanakAfterHomes;
-  if (kanakAfterHomes > 0) addFinding(seat, "/app/land", "p0", "Kanakpura parcel still visible after switching to Aravalli Homes.");
+  if (kanakAfterHomes > 0)
+    addFinding(
+      seat,
+      "/app/land",
+      "p0",
+      "Kanakpura parcel still visible after switching to Aravalli Homes.",
+    );
   await shot(page, `${tag}-land-homes`);
 
   const acquire = page.getByRole("button", { name: /complete acquisition/i });
@@ -283,12 +361,21 @@ async function reviewLandLegal(page, viewport) {
   if (rec.actions.acquireVisible) {
     await acquire.first().click();
     await page.waitForTimeout(500);
-    const toast = await page.locator("[data-sonner-toast], li[data-type], [role='status']").allTextContents();
+    const toast = await page
+      .locator("[data-sonner-toast], li[data-type], [role='status']")
+      .allTextContents();
     rec.actions.acquireToast = toast.join(" | ");
     const body = await page.locator("body").innerText();
-    rec.actions.acquireBlocked = /due-diligence|must be clear/i.test(body + rec.actions.acquireToast);
+    rec.actions.acquireBlocked = /due-diligence|must be clear/i.test(
+      body + rec.actions.acquireToast,
+    );
     if (!rec.actions.acquireBlocked) {
-      addFinding(seat, "/app/land", "p0", "Acquisition did not refuse while diligence is open/flagged.");
+      addFinding(
+        seat,
+        "/app/land",
+        "p0",
+        "Acquisition did not refuse while diligence is open/flagged.",
+      );
     }
     await shot(page, `${tag}-land-acquire-blocked`);
   }
@@ -309,7 +396,12 @@ async function reviewLandLegal(page, viewport) {
   rec.entitySwitch.projectFilterBaggad = /RIICO plot 18 Baggad/.test(afterProj);
   rec.entitySwitch.projectFilterMansarHidden = !/Mansarovar Sector 6/.test(afterProj);
   if (!rec.entitySwitch.projectFilterBaggad || !rec.entitySwitch.projectFilterMansarHidden) {
-    addFinding(seat, "/app/land", "p1", "Project filter did not isolate Baggad from Mansarovar parcels.");
+    addFinding(
+      seat,
+      "/app/land",
+      "p1",
+      "Project filter did not isolate Baggad from Mansarovar parcels.",
+    );
   }
   await shot(page, `${tag}-land-project-filter`);
   await setProjectByCode(page, "All projects");
@@ -326,10 +418,20 @@ async function reviewLandLegal(page, viewport) {
   rec.actions.commandHasApprovals = /approvals waiting/i.test(cmd);
   rec.actions.commandHasQuality = /failed inspection/i.test(cmd);
   if (!rec.actions.commandHasStatutory) {
-    addFinding(seat, "/app", "p1", "Command does not surface statutory overdue as a first-class KPI for Legal.");
+    addFinding(
+      seat,
+      "/app",
+      "p1",
+      "Command does not surface statutory overdue as a first-class KPI for Legal.",
+    );
   }
   if (rec.actions.commandHasCollections && rec.actions.commandHasQuality) {
-    addFinding(seat, "/app", "p2", "Legal Command is a generic office dashboard (collections / inspections / spend) not a land/legal queue.");
+    addFinding(
+      seat,
+      "/app",
+      "p2",
+      "Legal Command is a generic office dashboard (collections / inspections / spend) not a land/legal queue.",
+    );
   }
   await shot(page, `${tag}-command`);
   const cmdUx = await uxNotes(page, seat, "/app");
@@ -358,7 +460,13 @@ async function reviewLandLegal(page, viewport) {
   const drawingRev = await findTime(page, "R4");
   rec.find.drawingRevision = drawingRev;
   addTiming(seat, "/app/documents", "drawing revision R4", drawingRev.ms);
-  if (!drawingRev.found) addFinding(seat, "/app/documents", "p1", "Drawing revision R4 (Architectural GA) not found <10s on LLP.");
+  if (!drawingRev.found)
+    addFinding(
+      seat,
+      "/app/documents",
+      "p1",
+      "Drawing revision R4 (Architectural GA) not found <10s on LLP.",
+    );
   await shot(page, `${tag}-documents`);
 
   const previewBtn = page.getByRole("button", { name: /watermarked preview/i }).first();
@@ -385,32 +493,59 @@ async function reviewLandLegal(page, viewport) {
     await page.waitForTimeout(250);
     rec.actions.registerHasFileInput = (await page.locator("input[type=file]").count()) > 0;
     if (!rec.actions.registerHasFileInput) {
-      addFinding(seat, "/app/documents", "p1", "Register file is metadata-only — no actual file upload.");
+      addFinding(
+        seat,
+        "/app/documents",
+        "p1",
+        "Register file is metadata-only — no actual file upload.",
+      );
     }
     await page.getByLabel(/^Title$/i).fill("Legal review — NA conversion pack");
     await page.getByRole("button", { name: /^Register$/ }).click();
     await page.waitForTimeout(400);
-    rec.actions.registered = (await page.getByText("Legal review — NA conversion pack").count()) > 0;
+    rec.actions.registered =
+      (await page.getByText("Legal review — NA conversion pack").count()) > 0;
     await shot(page, `${tag}-documents-registered`);
   }
 
   // Approvals leak
   await gotoPath(page, "/app/approvals");
   rec.leaks.approvalsPath = new URL(page.url()).pathname;
-  rec.leaks.approvalsBody = (await page.locator("main").innerText().catch(() => "")).slice(0, 400);
+  rec.leaks.approvalsBody = (
+    await page
+      .locator("main")
+      .innerText()
+      .catch(() => "")
+  ).slice(0, 400);
   const approvalsRendered = /Approvals|Queue is clear|waitingOn/i.test(rec.leaks.approvalsBody);
   rec.leaks.approvalsRendered = approvalsRendered;
-  if (approvalsRendered) addFinding(seat, "/app/approvals", "p1", "Deep-link /app/approvals renders the queue — legal cannot four-eyes, but the page is unguarded.");
+  if (approvalsRendered)
+    addFinding(
+      seat,
+      "/app/approvals",
+      "p1",
+      "Deep-link /app/approvals renders the queue — legal cannot four-eyes, but the page is unguarded.",
+    );
   await shot(page, `${tag}-leak-approvals`);
 
   // Finance leak
   await gotoPath(page, "/app/finance");
   rec.leaks.financePath = new URL(page.url()).pathname;
-  rec.leaks.financeBody = (await page.locator("main").innerText().catch(() => "")).slice(0, 500);
+  rec.leaks.financeBody = (
+    await page
+      .locator("main")
+      .innerText()
+      .catch(() => "")
+  ).slice(0, 500);
   rec.leaks.financeDenied = /does not post books|not offered/i.test(rec.leaks.financeBody);
   rec.leaks.financeHasReconcile = /Reconcile|Tally reconciliation/i.test(rec.leaks.financeBody);
   if (!rec.leaks.financeDenied && rec.leaks.financeHasReconcile) {
-    addFinding(seat, "/app/finance", "p0", "Deep-link /app/finance leaked Tally reconcile actions to Legal.");
+    addFinding(
+      seat,
+      "/app/finance",
+      "p0",
+      "Deep-link /app/finance leaked Tally reconcile actions to Legal.",
+    );
   }
   await shot(page, `${tag}-leak-finance`);
 
@@ -420,7 +555,8 @@ async function reviewLandLegal(page, viewport) {
   await shot(page, `${tag}-audit`);
   await gotoPath(page, "/app/assistant");
   rec.find.assistantFailClosed = (await page.getByText("Fail-closed").count()) > 0;
-  rec.find.assistantDraft = (await page.getByRole("button", { name: /draft \(level 2\)/i }).count()) > 0;
+  rec.find.assistantDraft =
+    (await page.getByRole("button", { name: /draft \(level 2\)/i }).count()) > 0;
   await shot(page, `${tag}-assistant`);
 
   report.seats[tag] = rec;
@@ -439,13 +575,17 @@ async function reviewDocs(page, viewport) {
   };
 
   rec.home = new URL(page.url()).pathname;
-  if (rec.home !== "/app/documents") addFinding(seat, "home", "p0", `Expected home /app/documents, landed on ${rec.home}.`);
+  if (rec.home !== "/app/documents")
+    addFinding(seat, "home", "p0", `Expected home /app/documents, landed on ${rec.home}.`);
 
   rec.nav = await navLabels(page, viewport);
-  if (/Land & legal/i.test(rec.nav)) addFinding(seat, "nav", "p0", "Document Controller nav includes Land & legal.");
-  if (/\bTally\b/i.test(rec.nav)) addFinding(seat, "nav", "p0", "Tally leaked into Document Controller nav.");
+  if (/Land & legal/i.test(rec.nav))
+    addFinding(seat, "nav", "p0", "Document Controller nav includes Land & legal.");
+  if (/\bTally\b/i.test(rec.nav))
+    addFinding(seat, "nav", "p0", "Tally leaked into Document Controller nav.");
   for (const item of SEATS.dc.expectedNav) {
-    if (!rec.nav.includes(item)) addFinding(seat, "nav", "p1", `Missing expected nav item "${item}".`);
+    if (!rec.nav.includes(item))
+      addFinding(seat, "nav", "p1", `Missing expected nav item "${item}".`);
   }
 
   const title = await findTime(page, "Documents");
@@ -454,8 +594,10 @@ async function reviewDocs(page, viewport) {
   const rev = await findTime(page, "R4");
   rec.find.drawingRevision = rev;
   addTiming(seat, "/app/documents", "drawing revision R4", rev.ms);
-  rec.find.reraCertOnDefaultLlp = (await page.getByText("RERA Registration Certificate").count()) > 0;
-  rec.actions.defaultHasBaggadSoil = (await page.getByText("Soil Investigation Report").count()) > 0;
+  rec.find.reraCertOnDefaultLlp =
+    (await page.getByText("RERA Registration Certificate").count()) > 0;
+  rec.actions.defaultHasBaggadSoil =
+    (await page.getByText("Soil Investigation Report").count()) > 0;
   if (rec.actions.defaultHasBaggadSoil) {
     addFinding(seat, "/app/documents", "p0", "Baggad soil report visible on default LLP entity.");
   }
@@ -470,7 +612,12 @@ async function reviewDocs(page, viewport) {
     rec.actions.statFilterShowsJda = /JDA Layout Approval/.test(t);
     rec.actions.statFilterHidesGa = !/Architectural GA/.test(t);
     if (!rec.actions.statFilterShowsJda || !rec.actions.statFilterHidesGa) {
-      addFinding(seat, "/app/documents", "p1", "Kind filter Statutory did not isolate statutory files from drawings.");
+      addFinding(
+        seat,
+        "/app/documents",
+        "p1",
+        "Kind filter Statutory did not isolate statutory files from drawings.",
+      );
     }
     await shot(page, `${tag}-filter-statutory`);
     await page.getByRole("button", { name: /^all$/i }).click();
@@ -485,7 +632,8 @@ async function reviewDocs(page, viewport) {
     rec.actions.previewOpened = true;
     rec.actions.previewActor = (await page.getByText(/T\. Joseph/i).count()) > 0;
     rec.actions.previewWatermark = (await page.getByText(/watermarked/i).count()) > 0;
-    rec.actions.previewRequestOriginal = (await page.getByRole("button", { name: /request original/i }).count()) > 0;
+    rec.actions.previewRequestOriginal =
+      (await page.getByRole("button", { name: /request original/i }).count()) > 0;
     await shot(page, `${tag}-preview`);
     const close = page.getByRole("button", { name: /close preview/i });
     if (await close.count()) await close.click();
@@ -509,7 +657,10 @@ async function reviewDocs(page, viewport) {
   const revInput = page.getByPlaceholder("Revision notes").first();
   if (await revInput.count()) {
     await revInput.fill("IFC lift overrun — issued for construction");
-    await page.getByRole("button", { name: /new revision/i }).first().click();
+    await page
+      .getByRole("button", { name: /new revision/i })
+      .first()
+      .click();
     await page.waitForTimeout(400);
     rec.actions.newRevision = (await page.getByText("IFC lift overrun").count()) > 0;
     await shot(page, `${tag}-new-revision`);
@@ -524,14 +675,20 @@ async function reviewDocs(page, viewport) {
     await register.click();
     await page.waitForTimeout(200);
     rec.actions.registerHasFileInput = (await page.locator("input[type=file]").count()) > 0;
-    rec.actions.registerHasTransmittal = (await page.getByText(/transmittal|discipline|issued to/i).count()) > 0;
+    rec.actions.registerHasTransmittal =
+      (await page.getByText(/transmittal|discipline|issued to/i).count()) > 0;
     await page.getByLabel(/^Title$/i).fill("Site IFC — Tower B raft");
     await page.getByRole("button", { name: /^Register$/ }).click();
     await page.waitForTimeout(400);
     rec.actions.registered = (await page.getByText("Site IFC — Tower B raft").count()) > 0;
     await shot(page, `${tag}-registered`);
     if (!rec.actions.registerHasFileInput) {
-      addFinding(seat, "/app/documents", "p1", "DC register is metadata-only — cannot attach the actual drawing/PDF.");
+      addFinding(
+        seat,
+        "/app/documents",
+        "p1",
+        "DC register is metadata-only — cannot attach the actual drawing/PDF.",
+      );
     }
   }
 
@@ -548,8 +705,20 @@ async function reviewDocs(page, viewport) {
 
   rec.actions.hasSearch = (await page.locator("main input[placeholder]").count()) > 0;
   rec.actions.hasExpiry = (await page.getByText(/expir|validity|renewal/i).count()) > 0;
-  if (!rec.actions.hasSearch) addFinding(seat, "/app/documents", "p2", "No document search (sheet, SHA, title). Kind chips only.");
-  if (!rec.actions.hasExpiry) addFinding(seat, "/app/documents", "p1", "No expiry / validity reminder on statutory certificates.");
+  if (!rec.actions.hasSearch)
+    addFinding(
+      seat,
+      "/app/documents",
+      "p2",
+      "No document search (sheet, SHA, title). Kind chips only.",
+    );
+  if (!rec.actions.hasExpiry)
+    addFinding(
+      seat,
+      "/app/documents",
+      "p1",
+      "No expiry / validity reminder on statutory certificates.",
+    );
 
   // Entity switch
   await setEntityByName(page, "Aravalli Homes");
@@ -559,15 +728,26 @@ async function reviewDocs(page, viewport) {
   rec.entitySwitch.hidesKanakGa = !/Architectural GA — Tower A/.test(after);
   rec.entitySwitch.showsReraMansar = /RERA Registration Certificate/.test(after);
   if (!rec.entitySwitch.showsSoil || !rec.entitySwitch.hidesKanakGa) {
-    addFinding(seat, "/app/documents", "p0", "Entity switch did not change document rows (Kanakpura vs Homes).");
+    addFinding(
+      seat,
+      "/app/documents",
+      "p0",
+      "Entity switch did not change document rows (Kanakpura vs Homes).",
+    );
   }
   await shot(page, `${tag}-entity-homes`);
   await setProjectByCode(page, "MSE-03");
   const mansarOnly = await page.locator("main").innerText();
   rec.entitySwitch.projectMansarOnly =
-    /RERA Registration Certificate/.test(mansarOnly) && !/Soil Investigation Report/.test(mansarOnly);
+    /RERA Registration Certificate/.test(mansarOnly) &&
+    !/Soil Investigation Report/.test(mansarOnly);
   if (!rec.entitySwitch.projectMansarOnly) {
-    addFinding(seat, "/app/documents", "p1", "Project filter did not isolate Mansarovar documents from Baggad.");
+    addFinding(
+      seat,
+      "/app/documents",
+      "p1",
+      "Project filter did not isolate Mansarovar documents from Baggad.",
+    );
   }
   await shot(page, `${tag}-project-mansar`);
   await setProjectByCode(page, "All projects");
@@ -580,7 +760,12 @@ async function reviewDocs(page, viewport) {
   rec.actions.commandApprovalsLink = /approvals waiting/i.test(cmd);
   rec.actions.commandSiteLink = /failed inspection/i.test(cmd);
   if (rec.actions.commandStatutoryLink) {
-    addFinding(seat, "/app", "p1", "Command queue offers Statutory overdue → /app/land, a module DC must not see.");
+    addFinding(
+      seat,
+      "/app",
+      "p1",
+      "Command queue offers Statutory overdue → /app/land, a module DC must not see.",
+    );
   }
   await shot(page, `${tag}-command`);
 
@@ -588,21 +773,42 @@ async function reviewDocs(page, viewport) {
   await gotoPath(page, "/app/phases");
   rec.leaks.phasesLandCard = (await page.getByText("Land & legal").count()) > 0;
   rec.leaks.phasesTallyCard = (await page.getByText("Tally").count()) > 0;
-  if (rec.leaks.phasesLandCard) addFinding(seat, "/app/phases", "p1", "All phases lists Land & legal and links into it for a seat that must not see Land.");
+  if (rec.leaks.phasesLandCard)
+    addFinding(
+      seat,
+      "/app/phases",
+      "p1",
+      "All phases lists Land & legal and links into it for a seat that must not see Land.",
+    );
   await shot(page, `${tag}-phases`);
 
   // Deep-link land
   await gotoPath(page, "/app/land");
   rec.leaks.landPath = new URL(page.url()).pathname;
-  rec.leaks.landBody = (await page.locator("main").innerText().catch(() => "")).slice(0, 800);
+  rec.leaks.landBody = (
+    await page
+      .locator("main")
+      .innerText()
+      .catch(() => "")
+  ).slice(0, 800);
   rec.leaks.landTitle = /Land & legal/.test(rec.leaks.landBody);
   rec.leaks.landParcels = /Khasra|RIICO|RERA/.test(rec.leaks.landBody);
   rec.leaks.landMutate = /Mark filed|Complete acquisition|Clear/.test(rec.leaks.landBody);
   if (rec.leaks.landTitle && rec.leaks.landParcels) {
-    addFinding(seat, "/app/land", "p0", "Deep-link /app/land renders the full land register to Document Controller (nav hide only, no route guard).");
+    addFinding(
+      seat,
+      "/app/land",
+      "p0",
+      "Deep-link /app/land renders the full land register to Document Controller (nav hide only, no route guard).",
+    );
   }
   if (rec.leaks.landMutate) {
-    addFinding(seat, "/app/land", "p0", "DC can mutate land (Mark filed / Clear diligence / Complete acquisition) via deep-link.");
+    addFinding(
+      seat,
+      "/app/land",
+      "p0",
+      "DC can mutate land (Mark filed / Clear diligence / Complete acquisition) via deep-link.",
+    );
   }
   await shot(page, `${tag}-leak-land`);
 
@@ -612,20 +818,40 @@ async function reviewDocs(page, viewport) {
       await filed.click();
       await page.waitForTimeout(300);
       rec.leaks.dcFiledObligation = true;
-      addFinding(seat, "/app/land", "p0", "Confirmed: DC clicked Mark filed on a statutory obligation and the control accepted it.");
+      addFinding(
+        seat,
+        "/app/land",
+        "p0",
+        "Confirmed: DC clicked Mark filed on a statutory obligation and the control accepted it.",
+      );
     }
   }
 
   // Deep-link finance
   await gotoPath(page, "/app/finance");
   rec.leaks.financePath = new URL(page.url()).pathname;
-  rec.leaks.financeBody = (await page.locator("main").innerText().catch(() => "")).slice(0, 500);
+  rec.leaks.financeBody = (
+    await page
+      .locator("main")
+      .innerText()
+      .catch(() => "")
+  ).slice(0, 500);
   rec.leaks.financeDenied = /does not post books|not offered/i.test(rec.leaks.financeBody);
   rec.leaks.financeReconcile = /Reconcile/.test(rec.leaks.financeBody);
   if (rec.leaks.financeReconcile && !rec.leaks.financeDenied) {
-    addFinding(seat, "/app/finance", "p0", "Deep-link /app/finance leaked Tally reconcile to Document Controller.");
+    addFinding(
+      seat,
+      "/app/finance",
+      "p0",
+      "Deep-link /app/finance leaked Tally reconcile to Document Controller.",
+    );
   } else if (rec.leaks.financeDenied) {
-    addFinding(seat, "/app/finance", "p3", "Finance deep-link is denied in-page (good) but still reachable — prefer a 403/home redirect.");
+    addFinding(
+      seat,
+      "/app/finance",
+      "p3",
+      "Finance deep-link is denied in-page (good) but still reachable — prefer a 403/home redirect.",
+    );
   }
   await shot(page, `${tag}-leak-finance`);
 
@@ -641,7 +867,10 @@ async function reviewDocs(page, viewport) {
 
 async function runSeat(browser, seatKey, viewport) {
   const user = SEATS[seatKey];
-  const vp = viewport === "mobile" ? { width: 390, height: 844, isMobile: true } : { width: 1280, height: 800 };
+  const vp =
+    viewport === "mobile"
+      ? { width: 390, height: 844, isMobile: true }
+      : { width: 1280, height: 800 };
   const context = await browser.newContext({
     viewport: { width: vp.width, height: vp.height },
     isMobile: Boolean(vp.isMobile),
@@ -663,7 +892,10 @@ async function runSeat(browser, seatKey, viewport) {
         await menu.click();
         await page.waitForTimeout(250);
         await shot(page, `${seatKey}-${viewport}-nav`);
-        await page.locator("div.fixed.inset-0").click({ position: { x: 340, y: 12 } }).catch(() => {});
+        await page
+          .locator("div.fixed.inset-0")
+          .click({ position: { x: 340, y: 12 } })
+          .catch(() => {});
         await page.waitForTimeout(150);
       }
     }
@@ -675,7 +907,12 @@ async function runSeat(browser, seatKey, viewport) {
   }
   report.console.push({ seat: user.title, viewport, errors });
   if (errors.length) {
-    addFinding(user.title, viewport, "p1", `Browser console errors: ${errors.slice(0, 3).join(" | ")}`);
+    addFinding(
+      user.title,
+      viewport,
+      "p1",
+      `Browser console errors: ${errors.slice(0, 3).join(" | ")}`,
+    );
   }
   await context.close();
 }
@@ -705,7 +942,18 @@ async function main() {
   await browser.close();
 
   writeFileSync(join(OUT, "report.json"), JSON.stringify(report, null, 2));
-  console.log(JSON.stringify({ ok: true, findings: report.findings.length, screenshots: report.screenshots.length, out: OUT }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        ok: true,
+        findings: report.findings.length,
+        screenshots: report.screenshots.length,
+        out: OUT,
+      },
+      null,
+      2,
+    ),
+  );
 }
 
 main().catch((err) => {

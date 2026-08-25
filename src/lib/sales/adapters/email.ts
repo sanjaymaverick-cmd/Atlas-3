@@ -28,15 +28,22 @@ export function adaptEmail(input: EmailParts): IngestRequest | { error: string }
   if (!name || !phone) return { error: "Email needs Name and Phone lines." };
   const source = detectSource(input.subject ?? "", input.from ?? "");
   const budgetRaw = field(body, ["budget", "max budget"]);
-  const budget = budgetRaw ? Number(budgetRaw.replace(/[,\s]/g, "").replace(/lakh|lac/i, "00000")) : undefined;
+  const budget = budgetRaw
+    ? Number(budgetRaw.replace(/[,\s]/g, "").replace(/lakh|lac/i, "00000"))
+    : undefined;
   return {
-    projectId: mapProject(field(body, ["project", "project name", "project code"]) || input.subject),
+    projectId: mapProject(
+      field(body, ["project", "project name", "project code"]) || input.subject,
+    ),
     name,
     phone,
     source,
     unit: field(body, ["unit", "unit no"]) || undefined,
     budget: Number.isFinite(budget) && budget ? budget : undefined,
-    note: field(body, ["comment", "message", "requirement", "remarks"]) || (input.subject || "Inbound lead email"),
+    note:
+      field(body, ["comment", "message", "requirement", "remarks"]) ||
+      input.subject ||
+      "Inbound lead email",
     kind: mapKind(field(body, ["type", "property", "configuration", "bhk"])),
   };
 }

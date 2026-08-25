@@ -36,7 +36,9 @@ function Site() {
     receiveMaterial,
     issueMaterial,
   } = useAtlas();
-  const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
+  const scoped = projects.filter(
+    (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+  );
   const ids = scoped.map((p) => p.id);
   const [pid, setPid] = useState(ids[0] ?? "");
   const [work, setWork] = useState("");
@@ -50,7 +52,13 @@ function Site() {
   const [recvQty, setRecvQty] = useState<Record<string, string>>({});
   const [issueQty, setIssueQty] = useState<Record<string, string>>({});
   const openRfqs = rfqs.filter((r) => ids.includes(r.projectId) && r.status === "open");
-  const noPo = Boolean(pid) && !pos.some((p) => p.projectId === pid && (p.status === "approved" || p.status === "execution" || p.status === "executed"));
+  const noPo =
+    Boolean(pid) &&
+    !pos.some(
+      (p) =>
+        p.projectId === pid &&
+        (p.status === "approved" || p.status === "execution" || p.status === "executed"),
+    );
 
   const diaryRows = diaries.filter((d) => ids.includes(d.projectId));
   const insp = inspections.filter((i) => ids.includes(i.projectId));
@@ -58,7 +66,11 @@ function Site() {
   const mats = materials.filter((m) => ids.includes(m.projectId));
   const storesSeat = user?.role === "stores";
   const canMoveStock =
-    user?.role === "engineer" || user?.role === "supervisor" || user?.role === "stores" || user?.role === "pm" || user?.role === "owner";
+    user?.role === "engineer" ||
+    user?.role === "supervisor" ||
+    user?.role === "stores" ||
+    user?.role === "pm" ||
+    user?.role === "owner";
 
   return (
     <div>
@@ -69,7 +81,9 @@ function Site() {
       />
 
       {storesSeat ? (
-        <p className="mb-6 text-sm text-muted">Stores can read diaries and move stock. Seal and Pass/Fail stay with site seats.</p>
+        <p className="mb-6 text-sm text-muted">
+          Stores can read diaries and move stock. Seal and Pass/Fail stay with site seats.
+        </p>
       ) : (
         <Card className="mb-6 p-5">
           <h2 className="font-display text-2xl">Today’s diary</h2>
@@ -86,8 +100,8 @@ function Site() {
           </div>
           {noPo ? (
             <GateBanner>
-              No approved purchase order on this project yet. You can still seal a diary — the civil package is not in the
-              books.
+              No approved purchase order on this project yet. You can still seal a diary — the civil
+              package is not in the books.
             </GateBanner>
           ) : null}
           <div className="mt-4 grid gap-3">
@@ -115,7 +129,10 @@ function Site() {
                   ["finish", "Finishing", "फिनिशिंग", finish, setFinish],
                 ] as const
               ).map(([key, en, hi, value, set]) => (
-                <label key={key} className="flex flex-col gap-1 rounded-xl border border-line bg-chip px-3 py-2">
+                <label
+                  key={key}
+                  className="flex flex-col gap-1 rounded-xl border border-line bg-chip px-3 py-2"
+                >
                   <span>
                     <span className="text-sm font-medium">{en}</span>
                     <span className="ml-1 text-[11px] text-muted">{hi}</span>
@@ -181,8 +198,8 @@ function Site() {
         <Card className="mb-6 p-5">
           <h2 className="font-display text-2xl">Open stock</h2>
           <p className="mt-1 text-sm text-muted">
-            Open stock = received − issued. Example: receive 10 t TMT 12mm, issue 8 t → open stock 2 t. No separate
-            stores manager required.
+            Open stock = received − issued. Example: receive 10 t TMT 12mm, issue 8 t → open stock 2
+            t. No separate stores manager required.
           </p>
           {mats.length === 0 ? (
             <p className="mt-3 text-sm text-muted">No material lines on this project yet.</p>
@@ -272,7 +289,8 @@ function Site() {
         <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
           <h2 className="font-display text-xl sm:col-span-2">Register a paper quote</h2>
           <p className="sm:col-span-2 text-sm text-muted">
-            Vendor has no login. Amount goes on the open price request. Select/PO still needs Active.
+            Vendor has no login. Amount goes on the open price request. Select/PO still needs
+            Active.
           </p>
           <Field label="Open price request">
             <select
@@ -357,7 +375,8 @@ function Site() {
           <Button
             variant="outline"
             onClick={() => {
-              const tpl = (document.getElementById("tpl") as HTMLInputElement)?.value || "Inspection";
+              const tpl =
+                (document.getElementById("tpl") as HTMLInputElement)?.value || "Inspection";
               const loc = (document.getElementById("loc") as HTMLInputElement)?.value || "Site";
               scheduleInspection({ projectId: pid, template: tpl, location: loc });
               toast("Inspection scheduled.");
@@ -369,7 +388,9 @@ function Site() {
       </Card>
       <h2 className="mb-3 mt-8 font-display text-2xl">Open defects</h2>
       <div className="mb-8 space-y-3">
-        {openSnags.length === 0 ? <p className="text-sm text-muted">No open defects on this project.</p> : null}
+        {openSnags.length === 0 ? (
+          <p className="text-sm text-muted">No open defects on this project.</p>
+        ) : null}
         {openSnags.map((s) => (
           <Card key={s.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
             <div>

@@ -2,7 +2,11 @@
 
 export const GROUP_COMPANY = "DUKIA GROUP";
 
-export const TRADING_COMPANIES = ["SATYAM BUILDCOM", "SATYAM CONSTRUCTION", "MGB PRIME ESTATES LLP"];
+export const TRADING_COMPANIES = [
+  "SATYAM BUILDCOM",
+  "SATYAM CONSTRUCTION",
+  "MGB PRIME ESTATES LLP",
+];
 
 export const COMPANY_SPECS = [
   { name: GROUP_COMPANY, abbr: "DG", isGroup: true, role: "group" },

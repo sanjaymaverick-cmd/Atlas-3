@@ -9,7 +9,14 @@
 import { openTrial, signIn, signOut, go, closeTrial } from "../session.mjs";
 
 /** Aadhaar Prime must not see Square and Yard or SBG desks, units, or people. */
-const FOREIGN = ["Square and Yard", "R. Shekhawat", "SBG Sales Group", "P. Rathi", "Sunflower", "Acropolis"];
+const FOREIGN = [
+  "Square and Yard",
+  "R. Shekhawat",
+  "SBG Sales Group",
+  "P. Rathi",
+  "Sunflower",
+  "Acropolis",
+];
 const ROUTES = [
   "/app/sales/channel",
   "/app/sales/company",
@@ -33,7 +40,10 @@ try {
         findings.push({ seat, route, verdict: "redirected", detail: `→ ${landed}` });
         continue;
       }
-      const text = await page.locator("body").innerText().catch(() => "");
+      const text = await page
+        .locator("body")
+        .innerText()
+        .catch(() => "");
       const hits = FOREIGN.filter((d) => text.includes(d));
       findings.push({
         seat,
@@ -49,7 +59,8 @@ try {
 }
 
 for (const f of findings) {
-  const tag = f.verdict === "LEAK" ? "LEAK      " : f.verdict === "redirected" ? "redirected" : "clean     ";
+  const tag =
+    f.verdict === "LEAK" ? "LEAK      " : f.verdict === "redirected" ? "redirected" : "clean     ";
   console.log(`${tag} ${f.seat.padEnd(3)} ${f.route}${f.detail ? ` — ${f.detail}` : ""}`);
 }
 const leaks = findings.filter((f) => f.verdict === "LEAK");

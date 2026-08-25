@@ -46,8 +46,10 @@ export function validateAtlasJournalPost(input: AtlasJournalPost): string | null
   if (!COMPANY_ALLOWLIST.includes(input.company.trim() as (typeof COMPANY_ALLOWLIST)[number])) {
     return `Company "${input.company}" is not on the Atlas allowlist.`;
   }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.postingDate ?? "")) return "postingDate must be YYYY-MM-DD.";
-  if (!Array.isArray(input.lines) || input.lines.length < 2) return "At least two journal lines are required.";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.postingDate ?? ""))
+    return "postingDate must be YYYY-MM-DD.";
+  if (!Array.isArray(input.lines) || input.lines.length < 2)
+    return "At least two journal lines are required.";
   let debit = 0;
   let credit = 0;
   for (let i = 0; i < input.lines.length; i++) {
@@ -127,10 +129,14 @@ export function journalSubmitPayload(doc: Record<string, unknown> | null | undef
   doc: Record<string, unknown>;
 } {
   if (!doc || typeof doc !== "object") {
-    throw new Error("GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.");
+    throw new Error(
+      "GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.",
+    );
   }
   if (!doc.name || doc.doctype !== "Journal Entry" || !Array.isArray(doc.accounts)) {
-    throw new Error("GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.");
+    throw new Error(
+      "GET the draft Journal Entry, then submit the full doc — not {doctype,name} only.",
+    );
   }
   return { doc };
 }

@@ -15,11 +15,7 @@ import type {
   UnitHold,
 } from "@/lib/types";
 
-export {
-  DUKIA_TOWERS as TOWERS,
-  DUKIA_UNITS as UNITS,
-  DUKIA_AGENTS as AGENTS,
-} from "./dukia-seed";
+export { DUKIA_TOWERS as TOWERS, DUKIA_UNITS as UNITS, DUKIA_AGENTS as AGENTS } from "./dukia-seed";
 
 export const CUSTOMERS: Customer[] = [];
 export const DAILY_REPORTS: DailyReport[] = [];
@@ -34,7 +30,17 @@ export const INBOUND: InboundEvent[] = [];
 export const SCORE_HISTORY: LeadScoreHistory[] = [];
 export const WA_SENDS: WaSend[] = [];
 
-const FEATURE_LIST = ["source", "stage", "kind", "budget", "unit_price", "wa", "call", "brochure", "visit"];
+const FEATURE_LIST = [
+  "source",
+  "stage",
+  "kind",
+  "budget",
+  "unit_price",
+  "wa",
+  "call",
+  "brochure",
+  "visit",
+];
 
 export const SCORE_MODELS: ScoringModel[] = [
   {

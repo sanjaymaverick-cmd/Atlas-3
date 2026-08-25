@@ -1,10 +1,12 @@
 ## 2026-08-25 · md · R. Dukia · MD
 
 ### Work completed
+
 - Opened CEO pulse
 - Confirmed group is ops not post-elim P&L
 
 ### ERPNext documents created (names/IDs) or none
+
 - ACC-JV-2026-00010 · SATYAM BUILDCOM · dukia-run2-capital-SBC
 - ACC-JV-2026-00011 · SATYAM BUILDCOM · dukia-run2-opex-SBC
 - ACC-JV-2026-00012 · SATYAM CONSTRUCTION · dukia-run2-capital-SCN
@@ -19,18 +21,21 @@
 - ACC-JV-2026-00021 · MGB PRIME ESTATES LLP · ic-loan-scn-mgb-borrower
 
 ### Task scores
-| Task | Score | Notes |
-|------|-------|-------|
-| CEO pulse three LLP cards | 1 | {"threeCards":true,"notElim":true} |
-| Vendor activation ×3 | 1 | ["active","active","active"] |
-| Approve POs | 1 | 3 cards |
+
+| Task                      | Score | Notes                              |
+| ------------------------- | ----- | ---------------------------------- |
+| CEO pulse three LLP cards | 1     | {"threeCards":true,"notElim":true} |
+| Vendor activation ×3      | 1     | ["active","active","active"]       |
+| Approve POs               | 1     | 3 cards                            |
 
 ### UI/UX friction
-| ID | Screen | Issue | Severity | Effort | Fix type |
-|----|--------|-------|----------|--------|----------|
-| — | — | none this seat | — | — | — |
+
+| ID  | Screen | Issue          | Severity | Effort | Fix type |
+| --- | ------ | -------------- | -------- | ------ | -------- |
+| —   | —      | none this seat | —        | —      | —        |
 
 ### Gate refusals (exact product text)
+
 - none
 
 ### Would a first-week site hire succeed on today’s tasks? Y — MD desk is English and large type.

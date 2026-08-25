@@ -4,12 +4,12 @@
 
 ## What is live on this machine
 
-| Portal | Endpoint | Adapter |
-|---|---|---|
-| 99acres | `POST /api/ingest/99acres` | `src/lib/sales/adapters/acres.ts` |
-| MagicBricks | `POST /api/ingest/magicbricks` | `src/lib/sales/adapters/magicbricks.ts` |
-| Housing.com | `POST /api/ingest/housing` | `src/lib/sales/adapters/housing.ts` |
-| Email fallback | `POST /api/ingest/email` | `src/lib/sales/adapters/email.ts` |
+| Portal         | Endpoint                       | Adapter                                 |
+| -------------- | ------------------------------ | --------------------------------------- |
+| 99acres        | `POST /api/ingest/99acres`     | `src/lib/sales/adapters/acres.ts`       |
+| MagicBricks    | `POST /api/ingest/magicbricks` | `src/lib/sales/adapters/magicbricks.ts` |
+| Housing.com    | `POST /api/ingest/housing`     | `src/lib/sales/adapters/housing.ts`     |
+| Email fallback | `POST /api/ingest/email`       | `src/lib/sales/adapters/email.ts`       |
 
 Auth: header `X-Atlas-Ingest-Secret` (default `atlas-local-ingest-2026`) or HMAC `X-Atlas-Signature`. Override with env `ATLAS_INGEST_SECRET` (not a `VITE_` var).
 

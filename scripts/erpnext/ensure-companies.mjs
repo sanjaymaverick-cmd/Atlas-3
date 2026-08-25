@@ -7,8 +7,19 @@
  *
  *   node scripts/erpnext/ensure-companies.mjs
  */
-import { COMPANY_SPECS, FISCAL_YEARS, PROJECT_COST_CENTERS, TRADING_COMPANIES } from "./companies.mjs";
-import { ERP_CREATE_TIMEOUT_MS, ERP_SLOW_TIMEOUT_MS, erpnextFetch, loadDotEnv, readErpnextConfig } from "./lib.mjs";
+import {
+  COMPANY_SPECS,
+  FISCAL_YEARS,
+  PROJECT_COST_CENTERS,
+  TRADING_COMPANIES,
+} from "./companies.mjs";
+import {
+  ERP_CREATE_TIMEOUT_MS,
+  ERP_SLOW_TIMEOUT_MS,
+  erpnextFetch,
+  loadDotEnv,
+  readErpnextConfig,
+} from "./lib.mjs";
 
 loadDotEnv();
 const cfg = readErpnextConfig();
@@ -21,7 +32,14 @@ function fail(msg) {
 
 async function listCompanies() {
   const params = new URLSearchParams({
-    fields: JSON.stringify(["name", "abbr", "is_group", "parent_company", "default_currency", "country"]),
+    fields: JSON.stringify([
+      "name",
+      "abbr",
+      "is_group",
+      "parent_company",
+      "default_currency",
+      "country",
+    ]),
     limit_page_length: "50",
   });
   const r = await erpnextFetch(cfg, `/api/resource/Company?${params}`, {}, ERP_SLOW_TIMEOUT_MS);
@@ -30,7 +48,12 @@ async function listCompanies() {
 
 async function getCompany(name) {
   try {
-    const r = await erpnextFetch(cfg, `/api/resource/Company/${encodeURIComponent(name)}`, {}, ERP_SLOW_TIMEOUT_MS);
+    const r = await erpnextFetch(
+      cfg,
+      `/api/resource/Company/${encodeURIComponent(name)}`,
+      {},
+      ERP_SLOW_TIMEOUT_MS,
+    );
     return r.json?.data ?? null;
   } catch {
     return null;
@@ -168,7 +191,9 @@ if (!cfg.configured) {
 try {
   await erpnextFetch(cfg, "/api/method/frappe.ping", {}, ERP_SLOW_TIMEOUT_MS);
 } catch (err) {
-  fail(`ERPNext unreachable (${err.message}). Docker is at D:\\ERPNext\\frappe_docker (pwd.yml, port 8000).`);
+  fail(
+    `ERPNext unreachable (${err.message}). Docker is at D:\\ERPNext\\frappe_docker (pwd.yml, port 8000).`,
+  );
   process.exit();
 }
 
@@ -198,7 +223,9 @@ const ccNotes = [];
 for (const cc of PROJECT_COST_CENTERS) {
   if (!names.has(cc.company)) continue;
   const row = await ensureCostCenter(cc.company, cc.name);
-  ccNotes.push(row.error ? `${cc.name}: ${row.error}` : `${row.name}${row.existed ? " exists" : ""}`);
+  ccNotes.push(
+    row.error ? `${cc.name}: ${row.error}` : `${row.name}${row.existed ? " exists" : ""}`,
+  );
 }
 
 const fyNotes = await ensureFiscalYears([...names]);

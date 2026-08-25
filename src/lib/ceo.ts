@@ -24,7 +24,16 @@ import type {
 export interface CeoRisk {
   id: string;
   label: string;
-  to: "/app" | "/app/land" | "/app/commercial" | "/app/approvals" | "/app/site" | "/app/customers" | "/app/finance" | "/app/sales/channel" | "/app/org";
+  to:
+    | "/app"
+    | "/app/land"
+    | "/app/commercial"
+    | "/app/approvals"
+    | "/app/site"
+    | "/app/customers"
+    | "/app/finance"
+    | "/app/sales/channel"
+    | "/app/org";
   count: number;
   severity: "high" | "medium" | "low";
 }
@@ -83,7 +92,10 @@ export interface CeoInput {
   entities: LegalEntity[];
 }
 
-export function filterProjects(projects: Project[], scope: "group" | { entityId?: string; projectId?: string }) {
+export function filterProjects(
+  projects: Project[],
+  scope: "group" | { entityId?: string; projectId?: string },
+) {
   if (scope === "group") return projects;
   return projects.filter((p) => {
     if (scope.projectId && scope.projectId !== "all") return p.id === scope.projectId;
@@ -115,14 +127,21 @@ export function buildCeoReport(
     return next ? daysOverdue(next.due) : 0;
   });
   const collectionsMtd = input.payments
-    .filter((p) => ids.has(bookings.find((b) => b.id === p.bookingId)?.projectId ?? "") && p.paid > 0 && p.due.startsWith(month))
+    .filter(
+      (p) =>
+        ids.has(bookings.find((b) => b.id === p.bookingId)?.projectId ?? "") &&
+        p.paid > 0 &&
+        p.due.startsWith(month),
+    )
     .reduce((s, p) => s + p.paid, 0);
   const openDiligence = input.diligence.filter((d) => {
     if (d.status === "clear") return false;
     const parcel = input.parcels.find((p) => p.id === d.parcelId);
     return parcel ? ids.has(parcel.projectId) : false;
   }).length;
-  const reraOpen = input.obligations.filter((o) => ids.has(o.projectId) && o.kind === "rera" && o.status !== "filed");
+  const reraOpen = input.obligations.filter(
+    (o) => ids.has(o.projectId) && o.kind === "rera" && o.status !== "filed",
+  );
   const reraDue = reraOpen.filter((o) => daysUntil(o.due) <= 7).length;
   const snagsOpen = input.snags.filter((s) => ids.has(s.projectId) && s.status === "open").length;
   const ocWaiting = bookings.filter((b) => b.status === "active").length;
@@ -132,7 +151,13 @@ export function buildCeoReport(
   const capitalDeployed = input.parcels
     .filter((p) => ids.has(p.projectId) && p.status === "acquired")
     .reduce((s, p) => s + (p.considerationInr ?? 0), 0);
-  const openPo = input.pos.filter((p) => ids.has(p.projectId) && p.status !== "rejected" && p.status !== "cancelled" && p.status !== "closed");
+  const openPo = input.pos.filter(
+    (p) =>
+      ids.has(p.projectId) &&
+      p.status !== "rejected" &&
+      p.status !== "cancelled" &&
+      p.status !== "closed",
+  );
   const vendorsApproval = input.vendors.filter((v) => v.stage === "approval").length;
   const kpis: CeoKpis = {
     available: available.length,
@@ -159,7 +184,9 @@ export function buildCeoReport(
   if (reraOverdue || reraDue) {
     risks.push({
       id: "rera",
-      label: reraOverdue ? `${reraOverdue} RERA filing(s) overdue` : `${reraDue} RERA filing(s) due in 7 days`,
+      label: reraOverdue
+        ? `${reraOverdue} RERA filing(s) overdue`
+        : `${reraDue} RERA filing(s) due in 7 days`,
       to: "/app/land",
       count: reraOverdue || reraDue,
       severity: reraOverdue ? "high" : "medium",
@@ -177,7 +204,9 @@ export function buildCeoReport(
   const silentSite = plist.filter((p) => {
     if (!p.constructionStart || p.constructionStart > asOf) return false;
     if (p.constructionEnd && p.constructionEnd < asOf) return false;
-    const last = input.diaries.filter((d) => d.projectId === p.id).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
+    const last = input.diaries
+      .filter((d) => d.projectId === p.id)
+      .sort((a, b) => (a.date < b.date ? 1 : -1))[0];
     if (!last) return true;
     return daysUntil(last.date) <= -3;
   }).length;
@@ -252,14 +281,27 @@ export function buildCeoReport(
       : "No vendors stuck in activation. No open PO exposure in this slice.",
   );
   const mdWaiting = input.approvals.filter(
-    (a) => a.status === "pending" && a.waitingOn === "Managing Director" && (ids.size === 0 || ids.has(a.projectId)),
+    (a) =>
+      a.status === "pending" &&
+      a.waitingOn === "Managing Director" &&
+      (ids.size === 0 || ids.has(a.projectId)),
   ).length;
-  const starts = plist.map((p) => p.start).filter(Boolean).sort();
+  const starts = plist
+    .map((p) => p.start)
+    .filter(Boolean)
+    .sort();
   const weeksElapsed = starts[0]
-    ? Math.max(1, Math.round((new Date(`${asOf}T12:00:00`).getTime() - new Date(`${starts[0]}T12:00:00`).getTime()) / (7 * 86_400_000)))
+    ? Math.max(
+        1,
+        Math.round(
+          (new Date(`${asOf}T12:00:00`).getTime() - new Date(`${starts[0]}T12:00:00`).getTime()) /
+            (7 * 86_400_000),
+        ),
+      )
     : 12;
   const weeklyVelocity = kpis.booked > 0 ? Math.round((kpis.booked / weeksElapsed) * 10) / 10 : 0;
-  const weeksToSellout = weeklyVelocity > 0 ? Math.round((kpis.available / weeklyVelocity) * 10) / 10 : null;
+  const weeksToSellout =
+    weeklyVelocity > 0 ? Math.round((kpis.available / weeklyVelocity) * 10) / 10 : null;
   const funnel = [
     { stage: "available", count: kpis.available },
     { stage: "held", count: kpis.held },

@@ -3,7 +3,14 @@ import { Menu, Shield } from "lucide-react";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { CommandPalette } from "@/components/command-palette";
 import { Hint } from "@/components/hint";
-import { BOTTOM_NAV, GROUP_ORDER, NAV, NAV_GROUP_LABEL, rolesForPath, type NavGroup } from "@/components/layout/nav";
+import {
+  BOTTOM_NAV,
+  GROUP_ORDER,
+  NAV,
+  NAV_GROUP_LABEL,
+  rolesForPath,
+  type NavGroup,
+} from "@/components/layout/nav";
 import { homeForRole } from "@/lib/roles";
 import { isThirdParty, myCompanyId } from "@/lib/sales-scope";
 import { useAtlas } from "@/lib/store";
@@ -12,8 +19,19 @@ import { cn } from "@/lib/utils";
 export function AppShell() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { user, entities, projects, entityId, projectId, setEntity, setProject, signOut, approvals, agents, partners } =
-    useAtlas();
+  const {
+    user,
+    entities,
+    projects,
+    entityId,
+    projectId,
+    setEntity,
+    setProject,
+    signOut,
+    approvals,
+    agents,
+    partners,
+  } = useAtlas();
   const [open, setOpen] = useState(false);
   const pending = approvals.filter((a) => a.status === "pending").length;
   const entityProjects = projects.filter((p) => p.entityId === entityId);
@@ -25,10 +43,13 @@ export function AppShell() {
   const blocked = Boolean(user && (allowed.length === 0 || !allowed.includes(user.role)));
   const defaultOpen = useMemo(() => {
     const role = user?.role;
-    if (role === "sales" || role === "channel" || role === "channel_admin") return new Set<NavGroup>(["today", "sell"]);
-    if (role === "engineer" || role === "supervisor" || role === "stores") return new Set<NavGroup>(["today", "build"]);
+    if (role === "sales" || role === "channel" || role === "channel_admin")
+      return new Set<NavGroup>(["today", "sell"]);
+    if (role === "engineer" || role === "supervisor" || role === "stores")
+      return new Set<NavGroup>(["today", "build"]);
     if (role === "legal" || role === "docs") return new Set<NavGroup>(["today", "build"]);
-    if (role === "accountant" || role === "commercial") return new Set<NavGroup>(["today", "books", "build"]);
+    if (role === "accountant" || role === "commercial")
+      return new Set<NavGroup>(["today", "books", "build"]);
     return new Set<NavGroup>(["today", "books"]);
   }, [user?.role]);
   const [openGroups, setOpenGroups] = useState<Set<NavGroup>>(defaultOpen);
@@ -82,7 +103,9 @@ export function AppShell() {
                   </Hint>
                 </span>
                 {item.to === "/app/approvals" && pending > 0 ? (
-                  <span className="rounded-full bg-primary-fg/15 px-1.5 text-[10px] tabular-nums">{pending}</span>
+                  <span className="rounded-full bg-primary-fg/15 px-1.5 text-[10px] tabular-nums">
+                    {pending}
+                  </span>
                 ) : null}
               </Link>
             );
@@ -131,7 +154,9 @@ export function AppShell() {
                           </Hint>
                         </span>
                         {item.to === "/app/approvals" && pending > 0 ? (
-                          <span className="rounded-full bg-primary-fg/15 px-1.5 text-[10px] tabular-nums">{pending}</span>
+                          <span className="rounded-full bg-primary-fg/15 px-1.5 text-[10px] tabular-nums">
+                            {pending}
+                          </span>
                         ) : null}
                       </Link>
                     );
@@ -154,7 +179,9 @@ export function AppShell() {
           </span>
           <div>
             <p className="font-display text-lg leading-none">Atlas</p>
-            <p className="text-[10px] uppercase tracking-[0.16em] text-sidebar-muted">Private ERP</p>
+            <p className="text-[10px] uppercase tracking-[0.16em] text-sidebar-muted">
+              Private ERP
+            </p>
           </div>
         </div>
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3">
@@ -163,9 +190,15 @@ export function AppShell() {
         <div className="border-t border-white/10 p-4">
           <p className="text-sm">{user?.name}</p>
           <p className="text-xs text-sidebar-muted">
-            {user?.grade === "md" ? "Managing Director" : user?.grade === "director" ? "Director (group)" : user?.title}
+            {user?.grade === "md"
+              ? "Managing Director"
+              : user?.grade === "director"
+                ? "Director (group)"
+                : user?.title}
           </p>
-          <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-sidebar-muted">Ctrl/⌘ K to jump</p>
+          <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-sidebar-muted">
+            Ctrl/⌘ K to jump
+          </p>
           <button
             className="mt-3 flex h-11 w-full items-center rounded-md px-3 text-sm text-sidebar-muted hover:bg-white/10 hover:text-sidebar-fg"
             onClick={() => {
@@ -234,10 +267,18 @@ export function AppShell() {
 
         {open ? (
           <div className="fixed inset-0 z-40 bg-ink/40 lg:hidden" onClick={() => setOpen(false)}>
-            <div className="h-full w-64 overflow-y-auto bg-sidebar p-4 text-sidebar-fg" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="h-full w-64 overflow-y-auto bg-sidebar p-4 text-sidebar-fg"
+              onClick={(e) => e.stopPropagation()}
+            >
               <p className="mb-1 font-display text-xl">Atlas</p>
               <p className="mb-4 text-xs text-sidebar-muted">
-                {user?.name} · {user?.grade === "md" ? "Managing Director" : user?.grade === "director" ? "Director" : user?.title}
+                {user?.name} ·{" "}
+                {user?.grade === "md"
+                  ? "Managing Director"
+                  : user?.grade === "director"
+                    ? "Director"
+                    : user?.title}
               </p>
               <div className="space-y-1">
                 <NavLinks grouped={false} onPick={() => setOpen(false)} />

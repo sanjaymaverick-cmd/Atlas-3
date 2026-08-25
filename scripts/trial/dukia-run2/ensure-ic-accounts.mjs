@@ -3,7 +3,13 @@
  * Does not create companies. Never posts a journal.
  */
 import { TRADING_COMPANIES } from "../../erpnext/companies.mjs";
-import { ERP_CREATE_TIMEOUT_MS, ERP_SLOW_TIMEOUT_MS, erpnextFetch, loadDotEnv, readErpnextConfig } from "../../erpnext/lib.mjs";
+import {
+  ERP_CREATE_TIMEOUT_MS,
+  ERP_SLOW_TIMEOUT_MS,
+  erpnextFetch,
+  loadDotEnv,
+  readErpnextConfig,
+} from "../../erpnext/lib.mjs";
 
 loadDotEnv();
 const cfg = readErpnextConfig();
@@ -12,7 +18,12 @@ const GABBR = "DG";
 
 async function findAccount(name) {
   try {
-    const r = await erpnextFetch(cfg, `/api/resource/Account/${encodeURIComponent(name)}`, {}, ERP_SLOW_TIMEOUT_MS);
+    const r = await erpnextFetch(
+      cfg,
+      `/api/resource/Account/${encodeURIComponent(name)}`,
+      {},
+      ERP_SLOW_TIMEOUT_MS,
+    );
     return r.json?.data ?? null;
   } catch {
     return null;
@@ -77,7 +88,11 @@ for (const company of TRADING_COMPANIES) {
   await ensureLeaf(`Due to ${company}`, liabParent);
 }
 
-const abbr = { "SATYAM BUILDCOM": "SBC", "SATYAM CONSTRUCTION": "SCN", "MGB PRIME ESTATES LLP": "MGB" };
+const abbr = {
+  "SATYAM BUILDCOM": "SBC",
+  "SATYAM CONSTRUCTION": "SCN",
+  "MGB PRIME ESTATES LLP": "MGB",
+};
 let childOk = 0;
 for (const company of TRADING_COMPANIES) {
   const a = abbr[company];
@@ -86,7 +101,13 @@ for (const company of TRADING_COMPANIES) {
     const to = await findAccount(`Due to ${other} - ${a}`);
     if (from) childOk += 1;
     if (to) childOk += 1;
-    console.log(company, `Due from ${other}`, from ? "yes" : "no", `Due to ${other}`, to ? "yes" : "no");
+    console.log(
+      company,
+      `Due from ${other}`,
+      from ? "yes" : "no",
+      `Due to ${other}`,
+      to ? "yes" : "no",
+    );
   }
 }
 console.log("child IC leaves found", childOk);

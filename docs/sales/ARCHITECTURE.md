@@ -4,23 +4,23 @@
 
 ## Tech stack (this host vs later)
 
-| Layer | This host (shipped) | Later cutover (owner TODO) |
-|---|---|---|
-| Presentation | TanStack Start routes under `src/routes/app/sales*` | Same UI; swap data hooks |
-| Services | `src/lib/sales/*` pure functions | Same modules as Nest/Go packages |
-| Data | Zustand persist `atlas3-sales-v6` | PostgreSQL + JSONB (`docs/sales/0003_scores.sql`) |
-| Scoring | Hybrid fallback; CatBoost native at `services/scoring` (`cat_features`, no OTS). Bound locally to `:8091`. | Same; override `VITE_SCORING_URL` |
-| Integrations | inbound inbox + WhatsApp template registry | Live 99acres / MagicBricks / Housing / Meta / Google / WhatsApp Business / Razorpay / e-sign / telephony |
-| Books | ERPNext at D:\ERPNext remains the books. Atlas never posts unless ERPNEXT_POSTING_ENABLED. | Same invariant |
+| Layer        | This host (shipped)                                                                                        | Later cutover (owner TODO)                                                                               |
+| ------------ | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Presentation | TanStack Start routes under `src/routes/app/sales*`                                                        | Same UI; swap data hooks                                                                                 |
+| Services     | `src/lib/sales/*` pure functions                                                                           | Same modules as Nest/Go packages                                                                         |
+| Data         | Zustand persist `atlas3-sales-v6`                                                                          | PostgreSQL + JSONB (`docs/sales/0003_scores.sql`)                                                        |
+| Scoring      | Hybrid fallback; CatBoost native at `services/scoring` (`cat_features`, no OTS). Bound locally to `:8091`. | Same; override `VITE_SCORING_URL`                                                                        |
+| Integrations | inbound inbox + WhatsApp template registry                                                                 | Live 99acres / MagicBricks / Housing / Meta / Google / WhatsApp Business / Razorpay / e-sign / telephony |
+| Books        | ERPNext at D:\ERPNext remains the books. Atlas never posts unless ERPNEXT_POSTING_ENABLED.                 | Same invariant                                                                                           |
 
 ## Roles
 
-| Prompt name | Atlas seat | Email |
-|---|---|---|
-| Developer Admin | `owner` / `pm` | md@ / pd@ |
-| In-house Sales | `sales` | sm@atlas.local |
+| Prompt name               | Atlas seat      | Email          |
+| ------------------------- | --------------- | -------------- |
+| Developer Admin           | `owner` / `pm`  | md@ / pd@      |
+| In-house Sales            | `sales`         | sm@atlas.local |
 | Third-Party Company Admin | `channel_admin` | ca@atlas.local |
-| Agent | `channel` | ag@atlas.local |
+| Agent                     | `channel`       | ag@atlas.local |
 
 Isolation: a third-party company never sees another firm’s holds, reports, or leads.
 
@@ -61,7 +61,7 @@ interface IngestRequest {
   projectId: string;
   name: string;
   phone: string;
-  source: string;          // 99acres | magicbricks | housing | meta | google | website | walk-in | partner | email | webhook
+  source: string; // 99acres | magicbricks | housing | meta | google | website | walk-in | partner | email | webhook
   unit?: string;
   budget?: number;
   note?: string;
@@ -87,9 +87,9 @@ interface ScoreRequest {
   model: "hybrid" | "xgboost" | "lightgbm" | "catboost";
 }
 interface ScoreResult {
-  score: number;           // 0–100, calibrated
+  score: number; // 0–100, calibrated
   band: "hot" | "warm" | "cold";
-  reasons: string[];       // SHAP-style
+  reasons: string[]; // SHAP-style
   model: string;
   features: Record<string, number>;
 }

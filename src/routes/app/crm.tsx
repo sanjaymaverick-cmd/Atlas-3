@@ -26,7 +26,9 @@ function Crm() {
     requestCommission,
     approvals,
   } = useAtlas();
-  const scoped = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
+  const scoped = projects.filter(
+    (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+  );
   const ids = scoped.map((p) => p.id);
   const leadRows = leads.filter((l) => ids.includes(l.projectId));
   const commissionRows = commissions.filter((c) => ids.includes(c.projectId));
@@ -54,7 +56,11 @@ function Crm() {
 
       <Card className="mb-6 grid gap-3 p-5 sm:grid-cols-2">
         <Field label="Project">
-          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={pid} onChange={(e) => setPid(e.target.value)}>
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={pid}
+            onChange={(e) => setPid(e.target.value)}
+          >
             {scoped.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -72,7 +78,11 @@ function Crm() {
           <Input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="A-0802" />
         </Field>
         <Field label="Partner">
-          <select className="h-11 rounded-md border border-line bg-surface px-3 text-sm" value={partnerId} onChange={(e) => setPartnerId(e.target.value)}>
+          <select
+            className="h-11 rounded-md border border-line bg-surface px-3 text-sm"
+            value={partnerId}
+            onChange={(e) => setPartnerId(e.target.value)}
+          >
             <option value="">Direct</option>
             {partners.map((p) => (
               <option key={p.id} value={p.id}>
@@ -110,7 +120,8 @@ function Crm() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
-                  {l.source} · {l.unit || "no unit"} · {partners.find((p) => p.id === l.partnerId)?.name ?? "direct"}
+                  {l.source} · {l.unit || "no unit"} ·{" "}
+                  {partners.find((p) => p.id === l.partnerId)?.name ?? "direct"}
                 </p>
                 <p className="font-display text-xl">{l.name}</p>
                 <p className="text-sm text-muted">{l.note}</p>
@@ -175,12 +186,16 @@ function Crm() {
           <Card key={c.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
             <div>
               <p className="font-medium">{partners.find((p) => p.id === c.partnerId)?.name}</p>
-              <p className="text-sm tabular-nums text-muted">{inr(c.amount, true)} · booking {c.bookingId}</p>
+              <p className="text-sm tabular-nums text-muted">
+                {inr(c.amount, true)} · booking {c.bookingId}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <Status value={c.status} />
               {c.status === "accrued" &&
-              !approvals.some((a) => a.kind === "Commission" && a.refId === c.id && a.status === "pending") ? (
+              !approvals.some(
+                (a) => a.kind === "Commission" && a.refId === c.id && a.status === "pending",
+              ) ? (
                 <Button
                   size="sm"
                   onClick={() => {

@@ -28,7 +28,8 @@ async function main() {
   page.on("pageerror", (err) => errors.push(String(err)));
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 30000 });
   await page.evaluate(() => {
-    for (const k of Object.keys(localStorage)) if (k.startsWith("atlas3-")) localStorage.removeItem(k);
+    for (const k of Object.keys(localStorage))
+      if (k.startsWith("atlas3-")) localStorage.removeItem(k);
   });
   await page.reload({ waitUntil: "networkidle" });
   await page.getByText("Local test accounts").waitFor({ timeout: 20000 });
@@ -39,8 +40,16 @@ async function main() {
   await page.goto(`${BASE}/app/sales/pipeline`, { waitUntil: "domcontentloaded" });
   await page.getByText("New → visit → book").waitFor({ timeout: 10000 });
   const phone = `99xxxx${String(Date.now()).slice(-4)}`;
-  await page.locator("label").filter({ hasText: /^Name$/ }).locator("input").fill("CatBoost Bind");
-  await page.locator("label").filter({ hasText: /^Phone$/ }).locator("input").fill(phone);
+  await page
+    .locator("label")
+    .filter({ hasText: /^Name$/ })
+    .locator("input")
+    .fill("CatBoost Bind");
+  await page
+    .locator("label")
+    .filter({ hasText: /^Phone$/ })
+    .locator("input")
+    .fill(phone);
   await page.getByRole("button", { name: /ingest & score/i }).click();
   await page.waitForTimeout(2500);
   const body = await page.locator("body").innerText();
@@ -48,7 +57,12 @@ async function main() {
   if (!/catboost/i.test(body)) errors.push("pipeline did not stamp catboost (hybrid fallback?)");
   await browser.close();
 
-  const report = { ok: errors.length === 0, nativeScore: native.score, nativeBand: native.band, errors };
+  const report = {
+    ok: errors.length === 0,
+    nativeScore: native.score,
+    nativeBand: native.band,
+    errors,
+  };
   console.log(JSON.stringify(report, null, 2));
   if (!report.ok) process.exit(1);
 }

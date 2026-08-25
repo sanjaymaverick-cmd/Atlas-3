@@ -11,7 +11,9 @@ export const Route = createFileRoute("/app/phases")({ component: Phases });
 function Phases() {
   const { user, projects, entityId, projectId } = useAtlas();
   const role = user?.role;
-  const list = projects.filter((p) => p.entityId === entityId && (projectId === "all" || p.id === projectId));
+  const list = projects.filter(
+    (p) => p.entityId === entityId && (projectId === "all" || p.id === projectId),
+  );
   const allowed = PHASES.filter((p) => {
     const roles = rolesForPath(p.path);
     return role ? roles.includes(role) : false;
@@ -44,7 +46,9 @@ function Phases() {
           <li key={p.id}>
             <Link to={p.path as "/app"} className="block">
               <Card className="h-full p-5 transition-colors hover:bg-chip">
-                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">Phase {p.id}</p>
+                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+                  Phase {p.id}
+                </p>
                 <h2 className="mt-1 font-display text-2xl">{p.title}</h2>
                 <p className="mt-2 text-sm text-muted">{p.rule}</p>
               </Card>

@@ -89,7 +89,8 @@ async function main() {
   await page.goto(`${BASE}/app/sales/integrations`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(500);
   const inbox = await page.locator("body").innerText();
-  if (!/WhatsApp/i.test(inbox) || !/99acres/i.test(inbox)) errors.push("Inbound missing connectors");
+  if (!/WhatsApp/i.test(inbox) || !/99acres/i.test(inbox))
+    errors.push("Inbound missing connectors");
   const apply = page.getByRole("button", { name: /^Apply$/ }).first();
   if (await apply.count()) await apply.click();
   await page.waitForTimeout(400);

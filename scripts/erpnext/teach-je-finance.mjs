@@ -21,7 +21,10 @@ mkdirSync(OUT, { recursive: true });
 async function login(page) {
   await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 60000 });
   await page.waitForSelector("input", { timeout: 40000 });
-  const email = (await page.$("#login_email")) || (await page.$('input[type="email"]')) || (await page.$('input[type="text"]'));
+  const email =
+    (await page.$("#login_email")) ||
+    (await page.$('input[type="email"]')) ||
+    (await page.$('input[type="text"]'));
   const pass = (await page.$("#login_password")) || (await page.$('input[type="password"]'));
   await email.fill(USER);
   await pass.fill(PASSWORD);
@@ -35,20 +38,33 @@ async function login(page) {
 
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-const result = { ok: false, name: null, docstatus: null, company: null, owner: null, mock: false, steps: [] };
+const result = {
+  ok: false,
+  name: null,
+  docstatus: null,
+  company: null,
+  owner: null,
+  mock: false,
+  steps: [],
+};
 
 try {
   await login(page);
   result.steps.push({ at: page.url(), note: "logged in" });
   await page.screenshot({ path: join(OUT, "teach-01-home.png") });
-  if (!/dukia-books/i.test(page.url()) && !/DUKIA Books/i.test(await page.evaluate(() => document.body.innerText))) {
+  if (
+    !/dukia-books/i.test(page.url()) &&
+    !/DUKIA Books/i.test(await page.evaluate(() => document.body.innerText))
+  ) {
     await page.goto(`${BASE}/desk/dukia-books`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1500);
   }
   await page.screenshot({ path: join(OUT, "teach-02-dukia-books.png") });
 
   await page.goto(`${BASE}/app/journal-entry/new`, { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(() => window.cur_frm && window.cur_frm.doctype === "Journal Entry", { timeout: 25000 });
+  await page.waitForFunction(() => window.cur_frm && window.cur_frm.doctype === "Journal Entry", {
+    timeout: 25000,
+  });
   await page.waitForTimeout(1200);
   await page.screenshot({ path: join(OUT, "teach-03-new-je.png"), fullPage: true });
 
@@ -89,7 +105,12 @@ try {
   const saved = await page.evaluate(async () => {
     const frm = window.cur_frm;
     await frm.save();
-    return { name: frm.doc.name, docstatus: frm.doc.docstatus, company: frm.doc.company, owner: frm.doc.owner };
+    return {
+      name: frm.doc.name,
+      docstatus: frm.doc.docstatus,
+      company: frm.doc.company,
+      owner: frm.doc.owner,
+    };
   });
   result.name = saved.name;
   result.docstatus = saved.docstatus;
@@ -104,11 +125,12 @@ try {
     return p;
   });
   // Frappe confirm modal
-  const yes = page.locator(".modal-dialog button.btn-primary, .modal button:has-text('Yes'), button:has-text('Yes')").first();
-  await Promise.race([
-    yes.click({ timeout: 8000 }).catch(() => null),
-    page.waitForTimeout(8000),
-  ]);
+  const yes = page
+    .locator(
+      ".modal-dialog button.btn-primary, .modal button:has-text('Yes'), button:has-text('Yes')",
+    )
+    .first();
+  await Promise.race([yes.click({ timeout: 8000 }).catch(() => null), page.waitForTimeout(8000)]);
   try {
     await submitClick;
   } catch (e) {
@@ -143,9 +165,12 @@ try {
     // Cookie fallback submit as finance@
     const cookies = await page.context().cookies();
     const cookie = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
-    const get = await fetch(`${BASE}/api/resource/Journal Entry/${encodeURIComponent(result.name)}`, {
-      headers: { Accept: "application/json", Cookie: cookie },
-    });
+    const get = await fetch(
+      `${BASE}/api/resource/Journal Entry/${encodeURIComponent(result.name)}`,
+      {
+        headers: { Accept: "application/json", Cookie: cookie },
+      },
+    );
     const json = await get.json();
     const doc = json.data;
     const sub = await fetch(`${BASE}/api/method/frappe.client.submit`, {
@@ -155,9 +180,12 @@ try {
     });
     const subText = await sub.text();
     result.steps.push({ note: "cookie-submit", status: sub.status, body: subText.slice(0, 300) });
-    const fresh = await fetch(`${BASE}/api/resource/Journal Entry/${encodeURIComponent(result.name)}`, {
-      headers: { Accept: "application/json", Cookie: cookie },
-    });
+    const fresh = await fetch(
+      `${BASE}/api/resource/Journal Entry/${encodeURIComponent(result.name)}`,
+      {
+        headers: { Accept: "application/json", Cookie: cookie },
+      },
+    );
     const fd = (await fresh.json()).data;
     result.docstatus = fd.docstatus;
     result.owner = fd.owner;

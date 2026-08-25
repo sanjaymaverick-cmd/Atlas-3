@@ -154,36 +154,18 @@
   "bookings": [
     {
       "seat": "smav",
-      "errs": [
-        "ok",
-        "ok"
-      ],
-      "booked": [
-        "AVA-0102",
-        "AVA-0101"
-      ]
+      "errs": ["ok", "ok"],
+      "booked": ["AVA-0102", "AVA-0101"]
     },
     {
       "seat": "smsf",
-      "errs": [
-        "ok",
-        "ok"
-      ],
-      "booked": [
-        "SFA-0102",
-        "SFA-0101"
-      ]
+      "errs": ["ok", "ok"],
+      "booked": ["SFA-0102", "SFA-0101"]
     },
     {
       "seat": "smac",
-      "errs": [
-        "ok",
-        "ok"
-      ],
-      "booked": [
-        "ACA-0102",
-        "ACA-0101"
-      ]
+      "errs": ["ok", "ok"],
+      "booked": ["ACA-0102", "ACA-0101"]
     }
   ],
   "diaries": [

@@ -34,7 +34,8 @@ async function main() {
   await page.goto(`${BASE}/app/sales/whatsapp`, { waitUntil: "domcontentloaded" });
   await page.getByText("Templates, thread, automation").waitFor({ timeout: 10000 });
   const body = await page.locator("body").innerText();
-  if (!/Thread/i.test(body) || !/Yes, Sunday/i.test(body)) errors.push("WhatsApp thread missing seed inbound");
+  if (!/Thread/i.test(body) || !/Yes, Sunday/i.test(body))
+    errors.push("WhatsApp thread missing seed inbound");
   await page.getByRole("button", { name: /receive reply/i }).click();
   await page.waitForTimeout(400);
   await page.screenshot({ path: join(OUT, "whatsapp-thread.png"), fullPage: true });
