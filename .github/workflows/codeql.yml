@@ -1,13 +1,9 @@
 name: CodeQL
 
+# Default setup is on for this public repo (query suite: extended) and owns
+# SARIF upload. This advanced workflow is dispatch-only so the two setups
+# do not fight over the same analysis category.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    # Mondays 06:30 UTC
-    - cron: "30 6 * * 1"
   workflow_dispatch:
 
 jobs:
@@ -41,7 +37,7 @@ jobs:
         with:
           category: "/language:${{ matrix.language }}"
           output: results
-          upload: true
+          upload: false
 
       - name: Keep SARIF as a workflow artifact
         if: always()

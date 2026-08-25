@@ -25,20 +25,19 @@ jobs:
           persist-credentials: false
 
       # Super-Linter v7 forbids mixing VALIDATE_*=true with VALIDATE_*=false.
-      # Only enable the linters Atlas ships. ESLint stays in `npm run lint`
-      # (this image still bundles ESLint 8; the repo is ESLint 9).
+      # Only enable linters that match this repo:
+      # - JSON ESLint is skipped: Super-Linter still passes --ext, which ESLint 9
+      #   flat config rejects.
+      # - JS/TS/MD Prettier is skipped: the image ships Prettier 3.5.2; Atlas
+      #   uses 3.9.6 via `npm run format`. JSON/YAML Prettier stay on.
       - name: Super-Linter
         uses: super-linter/super-linter@v7.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: main
           VALIDATE_ALL_CODEBASE: true
-          VALIDATE_JAVASCRIPT_PRETTIER: true
-          VALIDATE_TYPESCRIPT_PRETTIER: true
-          VALIDATE_JSON: true
+          VALIDATE_GITHUB_ACTIONS: true
           VALIDATE_JSON_PRETTIER: true
           VALIDATE_YAML: true
           VALIDATE_YAML_PRETTIER: true
-          VALIDATE_MARKDOWN_PRETTIER: true
-          VALIDATE_GITHUB_ACTIONS: true
           FILTER_REGEX_EXCLUDE: ".*(node_modules|\\.vercel|\\.nitro|dist|routeTree\\.gen\\.ts|package-lock\\.json|screenshots|catboost_info).*"
